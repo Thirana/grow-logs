@@ -1,0 +1,297 @@
+# CLAUDE.md
+
+This file is read automatically by Claude Code at the start of every session.
+It provides complete project context and working conventions so you never need to re-explain the project.
+
+---
+
+## Project Overview
+
+**Grow Logs** is a personal growth logging SaaS for developers and self-learners to track daily work and learning activities. Users log entries with categories, an entry type (WORK or LEARNING), optional productivity score (1–10), and markdown text.
+
+For full context see `CONTEXT.md`. For all technical decisions and their reasoning see `DECISIONS.md`.
+
+---
+
+## Engineering Standard
+
+This is a real SaaS product being built to production quality. Every implementation decision should meet the bar of "would a senior engineer at a real SaaS company be comfortable shipping this?"
+
+**What this means in practice:**
+- Proper patterns: structured error handling, input validation at system boundaries, ownership scoping on every query, environment-based config, structured logging
+- When two valid approaches exist, pick the simpler one unless the more complex one has a clear and explainable production benefit
+- No premature abstractions, no over-engineering, no building for hypothetical future requirements
+- When using a non-obvious production pattern, add a brief explanation of WHY — this project is also a learning exercise
+
+**What it does not mean:**
+- Adding error handling for scenarios that cannot happen
+- Backwards-compatibility shims when you can just change the code
+- Feature flags or abstractions beyond what the current task requires
+
+---
+
+## Documentation Index
+
+| File | Purpose |
+|---|---|
+| `CONTEXT.md` | AI-oriented project summary and current state |
+| `DECISIONS.md` | Every technical decision with full reasoning |
+| `docs/PRODUCT.md` | Problem, target user, all MVP and non-MVP user stories |
+| `docs/ARCHITECTURE.md` | System design, request lifecycle, auth flows, data flows |
+| `docs/SCHEMA.md` | All DB tables, constraints, indexes, full Prisma schema |
+| `docs/API_CONTRACT.md` | All endpoints, request/response shapes, status codes |
+
+**Always check these files before asking the user for clarification.** Most questions about what to build are answered in the docs.
+
+---
+
+## Monorepo Structure
+
+```
+grow-logs/
+├── apps/
+│   ├── api/          NestJS backend
+│   └── web/          Next.js frontend
+├── packages/
+│   ├── schemas/      Shared Zod validation schemas
+│   └── types/        Shared TypeScript interfaces
+├── CLAUDE.md         (this file)
+├── CONTEXT.md
+├── DECISIONS.md
+└── docs/
+```
+
+Managed with **Turborepo** and **npm workspaces**.
+
+---
+
+## Tech Stack
+
+### Backend (apps/api)
+- **Runtime:** Node.js with TypeScript
+- **Framework:** NestJS
+- **ORM:** Prisma
+- **Database:** PostgreSQL
+- **Authentication:** Passport.js + JWT (custom, not Clerk)
+- **Validation:** Zod (via shared `packages/schemas`)
+- **Email:** AWS SES
+- **API Docs:** Swagger via `@nestjs/swagger`
+
+### Frontend (apps/web)
+- **Framework:** Next.js (App Router)
+- **State:** Zustand (client), React Query (server)
+- **Forms:** React Hook Form + Zod
+- **UI:** shadcn/ui + Tailwind CSS
+- **HTTP:** axios or fetch wrapper with JWT injection
+
+### Shared Packages
+- `packages/schemas` — Zod schemas imported by both apps
+- `packages/types` — TypeScript interfaces imported by both apps
+
+---
+
+## Development Commands
+
+```bash
+# From repo root
+npm run dev           # Start all apps in parallel
+npm run build         # Build all apps
+npm run lint          # Lint all apps
+npm run test          # Run all tests
+
+# From apps/api
+npm run dev           # Start NestJS in watch mode
+npm run test          # Unit tests
+npm run test:e2e      # E2E tests
+npx prisma migrate dev        # Run pending migrations
+npx prisma migrate dev --name <name>  # New migration
+npx prisma db seed    # Seed feature flags
+npx prisma studio     # Open Prisma Studio
+```
+
+---
+
+## Backend Architecture Rules
+
+### Module Structure
+Every NestJS module follows this exact structure:
+```
+modules/
+  <feature>/
+    <feature>.module.ts
+    <feature>.controller.ts
+    <feature>.service.ts
+    dto/
+      create-<feature>.dto.ts
+      update-<feature>.dto.ts
+      <feature>-response.dto.ts
+    entities/
+      <feature>.entity.ts
+```
+
+### Backend Modules
+| Module | Responsibility |
+|---|---|
+| `AuthModule` | Register, login, email verification, JWT strategy, password change |
+| `UsersModule` | User profile management |
+| `CategoriesModule` | Categories and subcategories CRUD |
+| `EntriesModule` | Log entry CRUD and summary analytics |
+| `OnboardingModule` | Onboarding completion logic |
+| `EmailModule` | AWS SES integration |
+| `FeatureFlagsModule` | Feature flag checks with 60s in-memory cache |
+| `AdminModule` | Admin user management and flag toggling |
+| `CommonModule` | Guards, pipes, interceptors, decorators, response transformer |
+
+### Request Lifecycle (in order)
+1. Middleware (logging, CORS, Helmet)
+2. Guards (JWT authentication, RolesGuard for admin)
+3. Interceptors (request logging, response transformation)
+4. Pipes (Zod validation of body and query params)
+5. Controller (route handler, delegates to service)
+6. Service (business logic, ownership checks)
+7. Prisma (database queries)
+
+---
+
+## API Design Rules
+
+- Base path: `/api/v1`
+- Resources are nouns, actions are HTTP methods — never `/getEntries`, always `GET /entries`
+- **Every** response uses the standard envelope — no exceptions:
+
+```typescript
+// Single resource
+{ data: {}, meta: {} }
+
+// List
+{ data: [], meta: { total, page, limit, totalPages } }
+
+// Error
+{ statusCode, message, errors: [], timestamp, path }
+```
+
+- All list endpoints are paginated (default page=1, limit=10, max limit=100)
+- Every query is scoped by authenticated user ID — users never access each other's data
+- UUIDs in path params are validated as proper UUID format before hitting the database
+- Pagination on all list endpoints from day one
+
+### HTTP Status Codes
+| Code | When |
+|---|---|
+| 200 | Successful GET or PATCH |
+| 201 | Successful POST that creates a resource |
+| 204 | Successful DELETE |
+| 400 | Validation failed |
+| 401 | Missing or invalid JWT |
+| 403 | Authenticated but wrong role |
+| 404 | Resource not found or not owned by user |
+| 409 | Duplicate resource |
+| 422 | Business rule violation |
+| 429 | Rate limit exceeded |
+| 500 | Unexpected server error |
+
+---
+
+## Validation Rules
+
+- Validation schemas live in `packages/schemas` and are imported into both the backend (as Zod pipes) and frontend (as form validation)
+- Never duplicate a validation rule — define it once in `packages/schemas`
+- Backend validates independently of the frontend — never trust client-side validation alone
+- Environment variables are validated at startup via `@nestjs/config` with a Zod schema — the app refuses to start if any required variable is missing
+
+---
+
+## Security Rules
+
+- Passwords hashed with bcrypt, never stored plain
+- JWT tokens expire after 7 days
+- All endpoints except register, login, verify-email, and resend-verification require authentication
+- Every database query is scoped by `userId` from the JWT — never trust a userId from the request body
+- CORS allows requests only from the frontend domain
+- Rate limiting on authentication endpoints via NestJS throttler
+- Helmet.js sets secure HTTP headers
+- Admin endpoints require both JWT guard AND RolesGuard
+- Raw error internals are never exposed to the client — always wrap in the standard error envelope
+- On login failure, always return a generic error without specifying which field (email or password) was wrong
+
+---
+
+## Database Rules
+
+- All primary keys are UUIDs generated at application level
+- All tables have `created_at` and `updated_at` timestamps
+- Hard deletes at MVP — do not add soft delete until explicitly asked
+- `entry_date` (user-assigned date) is separate from `created_at` (DB insert timestamp) — dashboard queries always sort/filter by `entry_date`
+- `user_id` is denormalised on `subcategories` to avoid a JOIN on ownership checks
+- Category limit (max 5 per user) is enforced in `CategoriesService`, not the database
+- Migration files are never edited after being applied — every schema change gets its own migration
+- Migration names are descriptive: `add_soft_delete_to_entries`, not `migration_001`
+
+### Foreign Key Delete Behaviours
+| Relationship | Behaviour |
+|---|---|
+| users → categories | CASCADE |
+| users → subcategories | CASCADE |
+| users → entries | CASCADE |
+| categories → subcategories | CASCADE |
+| categories → entries | RESTRICT |
+| subcategories → entries | SET NULL |
+
+---
+
+## Feature Flags
+
+All non-MVP features are gated behind feature flags stored in the `feature_flags` table and cached for 60 seconds in `FeatureFlagsModule`.
+
+| Flag key | Controls |
+|---|---|
+| `ai_weekly_summary` | AI-generated weekly digest email |
+| `github_integration` | GitHub commit and PR auto-import |
+| `jira_integration` | Jira ticket auto-import |
+| `stripe_billing` | Stripe subscription billing |
+| `public_profile` | Shareable public learning profile |
+| `resume_export` | PDF resume and performance review export |
+
+All flags default to `false`. Never activate them until explicitly instructed.
+
+---
+
+## Error Handling
+
+- A global exception filter catches all unhandled errors and returns the standard error envelope
+- Validation errors (400) are caught by Zod pipes
+- Authentication errors (401) are caught by JWT guard
+- Business logic errors (404, 409, 422) are thrown explicitly in services
+- Unexpected errors (500) are caught by the global filter — internals are logged but never sent to the client
+- On the frontend, React Query handles API error states; a global toast notification system displays user-friendly messages
+
+---
+
+## Code Style and Conventions
+
+- TypeScript strict mode enabled everywhere
+- No `any` — use proper types or `unknown`
+- No comments explaining what the code does — code should be self-documenting via clear naming
+- Only add a comment when the WHY is non-obvious (hidden constraint, workaround, non-obvious invariant)
+- No unused variables or imports
+- File names are kebab-case: `create-entry.dto.ts`, not `CreateEntryDto.ts`
+- Class names are PascalCase: `CreateEntryDto`
+- All environment variables are UPPER_SNAKE_CASE
+- Enums use UPPER_SNAKE_CASE values: `WORK`, `LEARNING`, `USER`, `ADMIN`
+
+---
+
+## What Must Not Change Without Discussion
+
+- The five database tables and their structure
+- The API endpoint list and response envelope shape
+- The monorepo folder structure
+- The full tech stack
+
+## What Is Still To Be Decided
+
+- Exact AWS infrastructure configuration (ECS task sizing, VPC, load balancer)
+- Stripe pricing tiers and plan names
+- Email template content and copy
+- Specific UI layout and component decisions
+- Deployment pipeline configuration
