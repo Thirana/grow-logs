@@ -14,12 +14,12 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Overall status:** Implementation in progress.
 
-**Last completed step:** Step 02 — Shared Packages Setup
+**Last completed step:** Step 03 — Dependency Automation
 
-**Next step:** Step 03 — Dependency Automation
-`docs/phases/backend/mvp/steps/step-03-dependency-automation.md`
+**Next step:** Step 04 — NestJS Bootstrap
+`docs/phases/backend/mvp/steps/step-04-nestjs-bootstrap.md`
 
-**Progress:** 2 / 26 steps complete
+**Progress:** 3 / 26 steps complete
 See full step index: `docs/phases/backend/mvp/PHASES.md`
 
 ---

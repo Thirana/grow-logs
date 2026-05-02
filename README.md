@@ -56,7 +56,7 @@ grow-logs/
 
 ## Status
 
-> **In development.** Backend implementation in progress — 2 / 26 steps complete.
+> **In development.** Backend implementation in progress — 3 / 26 steps complete.
 
 ---
 
@@ -81,5 +81,21 @@ npm run test         # Run all test suites
 ```
 
 > Turborepo caches task outputs locally. Re-running `npm run build` after no changes completes in milliseconds.
+
+#### Turborepo Remote Cache (CI)
+
+In CI, Turborepo can share its build cache across runs so unchanged packages are never rebuilt. This requires two secrets set in **GitHub repository Settings → Secrets → Actions**:
+
+| Secret | How to get it |
+|---|---|
+| `TURBO_TOKEN` | Run `npx turbo login` then `npx turbo link` locally — outputs the token |
+| `TURBO_TEAM` | Your Vercel team slug (visible in your Vercel dashboard URL) |
+
+These are injected as environment variables in the GitHub Actions workflow (added in Step 06). Without them the build still works — it just won't use the remote cache.
+
+### Dependency management
+
+- **Renovate Bot** opens weekly PRs to update dependencies. It groups related packages (all `@nestjs/*` in one PR, `prisma` + `@prisma/client` together). Patch and minor dev dependency updates are automerged once CI passes; major updates require manual review.
+- **Dependabot** monitors for CVEs and opens targeted security fix PRs independently of the regular update schedule.
 
 *Per-app setup instructions (database, environment variables, etc.) will be added as each service is implemented.*
