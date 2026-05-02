@@ -56,10 +56,30 @@ grow-logs/
 
 ## Status
 
-> **In development.** Documentation complete. Implementation not yet started.
+> **In development.** Backend implementation in progress — 2 / 26 steps complete.
 
 ---
 
 ## Local Development
 
-*Setup instructions will be added as each service is implemented.*
+### Prerequisites
+
+- Node.js 24+ (use `.nvmrc` — run `nvm use` if you have nvm)
+- npm 10+
+
+### Monorepo commands
+
+Run these from the repo root:
+
+```bash
+npm install          # Install all workspace dependencies
+npm run build        # Build all packages and apps (Turborepo, only rebuilds what changed)
+npm run dev          # Start all apps in parallel (watch mode)
+npm run lint         # Lint all packages and apps
+npm run typecheck    # Type-check all packages and apps
+npm run test         # Run all test suites
+```
+
+> Turborepo caches task outputs locally. Re-running `npm run build` after no changes completes in milliseconds.
+
+*Per-app setup instructions (database, environment variables, etc.) will be added as each service is implemented.*

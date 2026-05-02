@@ -13,6 +13,37 @@ For full context see `CONTEXT.md`. For all technical decisions and their reasoni
 
 ---
 
+## After Completing Any Step
+
+When a step is fully implemented and all "Done When" criteria are met, update these three files before ending the session. This keeps context accurate for the next session.
+
+**1. `CONTEXT.md` — update the Current Phase section:**
+```
+Last completed step: Step XX — [title]
+Next step: Step XX+1 — [title]
+Progress: XX / 26 steps complete
+```
+
+**2. `docs/phases/backend/mvp/PHASES.md` — mark the step as complete in the Status column:**
+Change `⬜` to `✅` for the completed step row.
+
+**3. `README.md` — update after every step:**
+
+Update the README at the end of every step, not just milestones. At minimum:
+- Update the progress counter in the Status section (`X / 26 steps complete`)
+- Add or update any commands introduced by the step (install, dev, build, db, migration, etc.)
+
+Specific additions at milestone steps:
+
+| Milestone step | Additional things to update |
+|---|---|
+| Step 04 (NestJS bootstrap) | Add `npm run db:up`, `npm run start:dev`, Swagger URL |
+| Step 05 (Prisma schema) | Add `npm run prisma:migrate:dev`, `npm run prisma:studio` |
+| Step 14 (Auth register) | Note that auth endpoints are available |
+| Step 26 (Admin module — final step) | Update status from "In development" to "Backend MVP complete" |
+
+---
+
 ## Engineering Standard
 
 This is a real SaaS product being built to production quality. Every implementation decision should meet the bar of "would a senior engineer at a real SaaS company be comfortable shipping this?"

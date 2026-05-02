@@ -5,34 +5,36 @@ Each step is a single focused unit — one concern, one agent session.
 
 ## Step Index
 
-| Step | Title | Phase |
-|---|---|---|
-| [01](steps/step-01-monorepo-root.md) | Monorepo Root Scaffold | Phase 1 |
-| [02](steps/step-02-shared-packages.md) | Shared Packages Setup | Phase 1 |
-| [03](steps/step-03-dependency-automation.md) | Dependency Automation | Phase 1 |
-| [04](steps/step-04-nestjs-bootstrap.md) | NestJS Bootstrap | Phase 2 |
-| [05](steps/step-05-prisma-schema.md) | Prisma Full Schema + Migrations + Seeds | Phase 2 |
-| [06](steps/step-06-github-actions-ci.md) | GitHub Actions CI Pipeline | Phase 2 |
-| [07](steps/step-07-sentry.md) | Sentry Error Tracking | Phase 2 |
-| [08](steps/step-08-opentelemetry.md) | OpenTelemetry Tracing | Phase 2 |
-| [09](steps/step-09-axiom-logging.md) | Axiom Log Shipping | Phase 2 |
-| [10](steps/step-10-code-quality-tooling.md) | Code Quality Tooling | Phase 2 |
-| [11](steps/step-11-common-zod-validation.md) | CommonModule: Zod Validation Pipe | Phase 3 |
-| [12](steps/step-12-common-jwt-guard.md) | CommonModule: JWT Guard + Passport Strategy | Phase 3 |
-| [13](steps/step-13-common-roles-ownership.md) | CommonModule: Roles Guard + CurrentUser + Ownership | Phase 3 |
-| [14](steps/step-14-auth-register.md) | AuthModule: Register + Email Token | Phase 4 |
-| [15](steps/step-15-auth-login.md) | AuthModule: Login + JWT Issuance | Phase 4 |
-| [16](steps/step-16-auth-verify-email.md) | AuthModule: Email Verification + Resend | Phase 4 |
-| [17](steps/step-17-auth-password-throttler.md) | AuthModule: Change Password + Rate Limiting | Phase 4 |
-| [18](steps/step-18-email-ses.md) | EmailModule: AWS SES Integration | Phase 5 |
-| [19](steps/step-19-users-module.md) | UsersModule | Phase 6 |
-| [20](steps/step-20-onboarding-module.md) | OnboardingModule | Phase 6 |
-| [21](steps/step-21-categories-module.md) | CategoriesModule: Categories CRUD | Phase 7 |
-| [22](steps/step-22-subcategories-module.md) | CategoriesModule: Subcategories CRUD | Phase 7 |
-| [23](steps/step-23-entries-crud.md) | EntriesModule: CRUD | Phase 8 |
-| [24](steps/step-24-entries-summary.md) | EntriesModule: Summary Analytics | Phase 8 |
-| [25](steps/step-25-feature-flags-module.md) | FeatureFlagsModule | Phase 9 |
-| [26](steps/step-26-admin-module.md) | AdminModule | Phase 9 |
+| Step | Title | Phase | Status |
+|---|---|---|---|
+| [01](steps/step-01-monorepo-root.md) | Monorepo Root Scaffold | Phase 1 | ✅ |
+| [02](steps/step-02-shared-packages.md) | Shared Packages Setup | Phase 1 | ✅ |
+| [03](steps/step-03-dependency-automation.md) | Dependency Automation | Phase 1 | ⬜ |
+| [04](steps/step-04-nestjs-bootstrap.md) | NestJS Bootstrap | Phase 2 | ⬜ |
+| [05](steps/step-05-prisma-schema.md) | Prisma Full Schema + Migrations + Seeds | Phase 2 | ⬜ |
+| [06](steps/step-06-github-actions-ci.md) | GitHub Actions CI Pipeline | Phase 2 | ⬜ |
+| [07](steps/step-07-sentry.md) | Sentry Error Tracking | Phase 2 | ⬜ |
+| [08](steps/step-08-opentelemetry.md) | OpenTelemetry Tracing | Phase 2 | ⬜ |
+| [09](steps/step-09-axiom-logging.md) | Axiom Log Shipping | Phase 2 | ⬜ |
+| [10](steps/step-10-code-quality-tooling.md) | Code Quality Tooling | Phase 2 | ⬜ |
+| [11](steps/step-11-common-zod-validation.md) | CommonModule: Zod Validation Pipe | Phase 3 | ⬜ |
+| [12](steps/step-12-common-jwt-guard.md) | CommonModule: JWT Guard + Passport Strategy | Phase 3 | ⬜ |
+| [13](steps/step-13-common-roles-ownership.md) | CommonModule: Roles Guard + CurrentUser + Ownership | Phase 3 | ⬜ |
+| [14](steps/step-14-auth-register.md) | AuthModule: Register + Email Token | Phase 4 | ⬜ |
+| [15](steps/step-15-auth-login.md) | AuthModule: Login + JWT Issuance | Phase 4 | ⬜ |
+| [16](steps/step-16-auth-verify-email.md) | AuthModule: Email Verification + Resend | Phase 4 | ⬜ |
+| [17](steps/step-17-auth-password-throttler.md) | AuthModule: Change Password + Rate Limiting | Phase 4 | ⬜ |
+| [18](steps/step-18-email-ses.md) | EmailModule: AWS SES Integration | Phase 5 | ⬜ |
+| [19](steps/step-19-users-module.md) | UsersModule | Phase 6 | ⬜ |
+| [20](steps/step-20-onboarding-module.md) | OnboardingModule | Phase 6 | ⬜ |
+| [21](steps/step-21-categories-module.md) | CategoriesModule: Categories CRUD | Phase 7 | ⬜ |
+| [22](steps/step-22-subcategories-module.md) | CategoriesModule: Subcategories CRUD | Phase 7 | ⬜ |
+| [23](steps/step-23-entries-crud.md) | EntriesModule: CRUD | Phase 8 | ⬜ |
+| [24](steps/step-24-entries-summary.md) | EntriesModule: Summary Analytics | Phase 8 | ⬜ |
+| [25](steps/step-25-feature-flags-module.md) | FeatureFlagsModule | Phase 9 | ⬜ |
+| [26](steps/step-26-admin-module.md) | AdminModule | Phase 9 | ⬜ |
+
+`⬜` not started · `✅` complete
 
 ---
 

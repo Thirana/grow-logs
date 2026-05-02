@@ -12,9 +12,15 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 ## Current Phase
 
-Documentation complete. About to begin implementation.
+**Overall status:** Implementation in progress.
 
-Immediate next task: Set up the Turborepo monorepo, initialise the NestJS backend in apps/api, and configure Prisma with the schema defined in docs/SCHEMA.md.
+**Last completed step:** Step 02 — Shared Packages Setup
+
+**Next step:** Step 03 — Dependency Automation
+`docs/phases/backend/mvp/steps/step-03-dependency-automation.md`
+
+**Progress:** 2 / 26 steps complete
+See full step index: `docs/phases/backend/mvp/PHASES.md`
 
 ---
 

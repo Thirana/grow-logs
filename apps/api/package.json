@@ -1,0 +1,9 @@
+{
+  "name": "@grow-logs/api",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@grow-logs/schemas": "*",
+    "@grow-logs/types": "*"
+  }
+}
