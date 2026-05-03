@@ -5,3 +5,111 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  FREE
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+}
+
+enum EntryType {
+  WORK
+  LEARNING
+}
+
+model User {
+  id                  String             @id @default(uuid())
+  email               String             @unique
+  passwordHash        String
+  role                UserRole           @default(USER)
+  isEmailVerified     Boolean            @default(false)
+  onboardingCompleted Boolean            @default(false)
+  subscriptionStatus  SubscriptionStatus @default(FREE)
+  subscriptionPlan    String?
+  stripeCustomerId    String?            @unique
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  categories    Category[]
+  subcategories Subcategory[]
+  entries       Entry[]
+
+  @@index([email])
+  @@index([stripeCustomerId])
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subcategories Subcategory[]
+  entries       Entry[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("categories")
+}
+
+model Subcategory {
+  id         String   @id @default(uuid())
+  categoryId String
+  userId     String
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries  Entry[]
+
+  @@unique([categoryId, name])
+  @@index([categoryId])
+  @@index([userId])
+  @@map("subcategories")
+}
+
+model Entry {
+  id                String    @id @default(uuid())
+  userId            String
+  categoryId        String
+  subcategoryId     String?
+  type              EntryType
+  text              String
+  productivityScore Int?      @db.SmallInt
+  entryDate         DateTime  @db.Date
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  subcategory Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, entryDate(sort: Desc)])
+  @@index([userId, categoryId])
+  @@index([userId, type])
+  @@map("entries")
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  enabled     Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+  @@map("feature_flags")
+}

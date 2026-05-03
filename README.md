@@ -56,7 +56,7 @@ grow-logs/
 
 ## Status
 
-> **In development.** Backend implementation in progress — 4 / 26 steps complete.
+> **In development.** Backend implementation in progress — 5 / 26 steps complete.
 
 ---
 
@@ -116,8 +116,11 @@ Swagger UI is available at **http://localhost:3000/api** once the server is runn
 
 ```bash
 # Prisma
-npm run prisma:migrate:dev   # Create and apply a migration (dev)
-npm run prisma:studio        # Open Prisma Studio
+npm run prisma:migrate:dev      # Create and apply a migration (dev)
+npm run prisma:migrate:deploy   # Apply pending migrations (production)
+npm run prisma:generate         # Regenerate the Prisma client after schema changes
+npm run prisma:studio           # Open Prisma Studio (visual DB browser)
+npx prisma db seed              # Seed feature flags (idempotent — safe to re-run)
 ```
 
 Copy `apps/api/.env.example` to `apps/api/.env` and fill in values before starting the server.

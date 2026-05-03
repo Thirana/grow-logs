@@ -11,7 +11,7 @@ Each step is a single focused unit — one concern, one agent session.
 | [02](steps/step-02-shared-packages.md) | Shared Packages Setup | Phase 1 | ✅ |
 | [03](steps/step-03-dependency-automation.md) | Dependency Automation | Phase 1 | ✅ |
 | [04](steps/step-04-nestjs-bootstrap.md) | NestJS Bootstrap | Phase 2 | ✅ |
-| [05](steps/step-05-prisma-schema.md) | Prisma Full Schema + Migrations + Seeds | Phase 2 | ⬜ |
+| [05](steps/step-05-prisma-schema.md) | Prisma Full Schema + Migrations + Seeds | Phase 2 | ✅ |
 | [06](steps/step-06-github-actions-ci.md) | GitHub Actions CI Pipeline | Phase 2 | ⬜ |
 | [07](steps/step-07-sentry.md) | Sentry Error Tracking | Phase 2 | ⬜ |
 | [08](steps/step-08-opentelemetry.md) | OpenTelemetry Tracing | Phase 2 | ⬜ |

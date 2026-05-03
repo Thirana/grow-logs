@@ -16,7 +16,7 @@ it('exits with code 1 when DATABASE_URL is missing', () => {
   env['PORT'] = '3099';
 
   try {
-    execSync('node -e "require(\'./dist/main\')"', {
+    execSync('node -e "require(\'./dist/src/main\')"', {
       cwd: apiRoot,
       env,
       encoding: 'utf8',
