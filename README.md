@@ -56,7 +56,7 @@ grow-logs/
 
 ## Status
 
-> **In development.** Backend implementation in progress — 3 / 26 steps complete.
+> **In development.** Backend implementation in progress — 4 / 26 steps complete.
 
 ---
 
@@ -98,4 +98,26 @@ These are injected as environment variables in the GitHub Actions workflow (adde
 - **Renovate Bot** opens weekly PRs to update dependencies. It groups related packages (all `@nestjs/*` in one PR, `prisma` + `@prisma/client` together). Patch and minor dev dependency updates are automerged once CI passes; major updates require manual review.
 - **Dependabot** monitors for CVEs and opens targeted security fix PRs independently of the regular update schedule.
 
-*Per-app setup instructions (database, environment variables, etc.) will be added as each service is implemented.*
+### API (`apps/api`)
+
+Run these from `apps/api`:
+
+```bash
+# Database (requires Docker)
+npm run db:up              # Start PostgreSQL container (defined at repo root: compose.yaml)
+npm run db:down            # Stop PostgreSQL container
+npm run db:reset           # Stop and wipe the database volume
+
+# Start the dev server
+npm run start:dev          # NestJS in watch mode (http://localhost:3000)
+```
+
+Swagger UI is available at **http://localhost:3000/api** once the server is running.
+
+```bash
+# Prisma
+npm run prisma:migrate:dev   # Create and apply a migration (dev)
+npm run prisma:studio        # Open Prisma Studio
+```
+
+Copy `apps/api/.env.example` to `apps/api/.env` and fill in values before starting the server.
