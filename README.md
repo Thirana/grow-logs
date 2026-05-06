@@ -1,5 +1,7 @@
 # Grow Logs
 
+![CI](https://github.com/Thirana/grow-logs/actions/workflows/ci.yml/badge.svg)
+
 A personal growth logging SaaS for developers and self-learners to track daily work and learning activities.
 
 Users log entries tagged as **Work** or **Learning**, organised by self-defined categories and sub-categories. Each entry supports markdown, an optional productivity score (1–10), and a user-assigned date. The dashboard surfaces recent activity and a category breakdown so users can see where their time and energy are going.
@@ -56,7 +58,7 @@ grow-logs/
 
 ## Status
 
-> **In development.** Backend implementation in progress — 5 / 26 steps complete.
+> **In development.** Backend implementation in progress — 6 / 26 steps complete.
 
 ---
 

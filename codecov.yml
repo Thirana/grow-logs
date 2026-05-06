@@ -1,0 +1,23 @@
+coverage:
+  status:
+    project:
+      default:
+        # Minimum overall coverage — raised as business modules and their tests are added
+        target: 30%
+        threshold: 2%
+    patch:
+      default:
+        # New code introduced in each PR must be at least 50% covered
+        target: 50%
+        threshold: 5%
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: true # only post a comment if coverage changed
+
+ignore:
+  - "apps/api/src/main.ts"
+  - "apps/api/prisma/**"
+  - "apps/api/test/**"
+  - "apps/api/dist/**"
