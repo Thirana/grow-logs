@@ -8,11 +8,17 @@ const prisma = new PrismaClient({ adapter });
 
 const flags = [
   { key: 'ai_weekly_summary', description: 'AI-generated weekly digest email' },
-  { key: 'github_integration', description: 'GitHub commit and PR auto-import' },
+  {
+    key: 'github_integration',
+    description: 'GitHub commit and PR auto-import',
+  },
   { key: 'jira_integration', description: 'Jira ticket auto-import' },
   { key: 'stripe_billing', description: 'Stripe subscription billing' },
   { key: 'public_profile', description: 'Shareable public learning profile' },
-  { key: 'resume_export', description: 'PDF resume and performance review export' },
+  {
+    key: 'resume_export',
+    description: 'PDF resume and performance review export',
+  },
 ];
 
 async function main(): Promise<void> {
