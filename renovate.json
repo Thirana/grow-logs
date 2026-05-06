@@ -5,7 +5,9 @@
   "packageRules": [
     {
       "groupName": "NestJS packages",
-      "matchPackagePrefixes": ["@nestjs/"]
+      "matchPackageNames": [
+        "@nestjs/{/,}**"
+      ]
     },
     {
       "groupName": "Prisma",
@@ -13,18 +15,15 @@
     },
     {
       "groupName": "TypeScript and type definitions",
-      "matchPackageNames": ["typescript"],
-      "matchPackagePrefixes": ["@types/"]
+      "matchPackageNames": ["typescript", "@types/{/,}**"]
     },
     {
       "groupName": "ESLint and formatting",
-      "matchPackageNames": ["eslint", "prettier"],
-      "matchPackagePrefixes": ["@eslint/", "@typescript-eslint/", "eslint-"]
+      "matchPackageNames": ["eslint", "prettier", "@eslint/{/,}**", "@typescript-eslint/{/,}**", "eslint-{/,}**"]
     },
     {
       "groupName": "Testing tools",
-      "matchPackageNames": ["jest", "ts-jest", "supertest"],
-      "matchPackagePrefixes": ["@jest/"]
+      "matchPackageNames": ["jest", "ts-jest", "supertest", "@jest/{/,}**"]
     },
     {
       "matchDepTypes": ["devDependencies"],
