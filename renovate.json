@@ -12,6 +12,21 @@
       "matchPackageNames": ["prisma", "@prisma/client"]
     },
     {
+      "groupName": "TypeScript and type definitions",
+      "matchPackageNames": ["typescript"],
+      "matchPackagePrefixes": ["@types/"]
+    },
+    {
+      "groupName": "ESLint and formatting",
+      "matchPackageNames": ["eslint", "prettier"],
+      "matchPackagePrefixes": ["@eslint/", "@typescript-eslint/", "eslint-"]
+    },
+    {
+      "groupName": "Testing tools",
+      "matchPackageNames": ["jest", "ts-jest", "supertest"],
+      "matchPackagePrefixes": ["@jest/"]
+    },
+    {
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
