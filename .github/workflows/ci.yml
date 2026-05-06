@@ -17,8 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 2 # required for --filter=[HEAD^1] to have a parent commit
 
       - uses: actions/setup-node@v6
         with:
@@ -39,7 +37,7 @@ jobs:
         working-directory: apps/api
 
       - name: Format, lint, typecheck
-        run: npx turbo run format:check lint typecheck --filter=[HEAD^1]
+        run: npx turbo run format:check lint typecheck
 
   test:
     name: Test
@@ -47,8 +45,6 @@ jobs:
     needs: quality
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
 
       - uses: actions/setup-node@v6
         with:
@@ -84,8 +80,6 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
 
       - uses: actions/setup-node@v6
         with:
@@ -106,4 +100,4 @@ jobs:
         working-directory: apps/api
 
       - name: Build
-        run: npx turbo run build --filter=[HEAD^1]
+        run: npx turbo run build
