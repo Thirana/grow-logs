@@ -1,4 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, InternalServerErrorException } from '@nestjs/common';
+import * as Sentry from '@sentry/nestjs';
 import {
   ApiTags,
   ApiOperation,
@@ -29,5 +30,14 @@ export class HealthController {
   @ApiServiceUnavailableResponse({ description: 'Database not reachable' })
   async getReadiness(): Promise<{ status: string; db: string }> {
     return this.healthService.getReadiness();
+  }
+
+  // TODO: remove before going to production
+  @Get('test-error')
+  @ApiOperation({ summary: 'Throws a 500 to verify Sentry error capture' })
+  async testError(): Promise<never> {
+    Sentry.captureException(new Error('Sentry test error — local dev verification'));
+    await Sentry.flush(3000);
+    throw new InternalServerErrorException('Sentry test error');
   }
 }

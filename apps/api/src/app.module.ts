@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
+import { SentryModule } from '@sentry/nestjs/setup';
 import {
   validateEnv,
   appConfig,
@@ -13,6 +14,7 @@ import { HealthModule } from './modules/health/health.module.js';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
