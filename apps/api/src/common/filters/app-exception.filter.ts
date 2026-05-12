@@ -8,6 +8,7 @@ import {
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import type { LoggerService } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import * as Sentry from '@sentry/nestjs';
 import { deriveErrorCode } from '../http/error-code.util.js';
 import type { RequestWithId } from '../http/request.types.js';
 
@@ -43,6 +44,7 @@ export class AppExceptionFilter implements ExceptionFilter {
     );
 
     if (statusCode >= 500) {
+      Sentry.captureException(exception);
       const stack = exception instanceof Error ? exception.stack : undefined;
       this.logger.error?.('Unhandled exception', { ...body, stack });
     } else {

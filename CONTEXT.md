@@ -14,12 +14,12 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Overall status:** Implementation in progress.
 
-**Last completed step:** Step 06 — GitHub Actions CI Pipeline
+**Last completed step:** Step 07 — Sentry Error Tracking
 
-**Next step:** Step 07 — Sentry Error Tracking
-`docs/phases/backend/mvp/steps/step-07-sentry.md`
+**Next step:** Step 08 — OpenTelemetry Tracing
+`docs/phases/backend/mvp/steps/step-08-opentelemetry.md`
 
-**Progress:** 6 / 26 steps complete
+**Progress:** 7 / 26 steps complete
 See full step index: `docs/phases/backend/mvp/PHASES.md`
 
 ---

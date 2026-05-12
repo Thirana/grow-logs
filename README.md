@@ -58,7 +58,7 @@ grow-logs/
 
 ## Status
 
-> **In development.** Backend implementation in progress — 6 / 26 steps complete.
+> **In development.** Backend implementation in progress — 7 / 26 steps complete.
 
 ---
 

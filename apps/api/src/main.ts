@@ -1,3 +1,4 @@
+import './instrument.js';
 import { NestFactory } from '@nestjs/core';
 import type { LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';

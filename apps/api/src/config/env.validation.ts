@@ -13,6 +13,7 @@ const envSchema = z
       .default('info'),
     LOG_FORMAT: z.enum(['pretty', 'json']).optional(),
     DATABASE_URL: z.string().min(1),
+    SENTRY_DSN: z.string().optional(),
     FRONTEND_URL: z.string().optional().default('http://localhost:3001'),
   })
   .transform((data) => ({
