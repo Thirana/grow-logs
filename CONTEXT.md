@@ -14,12 +14,12 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Overall status:** Implementation in progress.
 
-**Last completed step:** Step 10 — Code Quality Tooling
+**Last completed step:** Step 11 — CommonModule: Zod Validation Pipe
 
-**Next step:** Step 11 — CommonModule: Zod Validation Pipe
-`docs/phases/backend/mvp/steps/step-11-common-zod-validation.md`
+**Next step:** Step 12 — CommonModule: JWT Guard + Passport Strategy
+`docs/phases/backend/mvp/steps/step-12-common-jwt-guard.md`
 
-**Progress:** 8 / 26 steps complete
+**Progress:** 9 / 26 steps complete
 
 > **Note:** Steps 08 (OpenTelemetry) and 09 (Axiom) are intentionally deferred. They will be implemented after all other steps are complete. See their step files for full context on what was attempted and what needs to be resolved before re-implementing.
 See full step index: `docs/phases/backend/mvp/PHASES.md`

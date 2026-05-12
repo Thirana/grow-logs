@@ -320,6 +320,19 @@ modules/
 - Backend validates independently of the frontend — never trust client-side validation alone
 - Environment variables are validated at startup via `@nestjs/config` with a Zod schema — the app refuses to start if any required variable is missing
 
+### Schema file conventions in `packages/schemas`
+
+`packages/schemas/src/` has two kinds of files:
+
+| File | Purpose |
+|---|---|
+| `common.ts` | **Base primitive schemas** — reusable building blocks shared across many modules: `uuidSchema`, `paginationSchema`, `dateStringSchema`, and any future primitives (e.g. a score range, a slug pattern). Add new primitives here, not in module-specific files. |
+| `<feature>.ts` | **Module-specific schemas** — the full request/response shape for one resource (e.g. `entry.ts`, `category.ts`). These import from `common.ts` and compose the primitives into domain DTOs. |
+
+`packages/schemas/src/index.ts` re-exports everything with `export * from './<file>.js'`. Every new schema file must be added to `index.ts` immediately.
+
+**Rule:** before creating a new schema file, check whether the primitive already exists in `common.ts`. If a new primitive is needed by more than one module, add it to `common.ts`. If it belongs to exactly one module, add it to that module's schema file.
+
 ---
 
 ## Security Rules
