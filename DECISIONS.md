@@ -4,6 +4,23 @@ Every significant technical decision made during the design phase, with reasonin
 
 ---
 
+## Token Strategy: Short-Lived JWT + Opaque Refresh Token with Rotation
+
+**Decision:** Use a two-token authentication scheme: a short-lived JWT access token (1 hour) paired with an opaque refresh token (7-day rolling window, stored hashed in the database). Each time the access token is refreshed, the old refresh token is invalidated and a new one is issued. If a refresh token that has already been rotated is presented again, all sessions for that user are immediately wiped.
+
+**Reasoning:** The original design used a single 7-day JWT. This has two weaknesses: a stolen token is valid for 7 days with no way to revoke it, and logout has no server-side effect. The two-token approach fixes both. The 1-hour access token limits the damage window of a stolen token without requiring frequent re-login, because the refresh token handles silent renewal in the background. Storing the refresh token as a hash in the database means logout is real — deleting the row makes the token dead immediately. Rotation adds theft detection: if an attacker steals a refresh token and uses it, the legitimate user's next refresh will fail (the token was already rotated), triggering a full session wipe.
+
+Absolute expiry (a hard ceiling regardless of activity) was considered and deliberately excluded. The target users are developers logging daily work; an involuntary re-login every N days has no security benefit that justifies the UX cost for this application. The rolling 7-day window already ensures inactive users are eventually logged out.
+
+**Implementation impact:**
+- A `refresh_tokens` table stores one row per active session (token_hash, user_id, expires_at)
+- Login response sets the refresh token as an HTTP-only cookie; access token is returned in the response body
+- `POST /auth/refresh` validates the cookie, rotates the token, returns a new access token
+- `POST /auth/logout` deletes the refresh token row — token is dead immediately on the server
+- Reuse detection: if token_hash not found (already rotated), delete all refresh_tokens rows for that user_id
+
+---
+
 ## Authentication: Custom JWT over Clerk
 
 **Decision:** Implement authentication manually using Passport.js and JWT rather than using a hosted auth service like Clerk.

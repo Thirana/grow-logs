@@ -182,6 +182,37 @@ LEARNING   -- Learning related log entry
 
 ---
 
+### refresh_tokens
+
+| Column     | Type                     | Nullable | Default           | Notes                                               |
+| ---------- | ------------------------ | -------- | ----------------- | --------------------------------------------------- |
+| id         | UUID                     | NO       | gen_random_uuid() | Primary key                                         |
+| user_id    | UUID                     | NO       |                   | FK to users                                         |
+| token_hash | VARCHAR(255)             | NO       |                   | bcrypt hash of the opaque token, never the raw value |
+| expires_at | TIMESTAMP WITH TIME ZONE | NO       |                   | 7 days from issuance. Rolling — reset on every rotation |
+| created_at | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                                     |
+
+**Primary Key:** id
+
+**Unique Constraints:**
+
+- token_hash
+
+**Indexes:**
+
+- idx_refresh_tokens_user_id (user_id)
+- idx_refresh_tokens_token_hash (token_hash)
+
+**Foreign Keys:**
+
+| Column  | References | On Delete |
+| ------- | ---------- | --------- |
+| user_id | users.id   | CASCADE   |
+
+**Design note:** One row per active session. Rotation replaces the row (delete old, insert new). Reuse detection: if a lookup by token_hash finds nothing, the token was already rotated — the service then deletes all rows for that user_id (full session wipe) before returning 401. Logout deletes the single row for the current session.
+
+---
+
 ### feature_flags
 
 | Column      | Type                     | Nullable | Default           | Notes                                          |
@@ -230,10 +261,12 @@ users
   |--< subcategories (direct denormalised relationship)
   |
   |--< entries (one user has many entries)
-          |
-          |>-- categories (each entry belongs to one category, RESTRICT on delete)
-          |
-          |>-- subcategories (each entry optionally belongs to one subcategory, SET NULL on delete)
+  |       |
+  |       |>-- categories (each entry belongs to one category, RESTRICT on delete)
+  |       |
+  |       |>-- subcategories (each entry optionally belongs to one subcategory, SET NULL on delete)
+  |
+  |--< refresh_tokens (one row per active session, CASCADE on user delete)
 
 feature_flags (standalone, no relations)
 ```
@@ -282,9 +315,10 @@ model User {
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
 
-  categories    Category[]
-  subcategories Subcategory[]
-  entries       Entry[]
+  categories     Category[]
+  subcategories  Subcategory[]
+  entries        Entry[]
+  refreshTokens  RefreshToken[]
 
   @@index([email])
   @@index([stripeCustomerId])
@@ -346,6 +380,20 @@ model Entry {
   @@index([userId, categoryId])
   @@index([userId, type])
   @@map("entries")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("refresh_tokens")
 }
 
 model FeatureFlag {
