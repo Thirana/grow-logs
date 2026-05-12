@@ -14,8 +14,8 @@ Each step is a single focused unit — one concern, one agent session.
 | [05](steps/step-05-prisma-schema.md) | Prisma Full Schema + Migrations + Seeds | Phase 2 | ✅ |
 | [06](steps/step-06-github-actions-ci.md) | GitHub Actions CI Pipeline | Phase 2 | ✅ |
 | [07](steps/step-07-sentry.md) | Sentry Error Tracking | Phase 2 | ✅ |
-| [08](steps/step-08-opentelemetry.md) | OpenTelemetry Tracing | Phase 2 | ⬜ |
-| [09](steps/step-09-axiom-logging.md) | Axiom Log Shipping | Phase 2 | ⬜ |
+| [08](steps/step-08-opentelemetry.md) | OpenTelemetry Tracing | Phase 2 | ⏸️ |
+| [09](steps/step-09-axiom-logging.md) | Axiom Log Shipping | Phase 2 | ⏸️ |
 | [10](steps/step-10-code-quality-tooling.md) | Code Quality Tooling | Phase 2 | ⬜ |
 | [11](steps/step-11-common-zod-validation.md) | CommonModule: Zod Validation Pipe | Phase 3 | ⬜ |
 | [12](steps/step-12-common-jwt-guard.md) | CommonModule: JWT Guard + Passport Strategy | Phase 3 | ⬜ |

@@ -16,10 +16,12 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Last completed step:** Step 07 — Sentry Error Tracking
 
-**Next step:** Step 08 — OpenTelemetry Tracing
-`docs/phases/backend/mvp/steps/step-08-opentelemetry.md`
+**Next step:** Step 10 — Code Quality Tooling
+`docs/phases/backend/mvp/steps/step-10-code-quality-tooling.md`
 
 **Progress:** 7 / 26 steps complete
+
+> **Note:** Steps 08 (OpenTelemetry) and 09 (Axiom) are intentionally deferred. They will be implemented after all other steps are complete. See their step files for full context on what was attempted and what needs to be resolved before re-implementing.
 See full step index: `docs/phases/backend/mvp/PHASES.md`
 
 ---
