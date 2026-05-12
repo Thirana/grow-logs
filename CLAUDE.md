@@ -48,6 +48,7 @@ Current learning docs:
 | `07-validation-and-error-handling.md` | Phase 2 | ValidationPipe, Zod, exception filter, error envelope |
 | `08-sentry-error-tracking.md` | Phase 2 | Sentry, error monitoring, source maps |
 | `09-prisma-migrations.md` | Phase 2 | Prisma migrations, shadow database, migrate dev vs deploy, seeding |
+| `10-static-security-analysis.md` | Phase 2 | eslint-plugin-security, static analysis, ReDoS, detect-object-injection false positives |
 
 ---
 
@@ -65,6 +66,71 @@ Specific additions at milestone steps:
 | Step 05 (Prisma schema) | Add `npm run prisma:migrate:dev`, `npm run prisma:studio` |
 | Step 14 (Auth register) | Note that auth endpoints are available |
 | Step 26 (Admin module — final step) | Update status from "In development" to "Backend MVP complete" |
+
+---
+
+## Testing Standards
+
+Unit tests are part of every step — not optional, not deferred. Every new service file must have a corresponding `.spec.ts` file created in the same session as the implementation.
+
+### What to test
+
+| File type | Test it? | What to cover |
+|---|---|---|
+| `*.service.ts` | **Yes — always** | Every public method: happy path + all thrown exceptions (404, 409, 422) |
+| `*.controller.ts` | **Yes** | Route delegation only — verify the controller calls the correct service method with the correct args |
+| Guards (`*.guard.ts`) | **Yes** | Both the allow and deny paths |
+| Pipes (`*.pipe.ts`) | **Yes** | Valid input passes, invalid input throws with correct message |
+| Interceptors (`*.interceptor.ts`) | **Yes** | Output shape is correct, error passthrough works |
+| Exception filters (`*.filter.ts`) | **Yes** | Error envelope shape, status codes |
+| `*.module.ts` | **No** | Pure DI wiring — nothing to unit test |
+| `main.ts`, `instrument.ts` | **No** | Bootstrap files — covered by e2e |
+| `*.dto.ts`, `*.entity.ts` | **No** | Plain data shapes — no logic |
+| Config files | **No** | Tested implicitly when the app boots |
+
+### How to structure tests
+
+```typescript
+// auth.service.spec.ts
+describe('AuthService', () => {
+  let service: AuthService;
+  let prisma: DeepMockProxy<PrismaClient>;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        { provide: PrismaService, useValue: mockDeep<PrismaClient>() },
+      ],
+    }).compile();
+
+    service = module.get(AuthService);
+    prisma = module.get(PrismaService);
+  });
+
+  describe('register', () => {
+    it('creates a user and returns the response', async () => { ... });
+    it('throws ConflictException when email already exists', async () => { ... });
+  });
+});
+```
+
+Mock Prisma using `jest-mock-extended` (`mockDeep<PrismaClient>()`). Never hit a real database in unit tests.
+
+### Coverage targets
+
+| Layer | Target |
+|---|---|
+| Service files | ≥ 80% line + branch |
+| Guards and pipes | ≥ 80% line + branch |
+| Controllers | ≥ 70% (delegation logic only) |
+| Overall project | Rises naturally as modules are added |
+
+These targets are enforced by Codecov on PRs (patch threshold: 50% minimum on new lines). The project threshold in `codecov.yml` will be raised once Phase 3 tests are in place.
+
+### Current coverage state
+
+As of Step 10, only `health.service.spec.ts` exists. Starting from Phase 3 (CommonModule), every step that adds a service, guard, or pipe must include its spec file before the step is considered complete. The "Done When" criteria implicitly require tests — a step is not done if `npm test` fails or if new service files have 0% coverage.
 
 ---
 

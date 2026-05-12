@@ -35,7 +35,7 @@ npx turbo run format:check lint typecheck
 | Check | Command | What it catches |
 |---|---|---|
 | `format:check` | `prettier --check .` | Code style — spacing, quotes, line length, trailing commas |
-| `lint` | `eslint "{src,test}/**/*.ts"` | Code quality rules — unused vars, unsafe patterns |
+| `lint` | `eslint "{src,test}/**/*.ts"` | Code quality rules — unused vars, unsafe patterns, Node.js security issues (`eslint-plugin-security`) |
 | `typecheck` | `tsc --noEmit -p tsconfig.build.json` | TypeScript type errors across all source files |
 
 **If `format:check` fails**, run Prettier to auto-fix:
@@ -61,6 +61,8 @@ npx turbo run test -- --runInBand --coverage
 ```
 
 `--runInBand` runs tests serially in one process (avoids port conflicts between test suites). `--coverage` generates a coverage report in `apps/api/coverage/`.
+
+After tests pass, the coverage report is automatically uploaded to **Codecov**. A PR comment will appear showing coverage diff on changed lines. The thresholds (configured in `codecov.yml`) are 30% overall project coverage and 50% on new lines introduced in each PR.
 
 **If a test fails**, run just the API tests for faster feedback:
 ```bash
