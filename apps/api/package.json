@@ -60,6 +60,7 @@
     "@types/supertest": "^7.0.0",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-security": "^4.0.0",
     "globals": "^17.6.0",
     "jest": "^30.0.0",
     "prettier": "^3.8.3",
@@ -94,7 +95,11 @@
       "^(\\.{1,2}/.*)\\.js$": "$1"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!main.ts",
+      "!instrument.ts",
+      "!**/*.module.ts",
+      "!prisma/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",

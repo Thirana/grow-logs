@@ -47,10 +47,22 @@ In this repo, coverage is configured in `apps/api/package.json`:
 
 ```json
 "jest": {
-  "collectCoverageFrom": ["**/*.(t|j)s"],  // collect from all TS files
-  "coverageDirectory": "../coverage"        // output to apps/api/coverage/
+  "collectCoverageFrom": [
+    "**/*.(t|j)s",
+    "!main.ts",           // bootstrap entry point — not unit-testable
+    "!instrument.ts",     // Sentry init — runs at process start, not testable in isolation
+    "!**/*.module.ts",    // NestJS module wiring — no logic, just DI declarations
+    "!prisma/**"          // generated client — not your code
+  ],
+  "coverageDirectory": "../coverage"
 }
 ```
+
+### Why exclude these files?
+
+Including infrastructure files in coverage metrics distorts the numbers and creates perverse incentives. `main.ts` calls `NestFactory.create()` — there is nothing to unit-test there. `*.module.ts` files are pure DI declarations with no branching logic. Counting them as "uncovered" would pressure you to write meaningless tests just to improve the percentage, rather than testing actual business logic.
+
+The rule of thumb: exclude files where the only meaningful test is "does the app boot?" (answered by e2e tests) or "is the import correct?" (answered by TypeScript).
 
 ---
 
