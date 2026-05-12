@@ -58,7 +58,7 @@ grow-logs/
 
 ## Status
 
-> **In development.** Backend implementation in progress — 7 / 26 steps complete.
+> **In development.** Backend implementation in progress — 7 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
 
 ---
 
