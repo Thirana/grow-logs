@@ -46,6 +46,8 @@ Current learning docs:
 | `05-nestjs-request-lifecycle.md` | Phase 2 | Middleware chain, request lifecycle, NestJS architecture |
 | `06-structured-logging.md` | Phase 2 | Structured logging, Winston, request ID propagation |
 | `07-validation-and-error-handling.md` | Phase 2 | ValidationPipe, Zod, exception filter, error envelope |
+| `08-sentry-error-tracking.md` | Phase 2 | Sentry, error monitoring, source maps |
+| `09-prisma-migrations.md` | Phase 2 | Prisma migrations, shadow database, migrate dev vs deploy, seeding |
 
 ---
 
@@ -257,7 +259,11 @@ modules/
 ## Security Rules
 
 - Passwords hashed with bcrypt, never stored plain
-- JWT tokens expire after 7 days
+- Access tokens are JWTs, expire after 1 hour
+- Refresh tokens are opaque random strings, 7-day rolling window, stored as a bcrypt hash in the `refresh_tokens` table
+- Refresh token rotation: every use of a refresh token invalidates the old one and issues a new token with a fresh 7-day window
+- Reuse detection: if a refresh token that has already been rotated is presented, delete all refresh tokens for that user immediately (full session wipe)
+- Refresh token is delivered and received as an HTTP-only cookie — never in the response body
 - All endpoints except register, login, verify-email, and resend-verification require authentication
 - Every database query is scoped by `userId` from the JWT — never trust a userId from the request body
 - CORS allows requests only from the frontend domain
@@ -336,7 +342,7 @@ All flags default to `false`. Never activate them until explicitly instructed.
 
 ## What Must Not Change Without Discussion
 
-- The five database tables and their structure
+- The six database tables and their structure
 - The API endpoint list and response envelope shape
 - The monorepo folder structure
 - The full tech stack

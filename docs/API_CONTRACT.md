@@ -183,6 +183,14 @@ Default: page=1, limit=10. Maximum limit: 100.
 
 **Note:** onboardingCompleted tells the frontend whether to redirect to onboarding or dashboard.
 
+**Cookie set on response:**
+
+```
+Set-Cookie: refresh_token=<opaque_token>; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth; Max-Age=604800
+```
+
+The refresh token is never returned in the response body — only as an HTTP-only cookie. The `Path` is scoped to `/api/v1/auth` so the browser only sends it on auth-related requests.
+
 **Errors:**
 
 | Status | Scenario                                                       |
@@ -251,6 +259,60 @@ Default: page=1, limit=10. Maximum limit: 100.
   "meta": {}
 }
 ```
+
+---
+
+### POST /auth/refresh
+
+**Access:** PUBLIC (authenticated via HTTP-only refresh token cookie)
+
+**Description:** Exchanges a valid refresh token cookie for a new access token. Rotates the refresh token — the old cookie is invalidated and a new one is set. If the presented refresh token has already been rotated (reuse detected), all sessions for that user are immediately wiped and a 401 is returned.
+
+**Request body:** None. Refresh token is read from the HTTP-only cookie automatically.
+
+**Response 200:**
+
+```json
+{
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "meta": {}
+}
+```
+
+A new `refresh_token` HTTP-only cookie is also set on the response, replacing the old one.
+
+**Errors:**
+
+| Status | Scenario                                                                   |
+| ------ | -------------------------------------------------------------------------- |
+| 401    | Refresh token cookie missing                                               |
+| 401    | Refresh token expired                                                      |
+| 401    | Refresh token reuse detected — all sessions wiped, user must log in again  |
+
+---
+
+### POST /auth/logout
+
+**Access:** PROTECTED
+
+**Description:** Invalidates the current refresh token server-side. The HTTP-only cookie is cleared. The access token remains valid until its 1-hour expiry — clients should discard it locally on logout.
+
+**Request body:** None.
+
+**Response 200:**
+
+```json
+{
+  "data": {
+    "message": "Logged out successfully."
+  },
+  "meta": {}
+}
+```
+
+The `refresh_token` cookie is cleared on the response.
 
 ---
 
@@ -1002,7 +1064,9 @@ Default: page=1, limit=10. Maximum limit: 100.
 | Method | Endpoint                             | Access    | Description                           |
 | ------ | ------------------------------------ | --------- | ------------------------------------- | --- |
 | POST   | /auth/register                       | PUBLIC    | Register new account                  |
-| POST   | /auth/login                          | PUBLIC    | Login and receive JWT                 |
+| POST   | /auth/login                          | PUBLIC    | Login, receive access token + refresh cookie |
+| POST   | /auth/refresh                        | PUBLIC    | Rotate refresh token, get new access token |
+| POST   | /auth/logout                         | PROTECTED | Invalidate refresh token server-side  |
 | POST   | /auth/verify-email                   | PUBLIC    | Verify email with token               |
 | POST   | /auth/resend-verification            | PUBLIC    | Resend verification email             |
 | PATCH  | /auth/change-password                | PROTECTED | Change password                       |

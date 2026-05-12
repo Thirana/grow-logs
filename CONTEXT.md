@@ -84,7 +84,7 @@ CommonModule        Shared guards, pipes, interceptors, decorators, response tra
 
 ## Database Tables
 
-Five tables: users, categories, subcategories, entries, feature_flags.
+Six tables: users, categories, subcategories, entries, feature_flags, refresh_tokens.
 
 Full schema with all columns, indexes, constraints, foreign keys, delete behaviours, and complete Prisma schema definition is in docs/SCHEMA.md.
 

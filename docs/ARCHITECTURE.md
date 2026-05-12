@@ -349,8 +349,12 @@ NestJS uses @nestjs/config with a Zod validation schema to ensure all required e
 ## Security Baseline
 
 - Passwords hashed with bcrypt, never stored plain text
-- JWT tokens expire after 7 days
-- All endpoints except register and login require authentication
+- Access tokens are JWTs, expire after 1 hour
+- Refresh tokens are opaque random strings, 7-day rolling window, stored as bcrypt hash in the refresh_tokens table
+- Refresh token rotation: every token use invalidates the old token and issues a new one with a fresh 7-day window
+- Reuse detection: if an already-rotated refresh token is presented, all sessions for that user are wiped immediately
+- Refresh token is set as an HTTP-only cookie; access token is returned in the response body
+- All endpoints except register, login, verify-email, and resend-verification require authentication
 - Every query scoped by authenticated user ID — users can never access each other's data
 - CORS configured to allow requests only from the frontend domain
 - Rate limiting on authentication endpoints via NestJS throttler
