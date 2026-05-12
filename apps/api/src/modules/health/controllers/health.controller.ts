@@ -36,7 +36,9 @@ export class HealthController {
   @Get('test-error')
   @ApiOperation({ summary: 'Throws a 500 to verify Sentry error capture' })
   async testError(): Promise<never> {
-    Sentry.captureException(new Error('Sentry test error — local dev verification'));
+    Sentry.captureException(
+      new Error('Sentry test error — local dev verification'),
+    );
     await Sentry.flush(3000);
     throw new InternalServerErrorException('Sentry test error');
   }
