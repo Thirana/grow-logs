@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
+import { RolesGuard } from './guards/roles.guard.js';
 import { ZodValidationPipe } from './pipes/index.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 
@@ -17,7 +18,7 @@ import { JwtStrategy } from './strategies/jwt.strategy.js';
       }),
     }),
   ],
-  providers: [ZodValidationPipe, JwtStrategy, JwtAuthGuard],
-  exports: [ZodValidationPipe, JwtAuthGuard, JwtModule],
+  providers: [ZodValidationPipe, JwtStrategy, JwtAuthGuard, RolesGuard],
+  exports: [ZodValidationPipe, JwtAuthGuard, RolesGuard, JwtModule],
 })
 export class CommonModule {}
