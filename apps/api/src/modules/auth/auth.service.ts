@@ -1,17 +1,35 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterDto } from '@grow-logs/schemas';
+import { SubscriptionStatus, UserRole } from '@prisma/client';
+import { LoginDto, RegisterDto } from '@grow-logs/schemas';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { EmailService } from '../email/email.service.js';
 
+export interface LoginResponseUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  isEmailVerified: boolean;
+  onboardingCompleted: boolean;
+  subscriptionStatus: SubscriptionStatus;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  user: LoginResponseUser;
+}
+
 /**
- * Handles user registration: duplicate check, password hashing,
- * user creation, verification token generation, and email dispatch.
+ * Handles user registration and login.
+ * All methods assume the caller is unauthenticated — no JWT guard applied here.
  *
- * Used by AuthController on POST /v1/auth/register.
- * Every step assumes the caller is unauthenticated — no JWT guard applied here.
+ * Used by AuthController on POST /api/v1/auth/register and POST /api/v1/auth/login.
  */
 @Injectable()
 export class AuthService {
@@ -52,6 +70,55 @@ export class AuthService {
     return {
       message:
         'Registration successful. Please check your email to verify your account.',
+    };
+  }
+
+  async login(dto: LoginDto): Promise<LoginResponse> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+      select: {
+        id: true,
+        email: true,
+        passwordHash: true,
+        role: true,
+        isEmailVerified: true,
+        onboardingCompleted: true,
+        subscriptionStatus: true,
+      },
+    });
+
+    // Password is checked before email verification so the error message
+    // never reveals whether an email address has an account (user enumeration).
+    // Wrong email and wrong password both return the same generic message.
+    const passwordMatch =
+      user !== null && (await bcrypt.compare(dto.password, user.passwordHash));
+
+    if (!passwordMatch) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Verification check comes after password — only reached with correct credentials.
+    // This way the verification hint is not leaked to someone guessing emails.
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException(
+        'Email not verified. Please check your inbox.',
+      );
+    }
+
+    // Access token carries sub and role so JwtAuthGuard and RolesGuard
+    // can operate without a DB lookup on every request.
+    const accessToken = this.jwtService.sign({ sub: user.id, role: user.role });
+
+    return {
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        onboardingCompleted: user.onboardingCompleted,
+        subscriptionStatus: user.subscriptionStatus,
+      },
     };
   }
 }
