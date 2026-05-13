@@ -20,7 +20,7 @@ Each step is a single focused unit — one concern, one agent session.
 | [11](steps/step-11-common-zod-validation.md) | CommonModule: Zod Validation Pipe | Phase 3 | ✅ |
 | [12](steps/step-12-common-jwt-guard.md) | CommonModule: JWT Guard + Passport Strategy | Phase 3 | ✅ |
 | [13](steps/step-13-common-roles-ownership.md) | CommonModule: Roles Guard + CurrentUser + Ownership | Phase 3 | ✅ |
-| [14](steps/step-14-auth-register.md) | AuthModule: Register + Email Token | Phase 4 | ⬜ |
+| [14](steps/step-14-auth-register.md) | AuthModule: Register + Email Token | Phase 4 | ✅ |
 | [15](steps/step-15-auth-login.md) | AuthModule: Login + JWT Issuance | Phase 4 | ⬜ |
 | [16](steps/step-16-auth-verify-email.md) | AuthModule: Email Verification + Resend | Phase 4 | ⬜ |
 | [17](steps/step-17-auth-password-throttler.md) | AuthModule: Change Password + Rate Limiting | Phase 4 | ⬜ |

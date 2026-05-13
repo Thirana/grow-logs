@@ -25,7 +25,7 @@ describe('Request ID propagation (e2e)', () => {
 
   it('echoes x-request-id back on a successful response', async () => {
     const res = await request(app.getHttpServer())
-      .get('/v1/health/live')
+      .get('/api/v1/health/live')
       .set(REQUEST_ID_HEADER, 'test-id-123')
       .expect(200);
 
@@ -34,7 +34,7 @@ describe('Request ID propagation (e2e)', () => {
 
   it('echoes x-request-id back on an error response header', async () => {
     const res = await request(app.getHttpServer())
-      .get('/v1/unknown-route')
+      .get('/api/v1/unknown-route')
       .set(REQUEST_ID_HEADER, 'test-id-456')
       .expect(404);
 
@@ -43,7 +43,7 @@ describe('Request ID propagation (e2e)', () => {
 
   it('includes requestId in the error body matching the sent header', async () => {
     const res = await request(app.getHttpServer())
-      .get('/v1/unknown-route')
+      .get('/api/v1/unknown-route')
       .set(REQUEST_ID_HEADER, 'test-id-456')
       .expect(404);
 

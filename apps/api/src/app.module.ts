@@ -11,6 +11,7 @@ import {
 import { buildWinstonConfig } from './common/logging/winston.config.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { HealthModule } from './modules/health/health.module.js';
     }),
     PrismaModule,
     HealthModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

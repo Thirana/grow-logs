@@ -23,6 +23,7 @@ export function configureApp(app: INestApplication): void {
   const winstonLogger = app.get<LoggerService>(WINSTON_MODULE_NEST_PROVIDER);
   app.useLogger(winstonLogger);
 
+  app.setGlobalPrefix('api');
   app.enableVersioning({ type: VersioningType.URI });
 
   app.use(helmet());
