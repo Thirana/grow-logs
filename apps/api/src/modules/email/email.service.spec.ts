@@ -7,7 +7,9 @@ describe('EmailService', () => {
 
   beforeEach(() => {
     service = new EmailService();
-    logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
+    logSpy = jest
+      .spyOn(Logger.prototype, 'log')
+      .mockImplementation(() => undefined);
   });
 
   afterEach(() => {

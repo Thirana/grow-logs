@@ -80,9 +80,9 @@ describe('AuthService', () => {
     it('stores a bcrypt hash, never the plain password', async () => {
       await service.register(VALID_DTO);
 
-      const createArg = mockPrisma.user.create.mock.calls[0][0] as {
-        data: Record<string, unknown>;
-      };
+      const [createArg] = mockPrisma.user.create.mock.calls[0] as [
+        { data: Record<string, unknown> },
+      ];
       expect(createArg.data['passwordHash']).toBe(MOCK_HASH);
       expect(createArg.data['passwordHash']).not.toBe(VALID_DTO.password);
       expect(createArg.data['password']).toBeUndefined();
