@@ -15,6 +15,8 @@ const envSchema = z
     DATABASE_URL: z.string().min(1),
     SENTRY_DSN: z.string().optional(),
     FRONTEND_URL: z.string().optional().default('http://localhost:3001'),
+    JWT_SECRET: z.string().min(32),
+    JWT_EXPIRES_IN: z.string().optional().default('7d'),
   })
   .transform((data) => ({
     ...data,
