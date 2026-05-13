@@ -203,7 +203,7 @@ Managed with **Turborepo** and **npm workspaces**.
 - **Database:** PostgreSQL
 - **Authentication:** Passport.js + JWT (custom, not Clerk)
 - **Validation:** Zod (via shared `packages/schemas`)
-- **Email:** AWS SES
+- **Email:** Resend
 - **API Docs:** Swagger via `@nestjs/swagger`
 
 ### Frontend (apps/web)
@@ -266,7 +266,7 @@ modules/
 | `CategoriesModule` | Categories and subcategories CRUD |
 | `EntriesModule` | Log entry CRUD and summary analytics |
 | `OnboardingModule` | Onboarding completion logic |
-| `EmailModule` | AWS SES integration |
+| `EmailModule` | Resend transactional email |
 | `FeatureFlagsModule` | Feature flag checks with 60s in-memory cache |
 | `AdminModule` | Admin user management and flag toggling |
 | `CommonModule` | Guards, pipes, interceptors, decorators, response transformer |
