@@ -31,9 +31,9 @@ describe('App (e2e)', () => {
     await app.close();
   });
 
-  it('GET /v1/health/live returns 200 with status ok', async () => {
+  it('GET /api/v1/health/live returns 200 with status ok', async () => {
     const res = await request(app.getHttpServer())
-      .get('/v1/health/live')
+      .get('/api/v1/health/live')
       .expect(200);
 
     const body = res.body as LivenessBody;
@@ -42,9 +42,9 @@ describe('App (e2e)', () => {
     expect(typeof body.data.uptime).toBe('number');
   });
 
-  it('GET /v1/health/ready returns 200 when DB is reachable', async () => {
+  it('GET /api/v1/health/ready returns 200 when DB is reachable', async () => {
     const res = await request(app.getHttpServer())
-      .get('/v1/health/ready')
+      .get('/api/v1/health/ready')
       .expect(200);
 
     const body = res.body as ReadinessBody;
@@ -55,7 +55,7 @@ describe('App (e2e)', () => {
 
   it('unknown route returns 404 with standard error shape', async () => {
     const res = await request(app.getHttpServer())
-      .get('/v1/unknown-route')
+      .get('/api/v1/unknown-route')
       .expect(404);
 
     expectStandardErrorShape(res.body as Record<string, unknown>);

@@ -58,7 +58,7 @@ grow-logs/
 
 ## Status
 
-> **In development.** Backend implementation in progress — 11 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
+> **In development.** Backend implementation in progress — 12 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
 
 ---
 
@@ -114,7 +114,7 @@ npm run db:reset           # Stop and wipe the database volume
 npm run start:dev          # NestJS in watch mode (http://localhost:3000)
 ```
 
-Swagger UI is available at **http://localhost:3000/api** once the server is running.
+Swagger UI is available at **http://localhost:3000/api/docs** once the server is running.
 
 ```bash
 # Prisma

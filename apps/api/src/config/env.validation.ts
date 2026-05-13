@@ -17,6 +17,13 @@ const envSchema = z
     FRONTEND_URL: z.string().optional().default('http://localhost:3001'),
     JWT_SECRET: z.string().min(32),
     JWT_EXPIRES_IN: z.string().optional().default('7d'),
+    BCRYPT_ROUNDS: z.coerce
+      .number()
+      .int()
+      .min(4)
+      .max(20)
+      .optional()
+      .default(12),
   })
   .transform((data) => ({
     ...data,

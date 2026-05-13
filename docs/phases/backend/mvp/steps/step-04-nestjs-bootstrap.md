@@ -65,8 +65,8 @@ Everything specified in `NESTJS_BOOTSTRAP_PLAYBOOK.md`, adapted for the monorepo
 ## Done When
 
 - `npm run start:dev` inside `apps/api` starts without errors
-- `GET http://localhost:3000/v1/health/live` returns 200 with `{ data: { status: "ok", uptime: <number> }, meta: {} }`
-- `GET http://localhost:3000/v1/health/ready` returns 200 when Docker Postgres is running, 503 when it is not
-- `GET http://localhost:3000/api` opens Swagger UI
+- `GET http://localhost:3000/api/v1/health/live` returns 200 with `{ data: { status: "ok", uptime: <number> }, meta: {} }`
+- `GET http://localhost:3000/api/v1/health/ready` returns 200 when Docker Postgres is running, 503 when it is not
+- `GET http://localhost:3000/api/docs` opens Swagger UI
 - A request to an unknown route returns the standard error envelope with `requestId`, `errorCode`, and `path`
 - `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run test:e2e` all pass

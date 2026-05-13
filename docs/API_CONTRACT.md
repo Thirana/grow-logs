@@ -11,7 +11,7 @@ Production:   https://api.grow-logs.com/api/v1
 ```
 
 **Versioning**
-All endpoints are prefixed with /v1. When breaking changes are introduced in the future, a /v2 prefix is added while /v1 remains active for a deprecation period.
+All endpoints are prefixed with /api/v1. When breaking changes are introduced in the future, a /api/v2 prefix is added while /api/v1 remains active for a deprecation period.
 
 **Authentication**
 Protected endpoints require a Bearer token in the Authorization header:
