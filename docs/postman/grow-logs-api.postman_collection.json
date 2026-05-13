@@ -1,0 +1,303 @@
+{
+  "info": {
+    "_postman_id": "grow-logs-api-collection",
+    "name": "Grow Logs API",
+    "description": "API collection for the Grow Logs SaaS backend. All requests use the {{BASE_URL}} variable. The login request auto-sets {{ACCESS_TOKEN}} via a post-response script.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{ACCESS_TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register — happy path",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"{{USER_PASSWORD}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has data envelope', () => pm.expect(body).to.have.property('data'));",
+                  "pm.test('data has id and email', () => {",
+                  "  pm.expect(body.data).to.have.property('id');",
+                  "  pm.expect(body.data).to.have.property('email');",
+                  "});",
+                  "pm.test('passwordHash not exposed', () => pm.expect(body.data).to.not.have.property('passwordHash'));",
+                  "pm.test('email matches input', () => pm.expect(body.data.email).to.equal(pm.environment.get('USER_EMAIL')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register — duplicate email (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"{{USER_PASSWORD}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has statusCode', () => pm.expect(body).to.have.property('statusCode'));",
+                  "pm.test('statusCode is 409', () => pm.expect(body.statusCode).to.equal(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register — validation failure, weak password (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"valid@example.com\",\n  \"password\": \"short\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has errors array', () => pm.expect(body).to.have.property('errors'));",
+                  "pm.test('errors is array', () => pm.expect(body.errors).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register — validation failure, invalid email (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"ValidPass1!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has errors array', () => pm.expect(body).to.have.property('errors'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login — happy path",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"{{USER_PASSWORD}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has data envelope', () => pm.expect(body).to.have.property('data'));",
+                  "pm.test('data has accessToken', () => pm.expect(body.data).to.have.property('accessToken'));",
+                  "pm.test('data has user object', () => pm.expect(body.data).to.have.property('user'));",
+                  "pm.test('user has expected fields', () => {",
+                  "  const user = body.data.user;",
+                  "  pm.expect(user).to.have.property('id');",
+                  "  pm.expect(user).to.have.property('email');",
+                  "  pm.expect(user).to.have.property('role');",
+                  "  pm.expect(user).to.have.property('isEmailVerified');",
+                  "  pm.expect(user).to.have.property('onboardingCompleted');",
+                  "});",
+                  "pm.test('passwordHash not exposed', () => pm.expect(body.data.user).to.not.have.property('passwordHash'));",
+                  "if (body.data && body.data.accessToken) {",
+                  "  pm.environment.set('ACCESS_TOKEN', body.data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login — wrong password (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"wrongpassword\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "const body = pm.response.json();",
+                  "pm.test('generic error message (no enumeration)', () => {",
+                  "  pm.expect(body.message).to.equal('Invalid email or password');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login — unknown email gives same error as wrong password (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nosuchuser@example.com\",\n  \"password\": \"AnyPassword1!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "const body = pm.response.json();",
+                  "pm.test('same generic message as wrong password — no user enumeration', () => {",
+                  "  pm.expect(body.message).to.equal('Invalid email or password');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login — unverified email (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{UNVERIFIED_USER_EMAIL}}\",\n  \"password\": \"{{UNVERIFIED_USER_PASSWORD}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "const body = pm.response.json();",
+                  "pm.test('message mentions email not verified', () => {",
+                  "  pm.expect(body.message).to.include('Email not verified');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login — validation failure, missing password (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{USER_EMAIL}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has errors array', () => pm.expect(body).to.have.property('errors'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

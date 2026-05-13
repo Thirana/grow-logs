@@ -52,13 +52,30 @@ grow-logs/
 | `docs/ARCHITECTURE.md` | System design, request lifecycle, auth flows |
 | `docs/SCHEMA.md` | Database schema, Prisma models, migration strategy |
 | `docs/API_CONTRACT.md` | All endpoints, request/response shapes, status codes |
+| `docs/BACKEND_ENV.md` | Every backend environment variable — purpose, valid values, local vs production guidance |
 | `docs/phases/backend/mvp/PHASES.md` | Backend implementation phases and step index |
+
+### Postman Collection
+
+A Postman collection covering all implemented endpoints lives in `docs/postman/`.
+
+| File | Purpose |
+|---|---|
+| `docs/postman/grow-logs-api.postman_collection.json` | All requests, organised by module, with test assertions |
+| `docs/postman/environments/local.postman_environment.json` | Local dev environment (`http://localhost:3000/api/v1`) |
+| `docs/postman/environments/staging.postman_environment.json` | Staging environment (fill in URL when provisioned) |
+
+**To use:**
+1. Import the collection and the local environment file into Postman.
+2. Run **Auth / Register — happy path** once to create your test account.
+3. Run **Auth / Login — happy path** — the post-response script automatically sets `{{ACCESS_TOKEN}}` in the environment.
+4. All subsequent requests that require authentication use the stored token via the collection-level Bearer auth.
 
 ---
 
 ## Status
 
-> **In development.** Backend implementation in progress — 12 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
+> **In development.** Backend implementation in progress — 15 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
 
 ---
 

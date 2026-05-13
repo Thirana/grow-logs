@@ -49,10 +49,18 @@ Current learning docs:
 | `08-sentry-error-tracking.md` | Phase 2 | Sentry, error monitoring, source maps |
 | `09-prisma-migrations.md` | Phase 2 | Prisma migrations, shadow database, migrate dev vs deploy, seeding |
 | `10-static-security-analysis.md` | Phase 2 | eslint-plugin-security, static analysis, ReDoS, detect-object-injection false positives |
+| `11-authentication-and-authorization.md` | Phase 3–4 | JWT, Passport.js, guards, custom decorators, ownership verification, bcrypt, registration flow, login flow, security patterns |
 
 ---
 
-**3. `README.md` — update after every step:**
+**3. `docs/BACKEND_ENV.md` — update whenever a new environment variable is introduced:**
+
+When any step adds a new environment variable (in `env.validation.ts` and `.env.example`), add a corresponding entry to `docs/BACKEND_ENV.md` before the step is considered complete. Each entry must cover:
+- Purpose — what the app uses the variable for
+- Valid values — type, allowed options, Zod constraints
+- Local vs production guidance — concrete recommended values for each context
+
+**4. `README.md` — update after every step:**
 
 Update the README at the end of every step, not just milestones. At minimum:
 - Update the progress counter in the Status section (`X / 26 steps complete`)

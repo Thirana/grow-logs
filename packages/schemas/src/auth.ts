@@ -10,3 +10,11 @@ export const registerSchema = z.object({
 });
 
 export type RegisterDto = z.infer<typeof registerSchema>;
+
+export const loginSchema = z.object({
+  email: z.string().email(),
+  // min(1) only — strength rules are for registration; login must accept any stored password
+  password: z.string().min(1),
+});
+
+export type LoginDto = z.infer<typeof loginSchema>;

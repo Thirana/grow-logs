@@ -14,12 +14,12 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Overall status:** Implementation in progress.
 
-**Last completed step:** Step 14 — AuthModule: Register + Email Verification Token
+**Last completed step:** Step 15 — AuthModule: Login + JWT Issuance
 
-**Next step:** Step 15 — AuthModule: Login + JWT Issuance
-`docs/phases/backend/mvp/steps/step-15-auth-login.md`
+**Next step:** Step 16 — AuthModule: Email Verification + Resend
+`docs/phases/backend/mvp/steps/step-16-auth-verify-email.md`
 
-**Progress:** 12 / 26 steps complete
+**Progress:** 13 / 26 steps complete
 
 > **Note:** Steps 08 (OpenTelemetry) and 09 (Axiom) are intentionally deferred. They will be implemented after all other steps are complete. See their step files for full context on what was attempted and what needs to be resolved before re-implementing.
 See full step index: `docs/phases/backend/mvp/PHASES.md`
@@ -53,6 +53,7 @@ See DECISIONS.md for full reasoning behind every decision. Summary:
 | docs/ARCHITECTURE.md | System design, component diagram, auth flow, request lifecycle |
 | docs/SCHEMA.md | All database tables, indexes, constraints, full Prisma schema |
 | docs/API_CONTRACT.md | All endpoints, request and response shapes, status codes |
+| docs/BACKEND_ENV.md | Every backend environment variable — purpose, valid values, local vs production guidance |
 | DECISIONS.md | Every technical decision with reasoning |
 
 ---
