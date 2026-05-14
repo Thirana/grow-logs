@@ -70,7 +70,7 @@ export class AuthService {
       { expiresIn: '24h' },
     );
 
-    this.emailService.sendVerificationEmail(user.email, verificationToken);
+    void this.emailService.sendVerificationEmail(user.email, verificationToken);
 
     return {
       message:
@@ -223,7 +223,7 @@ export class AuthService {
       { expiresIn: '24h' },
     );
 
-    this.emailService.sendVerificationEmail(user.email, verificationToken);
+    void this.emailService.sendVerificationEmail(user.email, verificationToken);
 
     return RESPONSE;
   }

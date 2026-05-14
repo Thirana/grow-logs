@@ -24,12 +24,33 @@ const envSchema = z
       .max(20)
       .optional()
       .default(12),
+    RESEND_API_KEY: z.string().optional(),
+    RESEND_FROM_ADDRESS: z.string().optional(),
+    APP_URL: z.string().optional().default('http://localhost:3000'),
   })
   .transform((data) => ({
     ...data,
     LOG_FORMAT:
       data.LOG_FORMAT ?? (data.NODE_ENV === 'production' ? 'json' : 'pretty'),
-  }));
+  }))
+  .superRefine((data, ctx) => {
+    if (data.NODE_ENV === 'production') {
+      if (!data.RESEND_API_KEY) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['RESEND_API_KEY'],
+          message: 'Required in production',
+        });
+      }
+      if (!data.RESEND_FROM_ADDRESS) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['RESEND_FROM_ADDRESS'],
+          message: 'Required in production',
+        });
+      }
+    }
+  });
 
 export type Env = z.infer<typeof envSchema>;
 
