@@ -396,4 +396,72 @@ describe('AuthService', () => {
       expect(mockEmailService.sendVerificationEmail).not.toHaveBeenCalled();
     });
   });
+
+  describe('changePassword', () => {
+    const CHANGE_DTO = {
+      currentPassword: 'OldPass1!',
+      newPassword: 'NewPass1!',
+    };
+    const STORED_USER = { id: 'user-uuid', passwordHash: MOCK_HASH };
+    const NEW_HASH = '$2b$12$newmockhashfortesting';
+
+    beforeEach(() => {
+      mockPrisma.user.findUnique.mockResolvedValue(STORED_USER);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      (bcrypt.hash as jest.Mock).mockResolvedValue(NEW_HASH);
+    });
+
+    it('updates the passwordHash and returns a success message', async () => {
+      const result = await service.changePassword('user-uuid', CHANGE_DTO);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: STORED_USER.id },
+        data: { passwordHash: NEW_HASH },
+      });
+      expect(result.message).toBe('Password changed successfully');
+    });
+
+    it('hashes the new password before storing — never stores plain text', async () => {
+      await service.changePassword('user-uuid', CHANGE_DTO);
+
+      const [updateArg] = mockPrisma.user.update.mock.calls[0] as [
+        { data: Record<string, unknown> },
+      ];
+      expect(updateArg.data['passwordHash']).toBe(NEW_HASH);
+      expect(updateArg.data['passwordHash']).not.toBe(CHANGE_DTO.newPassword);
+    });
+
+    it('uses the configured bcrypt cost factor when hashing', async () => {
+      await service.changePassword('user-uuid', CHANGE_DTO);
+
+      expect(bcrypt.hash).toHaveBeenCalledWith(CHANGE_DTO.newPassword, 12);
+    });
+
+    it('throws UnauthorizedException when the current password is wrong', async () => {
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await expect(
+        service.changePassword('user-uuid', CHANGE_DTO),
+      ).rejects.toThrow(
+        new UnauthorizedException('Current password is incorrect'),
+      );
+    });
+
+    it('does not update the password when current password is wrong', async () => {
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await expect(
+        service.changePassword('user-uuid', CHANGE_DTO),
+      ).rejects.toThrow();
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('throws UnauthorizedException when the user no longer exists', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.changePassword('user-uuid', CHANGE_DTO),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+  });
 });

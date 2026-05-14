@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 import { SentryModule } from '@sentry/nestjs/setup';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import {
   validateEnv,
   appConfig,
@@ -32,9 +34,12 @@ import { AuthModule } from './modules/auth/auth.module.js';
         return buildWinstonConfig(level, format, 'grow-logs');
       },
     }),
+    // Default limit (10 req/min) applies globally; AuthController overrides to 5 via @Throttle.
+    ThrottlerModule.forRoot([{ name: 'auth', ttl: 60_000, limit: 10 }]),
     PrismaModule,
     HealthModule,
     AuthModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

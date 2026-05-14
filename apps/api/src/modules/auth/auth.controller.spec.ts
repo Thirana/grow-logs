@@ -7,6 +7,7 @@ const mockAuthService = {
   login: jest.fn(),
   verifyEmail: jest.fn(),
   resendVerification: jest.fn(),
+  changePassword: jest.fn(),
 };
 
 describe('AuthController', () => {
@@ -89,6 +90,23 @@ describe('AuthController', () => {
 
       expect(mockAuthService.resendVerification).toHaveBeenCalledWith(
         dto.email,
+      );
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('changePassword', () => {
+    it('delegates to authService.changePassword with userId from CurrentUser and the DTO', async () => {
+      const user = { userId: 'user-uuid', role: 'USER' as const };
+      const dto = { currentPassword: 'OldPass1!', newPassword: 'NewPass1!' };
+      const expected = { message: 'Password changed successfully' };
+      mockAuthService.changePassword.mockResolvedValue(expected);
+
+      const result = await controller.changePassword(user, dto);
+
+      expect(mockAuthService.changePassword).toHaveBeenCalledWith(
+        user.userId,
+        dto,
       );
       expect(result).toEqual(expected);
     });

@@ -27,32 +27,6 @@ Progress: XX / 26 steps complete
 **2. `docs/phases/backend/mvp/PHASES.md` — mark the step as complete in the Status column:**
 Change `⬜` to `✅` for the completed step row.
 
-**4. `docs/learning/backend/` — create or update a learning doc after every phase:**
-
-At the end of each phase (not every step), add or update the relevant learning doc in `docs/learning/backend/`. Files are prefixed with numbers for ordering. Group related concepts into one file rather than one file per tool.
-
-- If the phase introduces a concept covered by an existing file, add a new section to that file.
-- If the phase introduces a genuinely new concept group, create the next numbered file.
-- Each doc follows this structure: what it is → why it matters → how it works in this repo (with code examples) → interview summary.
-
-Current learning docs:
-
-| File | Phase | Concepts |
-|---|---|---|
-| `01-monorepos-and-turborepo.md` | Phase 1–2 | Monorepo, npm workspaces, Turborepo, remote cache |
-| `02-dependency-automation.md` | Phase 1 | Dependabot, Renovate |
-| `03-github-actions-ci.md` | Phase 2 | CI, GitHub Actions, pipeline structure |
-| `04-code-coverage-codecov.md` | Phase 2 | Code coverage, Codecov, thresholds |
-| `05-nestjs-request-lifecycle.md` | Phase 2 | Middleware chain, request lifecycle, NestJS architecture |
-| `06-structured-logging.md` | Phase 2 | Structured logging, Winston, request ID propagation |
-| `07-validation-and-error-handling.md` | Phase 2 | ValidationPipe, Zod, exception filter, error envelope |
-| `08-sentry-error-tracking.md` | Phase 2 | Sentry, error monitoring, source maps |
-| `09-prisma-migrations.md` | Phase 2 | Prisma migrations, shadow database, migrate dev vs deploy, seeding |
-| `10-static-security-analysis.md` | Phase 2 | eslint-plugin-security, static analysis, ReDoS, detect-object-injection false positives |
-| `11-authentication-and-authorization.md` | Phase 3–4 | JWT, Passport.js, guards, custom decorators, ownership verification, bcrypt, registration flow, login flow, security patterns |
-
----
-
 **3. `docs/BACKEND_ENV.md` — update whenever a new environment variable is introduced:**
 
 When any step adds a new environment variable (in `env.validation.ts` and `.env.example`), add a corresponding entry to `docs/BACKEND_ENV.md` before the step is considered complete. Each entry must cover:

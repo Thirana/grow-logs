@@ -6,7 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SubscriptionStatus, UserRole } from '@prisma/client';
-import { LoginDto, RegisterDto } from '@grow-logs/schemas';
+import { ChangePasswordDto, LoginDto, RegisterDto } from '@grow-logs/schemas';
 import * as bcrypt from 'bcrypt';
 
 interface EmailVerificationPayload {
@@ -163,6 +163,41 @@ export class AuthService {
     });
 
     return { message: 'Email verified successfully. You can now log in.' };
+  }
+
+  async changePassword(
+    userId: string,
+    dto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, passwordHash: true },
+    });
+
+    // A missing user here means the JWT was valid but the account was deleted
+    // mid-session. Treat as an auth failure rather than a 404 — no account info leaked.
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const currentPasswordMatch = await bcrypt.compare(
+      dto.currentPassword,
+      user.passwordHash,
+    );
+
+    if (!currentPasswordMatch) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    const rounds = this.configService.get<number>('BCRYPT_ROUNDS', 12);
+    const newPasswordHash = await bcrypt.hash(dto.newPassword, rounds);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newPasswordHash },
+    });
+
+    return { message: 'Password changed successfully' };
   }
 
   async resendVerification(email: string): Promise<{ message: string }> {

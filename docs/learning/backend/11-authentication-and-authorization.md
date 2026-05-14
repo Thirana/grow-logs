@@ -154,6 +154,73 @@ The `role` is included in the payload so `RolesGuard` can make permission decisi
 
 ---
 
+## Rate Limiting with @nestjs/throttler
+
+### What it is
+
+Rate limiting caps the number of requests a client can make within a time window. Without it, an attacker can hit the login endpoint thousands of times per second to brute force passwords or enumerate users.
+
+### How it works in this repo
+
+`ThrottlerModule` is registered globally in `AppModule` with a named throttler:
+
+```ts
+ThrottlerModule.forRoot([{ name: 'auth', ttl: 60_000, limit: 10 }])
+```
+
+`ThrottlerGuard` is wired as a global guard via `APP_GUARD`, so every route is covered by default (10 req/min). `AuthController` overrides this with a tighter limit:
+
+```ts
+@Throttle({ auth: { ttl: 60_000, limit: 5 } })
+@Controller({ path: 'auth', version: '1' })
+export class AuthController { ... }
+```
+
+This applies to every endpoint in the controller — register, login, verify-email, resend-verification, and change-password all share the 5 req/min limit.
+
+### 429 response envelope
+
+`ThrottlerException` extends `HttpException`. The existing `AppExceptionFilter` catches all `HttpException` instances via `@Catch()` and wraps them in the standard error envelope. No extra filter is needed — the 429 automatically returns `{ statusCode, message, errorCode, ... }`.
+
+---
+
+## Change Password Flow
+
+The `PATCH /v1/auth/change-password` endpoint requires a valid JWT and the user's current password before allowing a new password to be set.
+
+### Why current password is required
+
+A JWT proves the user authenticated at some point in the past, but not that they are present right now. If someone left a session open on a shared computer, requiring the current password prevents that session from being used to lock out the real user. This is standard security practice for sensitive account mutations.
+
+### Implementation
+
+```ts
+async changePassword(userId: string, dto: ChangePasswordDto) {
+  const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) throw new UnauthorizedException();        // deleted mid-session
+  if (!await bcrypt.compare(dto.currentPassword, user.passwordHash))
+    throw new UnauthorizedException('Current password is incorrect');
+
+  const hash = await bcrypt.hash(dto.newPassword, rounds);
+  await this.prisma.user.update({ where: { id: userId }, data: { passwordHash: hash } });
+}
+```
+
+The `refine` on the Zod schema rejects identical `currentPassword` and `newPassword` at the validation layer — the service never sees that case:
+
+```ts
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8).regex(...).regex(...),
+}).refine(
+  (data) => data.currentPassword !== data.newPassword,
+  { message: 'New password must be different from current password', path: ['newPassword'] },
+);
+```
+
+---
+
 ## Interview Summary
 
 **Q: What is the difference between authentication and authorization?**
@@ -176,3 +243,12 @@ The cost factor controls how many rounds of hashing are performed. Higher cost =
 
 **Q: Why is the `purpose` claim included in the email verification token?**
 The verification token is signed with the same secret as the access token. Without the `purpose` claim, an access token would be structurally valid as a verification token. The `purpose: 'email-verification'` claim, checked explicitly on the verify-email endpoint, ensures tokens cannot be used across different flows.
+
+**Q: Why does rate limiting apply at the controller class level rather than per method?**
+Applying `@Throttle` to the controller class covers all endpoints in one decorator. Auth endpoints are collectively the primary attack surface — register, login, verify, resend, and change-password all need the same protection. Individual methods can still override with stricter limits if a specific endpoint needs tighter control.
+
+**Q: Why does the 429 response use the standard error envelope without a custom ThrottlerExceptionFilter?**
+`ThrottlerException` extends `HttpException`. The global `AppExceptionFilter` is decorated with `@Catch()` (catches everything) and checks `instanceof HttpException` to extract the status and message. Any `HttpException` subclass — including 429 — automatically gets the standard `{ statusCode, message, errorCode, ... }` shape. No extra filter is needed.
+
+**Q: Why does change-password require the current password if the user already has a valid JWT?**
+A JWT proves a past authentication event, not presence at this moment. If a user left a session open on a shared machine, requiring the current password prevents that session from being weaponised to lock out the real user. Sensitive account mutations (password, email, MFA) should always require re-confirmation of credentials.
