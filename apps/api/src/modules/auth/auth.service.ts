@@ -8,6 +8,11 @@ import { JwtService } from '@nestjs/jwt';
 import { SubscriptionStatus, UserRole } from '@prisma/client';
 import { LoginDto, RegisterDto } from '@grow-logs/schemas';
 import * as bcrypt from 'bcrypt';
+
+interface EmailVerificationPayload {
+  sub: string;
+  purpose: string;
+}
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { EmailService } from '../email/email.service.js';
 
@@ -120,5 +125,71 @@ export class AuthService {
         subscriptionStatus: user.subscriptionStatus,
       },
     };
+  }
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    let payload: EmailVerificationPayload;
+
+    try {
+      payload = this.jwtService.verify<EmailVerificationPayload>(token);
+    } catch {
+      // Both expired and tampered tokens are unusable — same message for both
+      // avoids leaking whether the token was valid but expired vs never valid.
+      throw new UnauthorizedException(
+        'Verification link is invalid or expired. Please request a new one.',
+      );
+    }
+
+    if (payload.purpose !== 'email-verification') {
+      throw new UnauthorizedException(
+        'Verification link is invalid or expired. Please request a new one.',
+      );
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { id: true, isEmailVerified: true },
+    });
+
+    // Return success silently if user is already verified or not found.
+    // Idempotent: clicking the link twice should not produce an error.
+    if (!user || user.isEmailVerified) {
+      return { message: 'Email verified successfully. You can now log in.' };
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { isEmailVerified: true },
+    });
+
+    return { message: 'Email verified successfully. You can now log in.' };
+  }
+
+  async resendVerification(email: string): Promise<{ message: string }> {
+    // Always return the same response regardless of outcome to prevent
+    // user enumeration — an attacker must not be able to tell whether
+    // an email address has an account.
+    const RESPONSE = {
+      message:
+        'If your email is registered and unverified, a new verification email has been sent.',
+    };
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true, isEmailVerified: true },
+    });
+
+    if (!user || user.isEmailVerified) {
+      return RESPONSE;
+    }
+
+    const verificationToken = this.jwtService.sign(
+      { sub: user.id, purpose: 'email-verification' },
+      { expiresIn: '24h' },
+    );
+
+    this.emailService.sendVerificationEmail(user.email, verificationToken);
+
+    return RESPONSE;
   }
 }

@@ -22,7 +22,7 @@ Each step is a single focused unit — one concern, one agent session.
 | [13](steps/step-13-common-roles-ownership.md) | CommonModule: Roles Guard + CurrentUser + Ownership | Phase 3 | ✅ |
 | [14](steps/step-14-auth-register.md) | AuthModule: Register + Email Token | Phase 4 | ✅ |
 | [15](steps/step-15-auth-login.md) | AuthModule: Login + JWT Issuance | Phase 4 | ✅ |
-| [16](steps/step-16-auth-verify-email.md) | AuthModule: Email Verification + Resend | Phase 4 | ⬜ |
+| [16](steps/step-16-auth-verify-email.md) | AuthModule: Email Verification + Resend | Phase 4 | ✅ |
 | [17](steps/step-17-auth-password-throttler.md) | AuthModule: Change Password + Rate Limiting | Phase 4 | ⬜ |
 | [18](steps/step-18-email-ses.md) | EmailModule: Resend Integration | Phase 5 | ⬜ |
 | [19](steps/step-19-users-module.md) | UsersModule | Phase 6 | ⬜ |

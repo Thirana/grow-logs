@@ -5,6 +5,8 @@ import { AuthService } from './auth.service.js';
 const mockAuthService = {
   register: jest.fn(),
   login: jest.fn(),
+  verifyEmail: jest.fn(),
+  resendVerification: jest.fn(),
 };
 
 describe('AuthController', () => {
@@ -55,6 +57,39 @@ describe('AuthController', () => {
       const result = await controller.login(dto);
 
       expect(mockAuthService.login).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('verifyEmail', () => {
+    it('delegates to authService.verifyEmail with the token from the DTO', async () => {
+      const dto = { token: 'valid-verification-token' };
+      const expected = {
+        message: 'Email verified successfully. You can now log in.',
+      };
+      mockAuthService.verifyEmail.mockResolvedValue(expected);
+
+      const result = await controller.verifyEmail(dto);
+
+      expect(mockAuthService.verifyEmail).toHaveBeenCalledWith(dto.token);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('resendVerification', () => {
+    it('delegates to authService.resendVerification with the email from the DTO', async () => {
+      const dto = { email: 'user@example.com' };
+      const expected = {
+        message:
+          'If your email is registered and unverified, a new verification email has been sent.',
+      };
+      mockAuthService.resendVerification.mockResolvedValue(expected);
+
+      const result = await controller.resendVerification(dto);
+
+      expect(mockAuthService.resendVerification).toHaveBeenCalledWith(
+        dto.email,
+      );
       expect(result).toEqual(expected);
     });
   });

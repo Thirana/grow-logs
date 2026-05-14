@@ -25,7 +25,7 @@ Knowledge workers struggle to recall and articulate what they have actually done
 | Frontend hosting | Vercel |
 | Backend hosting | AWS ECS |
 | Database | AWS RDS (PostgreSQL) |
-| Email | AWS SES |
+| Email | Resend |
 
 ---
 
@@ -75,7 +75,7 @@ A Postman collection covering all implemented endpoints lives in `docs/postman/`
 
 ## Status
 
-> **In development.** Backend implementation in progress — 15 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
+> **In development.** Backend implementation in progress — 16 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
 
 ---
 

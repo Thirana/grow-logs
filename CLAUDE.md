@@ -60,6 +60,13 @@ When any step adds a new environment variable (in `env.validation.ts` and `.env.
 - Valid values — type, allowed options, Zod constraints
 - Local vs production guidance — concrete recommended values for each context
 
+**5. Swagger + Postman — update whenever any endpoint is added or modified:**
+
+For every new or changed endpoint, before the step is considered complete:
+- Add `@ApiTags`, `@ApiOperation`, `@ApiBody` (required — Swagger cannot infer from Zod schemas), and all relevant response decorators (`@ApiOkResponse`, `@ApiCreatedResponse`, `@ApiUnauthorizedResponse`, `@ApiBadRequestResponse`, etc.) to the controller method
+- Add corresponding requests to `docs/postman/grow-logs-api.postman_collection.json` covering the happy path and all documented error cases
+- Add any new environment variables needed by the requests to `docs/postman/environments/local.postman_environment.json`
+
 **4. `README.md` — update after every step:**
 
 Update the README at the end of every step, not just milestones. At minimum:
