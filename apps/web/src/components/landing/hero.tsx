@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { GlButton } from '@/components/common/gl-button';
 import { IconArrow, IconCheck } from '@/components/common/icons';
 import { HeroEntryCard } from './hero-entry-card';
-import { HeroTrend } from './hero-trend';
-import { SplitStatCard } from './split-stat-card';
+import { HeroStreakWidget } from './hero-streak-widget';
+import { HeroScoreWidget } from './hero-score-widget';
+import { HeroSplitWidget } from './hero-split-widget';
+import { HeroCategoriesWidget } from './hero-categories-widget';
 
 const TRUST_BADGES = ['Free to start', 'No setup required', 'Built for developers'] as const;
 
@@ -65,23 +67,26 @@ export function Hero() {
         ))}
       </div>
 
-      {/* Product spot */}
+      {/* Product spot — bento grid */}
       <div className="relative mt-20">
-        {/* Subtle bottom fade so the product spot blends into the next section */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
-          style={{
-            background: `linear-gradient(to bottom, transparent, var(--gl-bg))`,
-          }}
-          aria-hidden="true"
-        />
+        <div className="mx-auto max-w-[960px] text-left">
+          {/*
+            Layout (lg):  [Entry card · row-span-3] | [Streak] [Score]
+                                                     | [Split ·  col-span-2  ]
+                                                     | [Categories · col-span-2]
+            sm: 2-col stack — entry card full width, rest 2-up then full.
+          */}
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+            {/* Tall anchor — spans all 3 rows on lg */}
+            <div className="sm:col-span-2 lg:col-span-1 lg:row-span-3">
+              <HeroEntryCard />
+            </div>
 
-        <div className="mx-auto grid max-w-[940px] grid-cols-1 gap-[18px] text-left md:grid-cols-[1.55fr_1fr]">
-          <HeroEntryCard />
+            <HeroStreakWidget />
+            <HeroScoreWidget />
 
-          <div className="flex flex-col gap-[18px]">
-            <SplitStatCard workPct={62} learnPct={38} />
-            <HeroTrend />
+            <HeroSplitWidget className="sm:col-span-2 lg:col-span-2" />
+            <HeroCategoriesWidget className="sm:col-span-2 lg:col-span-2" />
           </div>
         </div>
       </div>

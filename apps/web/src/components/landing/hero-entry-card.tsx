@@ -3,7 +3,7 @@ import { IconCheck } from '@/components/common/icons';
 
 export function HeroEntryCard() {
   return (
-    <div className="relative flex min-h-[280px] flex-col gap-3.5 rounded-2xl border border-gl-border bg-gl-surface p-7 shadow-gl-lg">
+    <div className="relative flex h-full min-h-[280px] flex-col gap-3.5 rounded-2xl border border-gl-border bg-gl-surface p-7 shadow-gl-lg transition-all duration-[150ms] hover:-translate-y-0.5 hover:shadow-gl-lg">
       {/* Date + score */}
       <div className="flex items-center justify-between gap-3">
         <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.10em] text-gl-text-faint whitespace-nowrap">
