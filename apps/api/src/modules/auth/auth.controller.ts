@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -7,30 +15,39 @@ import {
   ApiConflictResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
+  ApiTooManyRequestsResponse,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import {
+  changePasswordSchema,
   loginSchema,
   registerSchema,
   resendVerificationSchema,
   verifyEmailSchema,
 } from '@grow-logs/schemas';
 import type {
+  ChangePasswordDto,
   LoginDto,
   RegisterDto,
   ResendVerificationDto,
   VerifyEmailDto,
 } from '@grow-logs/schemas';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
+import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUser } from '../../common/types/authenticated-user.type.js';
 import { ZodValidationPipe } from '../../common/pipes/index.js';
 import { AuthService, LoginResponse } from './auth.service.js';
 
 /**
- * Handles all unauthenticated auth routes under /api/v1/auth.
- * No JwtAuthGuard applied here — these endpoints are intentionally public.
+ * Handles all auth routes under /api/v1/auth.
+ * Public endpoints have no guard. change-password requires JwtAuthGuard.
  *
  * Delegates all business logic to AuthService.
  */
 @ApiTags('auth')
+@Throttle({ auth: { ttl: 60_000, limit: 5 } })
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -144,5 +161,41 @@ export class AuthController {
     dto: ResendVerificationDto,
   ): Promise<{ message: string }> {
     return this.authService.resendVerification(dto.email);
+  }
+
+  @Patch('change-password')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Change the authenticated user's password" })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['currentPassword', 'newPassword'],
+      properties: {
+        currentPassword: { type: 'string', example: 'OldPass1!' },
+        newPassword: {
+          type: 'string',
+          minLength: 8,
+          example: 'NewPass1!',
+          description:
+            'Must contain a number and a special character, and differ from the current password',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Password changed successfully' })
+  @ApiUnauthorizedResponse({
+    description: 'Current password is incorrect or JWT missing/invalid',
+  })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  @ApiTooManyRequestsResponse({
+    description: 'Rate limit exceeded — max 5 requests per minute',
+  })
+  async changePassword(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(changePasswordSchema)) dto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    return this.authService.changePassword(user.userId, dto);
   }
 }

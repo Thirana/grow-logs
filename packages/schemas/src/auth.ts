@@ -24,3 +24,19 @@ export type VerifyEmailDto = z.infer<typeof verifyEmailSchema>;
 
 export const resendVerificationSchema = z.object({ email: z.string().email() });
 export type ResendVerificationDto = z.infer<typeof resendVerificationSchema>;
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1),
+    newPassword: z
+      .string()
+      .min(8)
+      .regex(/[0-9]/, 'must contain a number')
+      .regex(/[^a-zA-Z0-9]/, 'must contain a special character'),
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: 'New password must be different from current password',
+    path: ['newPassword'],
+  });
+
+export type ChangePasswordDto = z.infer<typeof changePasswordSchema>;
