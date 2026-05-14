@@ -211,6 +211,62 @@ During automated testing, Jest sets this to a low value (e.g. `4`) via the test 
 
 ---
 
+### `RESEND_API_KEY`
+
+| | |
+|---|---|
+| **Required** | Production only — app refuses to start in `production` if missing |
+| **Type** | String — Resend API key, always prefixed `re_` |
+
+The API key used to authenticate calls to the Resend email API. Generated in the Resend dashboard under **API Keys**. Use **Sending access** permission (not Full access).
+
+Resend shows the key only once at creation time — copy it immediately and store in `.env` or a secret manager.
+
+| Environment | Value |
+|---|---|
+| Local | Your real Resend API key — needed only if testing production mode locally. In `development` mode the app logs emails to console and never calls Resend, so the key can be left as a placeholder. |
+| Production | The key from your Resend dashboard, stored in a secret manager. Never in source control. |
+
+---
+
+### `RESEND_FROM_ADDRESS`
+
+| | |
+|---|---|
+| **Required** | Production only — app refuses to start in `production` if missing |
+| **Type** | Email address string |
+
+The sender address shown in the `From` field of all outgoing emails. Must be on a domain verified in the Resend dashboard.
+
+**Development / MVP:** Use `onboarding@resend.dev` — Resend's shared sandbox domain, which works without any DNS setup. Restriction: can only send to the email address registered on your Resend account.
+
+**Production:** Use an address on your own verified domain, e.g. `noreply@grow-logs.com`. Requires adding SPF and DKIM DNS records in the Resend dashboard before deploying.
+
+| Environment | Value |
+|---|---|
+| Local | `onboarding@resend.dev` |
+| Production | `noreply@yourdomain.com` (once domain is verified in Resend) |
+
+---
+
+### `APP_URL`
+
+| | |
+|---|---|
+| **Required** | No — defaults to `http://localhost:3000` |
+| **Type** | URL string — no trailing slash |
+
+The base URL of the backend API. Used to construct absolute URLs in email templates (e.g. the email verification link: `${APP_URL}/verify-email?token=...`).
+
+**Do not include a trailing slash** — the verification URL is built by string concatenation.
+
+| Environment | Value |
+|---|---|
+| Local | `http://localhost:3000` |
+| Production | The public URL of your API, e.g. `https://api.grow-logs.com` |
+
+---
+
 ### `SENTRY_DSN`
 
 | | |
