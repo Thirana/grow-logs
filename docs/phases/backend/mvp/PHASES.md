@@ -25,7 +25,7 @@ Each step is a single focused unit — one concern, one agent session.
 | [16](steps/step-16-auth-verify-email.md) | AuthModule: Email Verification + Resend | Phase 4 | ✅ |
 | [17](steps/step-17-auth-password-throttler.md) | AuthModule: Change Password + Rate Limiting | Phase 4 | ✅ |
 | [18](steps/step-18-email-ses.md) | EmailModule: Resend Integration | Phase 5 | ✅ |
-| [19](steps/step-19-users-module.md) | UsersModule | Phase 6 | ⬜ |
+| [19](steps/step-19-users-module.md) | UsersModule | Phase 6 | ✅ |
 | [20](steps/step-20-onboarding-module.md) | OnboardingModule | Phase 6 | ⬜ |
 | [21](steps/step-21-categories-module.md) | CategoriesModule: Categories CRUD | Phase 7 | ⬜ |
 | [22](steps/step-22-subcategories-module.md) | CategoriesModule: Subcategories CRUD | Phase 7 | ⬜ |
