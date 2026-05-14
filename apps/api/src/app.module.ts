@@ -14,6 +14,7 @@ import { buildWinstonConfig } from './common/logging/winston.config.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { UsersModule } from './modules/users/users.module.js';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
     PrismaModule,
     HealthModule,
     AuthModule,
+    UsersModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
