@@ -296,6 +296,203 @@
               }
             }
           ]
+        },
+        {
+          "name": "Verify Email — happy path (200)",
+          "description": "Paste the token printed to the dev server console after registering. In dev mode the server logs: [DEV] Verify: http://localhost:3001/verify-email?token=<TOKEN>. Copy the token value and set it as {{VERIFICATION_TOKEN}} in your environment.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{VERIFICATION_TOKEN}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has data envelope', () => pm.expect(body).to.have.property('data'));",
+                  "pm.test('data has message', () => pm.expect(body.data).to.have.property('message'));",
+                  "pm.test('message confirms verification', () => pm.expect(body.data.message).to.include('verified'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Email — idempotent, second call succeeds (200)",
+          "description": "Calling verify-email twice with the same valid token must return 200 both times. Email clients pre-fetch links, so the second call must not error.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{VERIFICATION_TOKEN}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200 on second call', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Email — tampered token (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"this.is.not.a.valid.jwt\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "const body = pm.response.json();",
+                  "pm.test('message does not distinguish invalid from expired', () => {",
+                  "  pm.expect(body.message).to.include('invalid or expired');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Email — validation failure, missing token (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has errors array', () => pm.expect(body).to.have.property('errors'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resend Verification — registered unverified email (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/resend-verification", "host": ["{{BASE_URL}}"], "path": ["auth", "resend-verification"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{USER_EMAIL}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has data envelope', () => pm.expect(body).to.have.property('data'));",
+                  "pm.test('data has message', () => pm.expect(body.data).to.have.property('message'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resend Verification — unknown email returns same 200 (no enumeration)",
+          "description": "The endpoint must return 200 with the same message even for email addresses that have no account. This prevents an attacker from discovering which emails are registered.",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/resend-verification", "host": ["{{BASE_URL}}"], "path": ["auth", "resend-verification"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nosuchuser@example.com\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200 even for unknown email', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('same message as registered email (no enumeration)', () => {",
+                  "  pm.expect(body.data).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resend Verification — validation failure, invalid email (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/auth/resend-verification", "host": ["{{BASE_URL}}"], "path": ["auth", "resend-verification"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-an-email\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has errors array', () => pm.expect(body).to.have.property('errors'));"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

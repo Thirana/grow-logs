@@ -14,12 +14,12 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Overall status:** Implementation in progress.
 
-**Last completed step:** Step 15 — AuthModule: Login + JWT Issuance
+**Last completed step:** Step 16 — AuthModule: Email Verification + Resend
 
-**Next step:** Step 16 — AuthModule: Email Verification + Resend
-`docs/phases/backend/mvp/steps/step-16-auth-verify-email.md`
+**Next step:** Step 17 — AuthModule: Change Password + Rate Limiting
+`docs/phases/backend/mvp/steps/step-17-auth-password-throttler.md`
 
-**Progress:** 13 / 26 steps complete
+**Progress:** 14 / 26 steps complete
 
 > **Note:** Steps 08 (OpenTelemetry) and 09 (Axiom) are intentionally deferred. They will be implemented after all other steps are complete. See their step files for full context on what was attempted and what needs to be resolved before re-implementing.
 See full step index: `docs/phases/backend/mvp/PHASES.md`

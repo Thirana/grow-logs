@@ -42,9 +42,9 @@ The TCP port the NestJS server listens on.
 | **Allowed values** | `development`, `test`, `production` |
 
 Controls environment-specific behaviour across the application:
-- `development` — console-style log output (`pretty` format), email stub logs to console instead of sending via SES
+- `development` — console-style log output (`pretty` format), email stub logs to console instead of sending via Resend
 - `test` — used automatically by Jest; disables Sentry and keeps logging quiet
-- `production` — JSON log output, real SES email sending, Sentry active
+- `production` — JSON log output, real Resend email sending, Sentry active
 
 | Environment | Value |
 |---|---|

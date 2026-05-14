@@ -34,11 +34,13 @@ const mockPrisma = {
   user: {
     findUnique: jest.fn(),
     create: jest.fn(),
+    update: jest.fn(),
   },
 };
 
 const mockJwtService = {
   sign: jest.fn(),
+  verify: jest.fn(),
 };
 
 const mockEmailService = {
@@ -222,6 +224,176 @@ describe('AuthService', () => {
           'Email not verified. Please check your inbox.',
         ),
       );
+    });
+  });
+
+  describe('verifyEmail', () => {
+    const VALID_PAYLOAD = { sub: 'user-uuid', purpose: 'email-verification' };
+    const UNVERIFIED_USER = { id: 'user-uuid', isEmailVerified: false };
+    const VERIFIED_USER = { id: 'user-uuid', isEmailVerified: true };
+
+    beforeEach(() => {
+      mockJwtService.verify.mockReturnValue(VALID_PAYLOAD);
+      mockPrisma.user.findUnique.mockResolvedValue(UNVERIFIED_USER);
+      mockPrisma.user.update.mockResolvedValue({
+        ...UNVERIFIED_USER,
+        isEmailVerified: true,
+      });
+    });
+
+    it('sets isEmailVerified to true and returns success message', async () => {
+      const result = await service.verifyEmail('valid-token');
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: UNVERIFIED_USER.id },
+        data: { isEmailVerified: true },
+      });
+      expect(result.message).toBe(
+        'Email verified successfully. You can now log in.',
+      );
+    });
+
+    it('returns success silently when user is already verified (idempotent)', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(VERIFIED_USER);
+
+      const result = await service.verifyEmail('valid-token');
+
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
+      expect(result.message).toBe(
+        'Email verified successfully. You can now log in.',
+      );
+    });
+
+    it('returns success silently when user is not found', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      const result = await service.verifyEmail('valid-token');
+
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
+      expect(result.message).toBe(
+        'Email verified successfully. You can now log in.',
+      );
+    });
+
+    it('throws UnauthorizedException when token signature is invalid', async () => {
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('invalid signature');
+      });
+
+      await expect(service.verifyEmail('tampered-token')).rejects.toThrow(
+        new UnauthorizedException(
+          'Verification link is invalid or expired. Please request a new one.',
+        ),
+      );
+    });
+
+    it('throws UnauthorizedException when token is expired', async () => {
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('jwt expired');
+      });
+
+      await expect(service.verifyEmail('expired-token')).rejects.toThrow(
+        new UnauthorizedException(
+          'Verification link is invalid or expired. Please request a new one.',
+        ),
+      );
+    });
+
+    it('throws UnauthorizedException when token purpose is not email-verification', async () => {
+      mockJwtService.verify.mockReturnValue({
+        sub: 'user-uuid',
+        purpose: 'access',
+      });
+
+      await expect(service.verifyEmail('wrong-purpose-token')).rejects.toThrow(
+        new UnauthorizedException(
+          'Verification link is invalid or expired. Please request a new one.',
+        ),
+      );
+    });
+
+    it('returns the same error message for invalid and expired tokens (no leaking)', async () => {
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('jwt expired');
+      });
+      let expiredMessage: string | undefined;
+      try {
+        await service.verifyEmail('expired-token');
+      } catch (e) {
+        expiredMessage = (e as UnauthorizedException).message;
+      }
+
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('invalid signature');
+      });
+      let invalidMessage: string | undefined;
+      try {
+        await service.verifyEmail('tampered-token');
+      } catch (e) {
+        invalidMessage = (e as UnauthorizedException).message;
+      }
+
+      expect(expiredMessage).toBe(invalidMessage);
+    });
+  });
+
+  describe('resendVerification', () => {
+    const UNVERIFIED_USER = {
+      id: 'user-uuid',
+      email: 'user@example.com',
+      isEmailVerified: false,
+    };
+    const EXPECTED_RESPONSE = {
+      message:
+        'If your email is registered and unverified, a new verification email has been sent.',
+    };
+
+    beforeEach(() => {
+      mockPrisma.user.findUnique.mockResolvedValue(UNVERIFIED_USER);
+      mockJwtService.sign.mockReturnValue('mock-verification-token');
+    });
+
+    it('returns the same response regardless of outcome (prevents user enumeration)', async () => {
+      const resultFound = await service.resendVerification('user@example.com');
+      expect(resultFound).toEqual(EXPECTED_RESPONSE);
+
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      const resultNotFound = await service.resendVerification(
+        'unknown@example.com',
+      );
+      expect(resultNotFound).toEqual(EXPECTED_RESPONSE);
+    });
+
+    it('generates a verification token and sends an email for an unverified user', async () => {
+      await service.resendVerification('user@example.com');
+
+      expect(mockJwtService.sign).toHaveBeenCalledWith(
+        { sub: UNVERIFIED_USER.id, purpose: 'email-verification' },
+        { expiresIn: '24h' },
+      );
+      expect(mockEmailService.sendVerificationEmail).toHaveBeenCalledWith(
+        UNVERIFIED_USER.email,
+        'mock-verification-token',
+      );
+    });
+
+    it('does not send an email when user is already verified', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue({
+        ...UNVERIFIED_USER,
+        isEmailVerified: true,
+      });
+
+      await service.resendVerification('user@example.com');
+
+      expect(mockEmailService.sendVerificationEmail).not.toHaveBeenCalled();
+    });
+
+    it('does not send an email when email address is not registered', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      await service.resendVerification('unknown@example.com');
+
+      expect(mockEmailService.sendVerificationEmail).not.toHaveBeenCalled();
     });
   });
 });

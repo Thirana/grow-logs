@@ -9,7 +9,7 @@ The system consists of four primary components:
 - A Next.js frontend application served via Vercel
 - A NestJS REST API backend hosted on AWS ECS
 - A PostgreSQL database hosted on AWS RDS
-- AWS SES for transactional email delivery
+- Resend for transactional email delivery
 
 ---
 
@@ -27,7 +27,7 @@ User (Browser)
 [NestJS Backend - AWS ECS]
       |
       |--- PostgreSQL (AWS RDS)
-      |--- AWS SES (Email)
+      |--- Resend (Email)
 ```
 
 The frontend never talks directly to the database. All data access goes through the backend API. The backend is the single source of truth for all business logic and data validation.
@@ -103,7 +103,7 @@ NestJS Application
       |     Onboarding completion logic
       |
       |-- EmailModule
-      |     AWS SES integration and email templates
+      |     Resend integration and email templates
       |
       |-- FeatureFlagsModule
       |     Feature flag checks with 60 second in-memory caching

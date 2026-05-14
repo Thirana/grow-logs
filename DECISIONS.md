@@ -4,6 +4,16 @@ Every significant technical decision made during the design phase, with reasonin
 
 ---
 
+## Email Provider: Resend over AWS SES
+
+**Decision:** Use Resend for transactional email delivery instead of AWS SES.
+
+**Reasoning:** AWS SES was the original choice for cost efficiency at scale. However, SES requires significant setup overhead that is disproportionate for a project at MVP stage: sandbox mode exit approval, IAM role configuration, domain and sender identity verification, and AWS account prerequisites. Resend offers a far simpler integration (single API key, clean SDK), a free tier of 3,000 emails/month that comfortably covers early production usage, and no sandbox restrictions. The architecture is identical either way — `EmailModule` is a thin service with a single `sendVerificationEmail` method, so switching providers later requires changing only that service's internals and swapping one env var for two.
+
+**Migration path if needed:** Replace `resend` package with `@aws-sdk/client-ses`, rewrite `EmailService` send logic, swap `RESEND_API_KEY` for `AWS_REGION` + `AWS_SES_FROM_ADDRESS`. No other files change.
+
+---
+
 ## Token Strategy: Short-Lived JWT + Opaque Refresh Token with Rotation
 
 **Decision:** Use a two-token authentication scheme: a short-lived JWT access token (1 hour) paired with an opaque refresh token (7-day rolling window, stored hashed in the database). Each time the access token is refreshed, the old refresh token is invalidated and a new one is issued. If a refresh token that has already been rotated is presented again, all sessions for that user are immediately wiped.

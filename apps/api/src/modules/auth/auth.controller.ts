@@ -1,6 +1,26 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { loginSchema, registerSchema } from '@grow-logs/schemas';
-import type { LoginDto, RegisterDto } from '@grow-logs/schemas';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiConflictResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiBody,
+} from '@nestjs/swagger';
+import {
+  loginSchema,
+  registerSchema,
+  resendVerificationSchema,
+  verifyEmailSchema,
+} from '@grow-logs/schemas';
+import type {
+  LoginDto,
+  RegisterDto,
+  ResendVerificationDto,
+  VerifyEmailDto,
+} from '@grow-logs/schemas';
 import { ZodValidationPipe } from '../../common/pipes/index.js';
 import { AuthService, LoginResponse } from './auth.service.js';
 
@@ -10,12 +30,34 @@ import { AuthService, LoginResponse } from './auth.service.js';
  *
  * Delegates all business logic to AuthService.
  */
+@ApiTags('auth')
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Register a new user account' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['email', 'password'],
+      properties: {
+        email: { type: 'string', format: 'email', example: 'user@example.com' },
+        password: {
+          type: 'string',
+          minLength: 8,
+          example: 'SecurePass1!',
+          description: 'Must contain a number and a special character',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({
+    description: 'User registered — verification email sent',
+  })
+  @ApiConflictResponse({ description: 'Email already registered' })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
   async register(
     @Body(new ZodValidationPipe(registerSchema)) dto: RegisterDto,
   ): Promise<{ message: string }> {
@@ -24,9 +66,83 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Log in and receive a JWT access token' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['email', 'password'],
+      properties: {
+        email: { type: 'string', format: 'email', example: 'user@example.com' },
+        password: { type: 'string', example: 'SecurePass1!' },
+      },
+    },
+  })
+  @ApiOkResponse({
+    description: 'Login successful — returns access token and user profile',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid credentials or email not verified',
+  })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
   async login(
     @Body(new ZodValidationPipe(loginSchema)) dto: LoginDto,
   ): Promise<LoginResponse> {
     return this.authService.login(dto);
+  }
+
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Verify an email address using the token from the verification email',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['token'],
+      properties: {
+        token: {
+          type: 'string',
+          description: 'JWT emailed to the user on registration or resend',
+          example: 'eyJhbGci...',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Email verified — user can now log in' })
+  @ApiUnauthorizedResponse({ description: 'Token is invalid or expired' })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  async verifyEmail(
+    @Body(new ZodValidationPipe(verifyEmailSchema)) dto: VerifyEmailDto,
+  ): Promise<{ message: string }> {
+    return this.authService.verifyEmail(dto.token);
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Resend the verification email',
+    description:
+      'Always returns 200 regardless of whether the email is registered — prevents user enumeration.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['email'],
+      properties: {
+        email: { type: 'string', format: 'email', example: 'user@example.com' },
+      },
+    },
+  })
+  @ApiOkResponse({
+    description:
+      'Request acknowledged — if the email is registered and unverified a new link has been sent',
+  })
+  @ApiBadRequestResponse({ description: 'Validation failed' })
+  async resendVerification(
+    @Body(new ZodValidationPipe(resendVerificationSchema))
+    dto: ResendVerificationDto,
+  ): Promise<{ message: string }> {
+    return this.authService.resendVerification(dto.email);
   }
 }
