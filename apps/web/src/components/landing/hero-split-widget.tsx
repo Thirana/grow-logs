@@ -1,11 +1,24 @@
+'use client';
+
+import { useFadeCycle } from '@/hooks/use-hero-cycle';
+
 interface HeroSplitWidgetProps {
   className?: string;
 }
 
-const WORK_PCT = 58;
-const LEARN_PCT = 42;
+const SPLITS = [
+  { workPct: 58, learnPct: 42 },
+  { workPct: 43, learnPct: 57 },
+  { workPct: 65, learnPct: 35 },
+  { workPct: 52, learnPct: 48 },
+] as const;
+
+// Bar width transitions via CSS; percentage numbers fade out/in when the split changes.
+const BAR_TRANSITION = 'width 0.9s cubic-bezier(0.34, 1.2, 0.64, 1)';
 
 export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
+  const { current: split, visible } = useFadeCycle(SPLITS, 4200, 320);
+
   return (
     <div
       className={`rounded-xl border border-gl-border bg-gl-surface p-5 shadow-gl transition-all duration-[150ms] hover:-translate-y-0.5 hover:shadow-gl-lg ${className}`}
@@ -17,16 +30,23 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
       <div className="flex items-end justify-between gap-4">
         {/* Work */}
         <div className="flex-1">
-          <div className="mb-1.5 flex items-baseline gap-1.5">
+          <div
+            className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[320ms]"
+            style={{ opacity: visible ? 1 : 0 }}
+          >
             <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-work">
-              {WORK_PCT}%
+              {split.workPct}%
             </span>
             <span className="text-[11px] font-medium text-gl-text-muted">Work</span>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-gl-bg-subtle">
             <div
-              className="h-full rounded-full opacity-85 animate-expand-x"
-              style={{ width: `${WORK_PCT}%`, background: 'var(--gl-work-fg)' }}
+              className="h-full rounded-full opacity-85"
+              style={{
+                width: `${split.workPct}%`,
+                background: 'var(--gl-work-fg)',
+                transition: BAR_TRANSITION,
+              }}
             />
           </div>
         </div>
@@ -35,16 +55,23 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
 
         {/* Learning */}
         <div className="flex-1">
-          <div className="mb-1.5 flex items-baseline gap-1.5">
+          <div
+            className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[320ms]"
+            style={{ opacity: visible ? 1 : 0 }}
+          >
             <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-primary">
-              {LEARN_PCT}%
+              {split.learnPct}%
             </span>
             <span className="text-[11px] font-medium text-gl-text-muted">Learning</span>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-gl-bg-subtle">
             <div
-              className="h-full rounded-full opacity-90 animate-expand-x animation-delay-200"
-              style={{ width: `${LEARN_PCT}%`, background: 'var(--gl-primary)' }}
+              className="h-full rounded-full opacity-90"
+              style={{
+                width: `${split.learnPct}%`,
+                background: 'var(--gl-primary)',
+                transition: BAR_TRANSITION,
+              }}
             />
           </div>
         </div>
