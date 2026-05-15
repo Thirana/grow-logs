@@ -31,7 +31,7 @@ const ENTRIES: HeroEntry[] = [
     dayNum: '13', month: 'MAY', type: 'Learning',
     catName: 'Reading', catSub: 'DDIA', swatchColor: '#B87DA2',
     score: 7,
-    title: 'Chapter 4 — replication patterns.',
+    title: 'Chapter 4: replication patterns.',
     body: 'Conflict resolution finally clicked. Drew the quorum diagram from scratch to test my understanding, then wrote it up in Notion.',
   },
   {

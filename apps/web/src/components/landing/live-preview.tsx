@@ -6,6 +6,7 @@ import { StatsRow } from '@/components/dashboard/stats-row';
 import { CategoryChart } from '@/components/dashboard/category-chart';
 import { ActivityCard } from '@/components/dashboard/activity-card';
 import { RecentEntries } from '@/components/dashboard/recent-entries';
+import { FadeIn } from '@/components/common/fade-in';
 import {
   MOCK_STATS,
   MOCK_CATEGORIES,
@@ -17,16 +18,19 @@ export function LivePreview() {
   return (
     <section id="preview" className="py-12 sm:py-16 lg:py-20">
       {/* Section header */}
-      <div className="mx-auto mb-10 max-w-[680px] text-center">
-        <h2 className="mb-3.5 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
-          See it in <span className="text-gl-primary">action</span>.
-        </h2>
-        <p className="text-[17px] leading-[1.55] text-gl-text-muted text-pretty">
-          The real dashboard, embedded right here. Switch the chart tabs, filter the entries — it all works.
-        </p>
-      </div>
+      <FadeIn>
+        <div className="mx-auto mb-10 max-w-[680px] text-center">
+          <h2 className="mb-3.5 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
+            See it in <span className="text-gl-primary">action</span>.
+          </h2>
+          <p className="text-[17px] leading-[1.55] text-gl-text-muted text-pretty">
+            The real dashboard, embedded right here. Switch the chart tabs, filter the entries. It all works.
+          </p>
+        </div>
+      </FadeIn>
 
       {/* Preview window */}
+      <FadeIn delay={130}>
       <div className="relative overflow-hidden rounded-[18px] border border-gl-border bg-gl-bg-subtle shadow-gl-lg">
         {/* Chrome bar */}
         <div className="flex items-center justify-between border-b border-gl-border px-5 py-4">
@@ -77,6 +81,7 @@ export function LivePreview() {
           </GlButton>
         </Link>
       </div>
+      </FadeIn>
     </section>
   );
 }

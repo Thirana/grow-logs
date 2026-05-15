@@ -1,78 +1,98 @@
 import Link from 'next/link';
 import { GlButton } from '@/components/common/gl-button';
-import { IconArrow } from '@/components/common/icons';
+import { IconArrow, IconCheck } from '@/components/common/icons';
+import { FadeIn } from '@/components/common/fade-in';
 
-// Bar heights for the decorative bar-stack echoes
-const BARS_RIGHT = [40, 64, 28, 80, 52, 44, 96, 36] as const;
-const BARS_LEFT  = [32, 48, 20, 64] as const;
+const STAT_PILLS = [
+  { label: 'entries logged', value: '147', color: 'text-gl-primary' },
+  { label: 'day streak',     value: '9',   color: 'text-gl-warning' },
+  { label: 'avg score',      value: '7.4', color: 'text-gl-learn'   },
+] as const;
+
+const TRUST_BADGES = [
+  'Free forever for core features',
+  'No setup required',
+  'Built for developers',
+] as const;
 
 export function BottomCta() {
   return (
     <section className="py-12 sm:py-16 lg:pt-16 lg:pb-20">
-      <div className="relative overflow-hidden rounded-3xl border border-gl-border bg-gl-surface px-6 py-20 text-center sm:px-10">
+      <div className="relative overflow-hidden rounded-3xl border border-gl-border bg-gl-surface px-6 py-16 text-center sm:px-10 sm:py-20">
 
-        {/* Sage radial halo */}
+        {/* Sage radial halo — top and bottom for depth */}
         <div
           className="pointer-events-none absolute inset-0 z-0"
           style={{
-            background: `radial-gradient(50% 80% at 50% 0%, rgba(111, 200, 160, 0.10) 0%, transparent 70%)`,
+            background: `
+              radial-gradient(55% 70% at 50% 0%, rgba(111, 200, 160, 0.13) 0%, transparent 70%),
+              radial-gradient(40% 50% at 50% 100%, rgba(111, 200, 160, 0.07) 0%, transparent 70%)
+            `,
           }}
           aria-hidden="true"
         />
 
-        {/* Bar-stack echo — right bottom */}
-        <div
-          className="pointer-events-none absolute right-8 bottom-0 z-0 hidden items-end gap-1.5 opacity-[0.22] sm:flex"
-          aria-hidden="true"
-        >
-          {BARS_RIGHT.map((h, i) => (
-            <div
-              key={i}
-              className="w-3.5 rounded-sm"
-              style={{
-                height: h,
-                background: i === 3 ? 'var(--gl-primary)' : 'var(--gl-text)',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Bar-stack echo — left top (mirrored) */}
-        <div
-          className="pointer-events-none absolute left-8 top-0 z-0 hidden items-start gap-1.5 opacity-[0.14] sm:flex"
-          style={{ transform: 'scaleY(-1)' }}
-          aria-hidden="true"
-        >
-          {BARS_LEFT.map((h, i) => (
-            <div
-              key={i}
-              className="w-3.5 rounded-sm"
-              style={{ height: h, background: 'var(--gl-text)' }}
-            />
-          ))}
-        </div>
-
         {/* Content */}
-        <div className="relative z-10">
-          <h2 className="mx-auto mb-4 max-w-[760px] text-[38px] font-bold leading-[1.05] tracking-[-0.030em] text-gl-text text-balance sm:text-[48px] sm:tracking-[-0.032em] lg:text-[56px] lg:tracking-[-0.035em]">
-            Start building a record of your{' '}
-            <span className="text-gl-primary">growth</span>.
-          </h2>
+        <FadeIn>
+          <div className="relative z-10">
 
-          <p className="mx-auto mb-9 max-w-[560px] text-[17px] leading-[1.55] text-gl-text-muted sm:text-[18px]">
-            The best time to start was your first day of learning. The second best time is
-            today.
-          </p>
+            {/* Stat pills — preview of what you track */}
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-2.5">
+              {STAT_PILLS.map(({ label, value, color }) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center gap-2 rounded-full border border-gl-border bg-gl-surface-2 px-4 py-1.5"
+                >
+                  <span className={`font-mono text-[15px] font-bold tabular-nums ${color}`}>
+                    {value}
+                  </span>
+                  <span className="text-[12px] text-gl-text-muted">{label}</span>
+                </span>
+              ))}
+            </div>
 
-          <div className="flex flex-col items-center gap-3">
-            <Link href="/register" tabIndex={-1}>
-              <GlButton variant="primary" size="lg" trailing={<IconArrow />}>
-                Start for free
-              </GlButton>
-            </Link>
-            <span className="text-[12.5px] text-gl-text-faint">No credit card required</span>
+            {/* Heading */}
+            <h2 className="mx-auto mb-4 max-w-[700px] text-[38px] font-bold leading-[1.05] tracking-[-0.030em] text-gl-text text-balance sm:text-[48px] sm:tracking-[-0.032em] lg:text-[56px] lg:tracking-[-0.035em]">
+              Start building a record of your{' '}
+              <span className="text-gl-primary">growth</span>.
+            </h2>
+
+            {/* Subtext */}
+            <p className="mx-auto mb-9 max-w-[520px] text-[17px] leading-[1.55] text-gl-text-muted sm:text-[18px]">
+              The best time to start was your first day of learning. The second best time is today.
+            </p>
+
+            {/* CTA buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link href="/register" tabIndex={-1}>
+                <GlButton variant="primary" size="lg" trailing={<IconArrow />}>
+                  Start for free
+                </GlButton>
+              </Link>
+              <Link href="#how" tabIndex={-1}>
+                <GlButton variant="secondary" size="lg">
+                  See how it works
+                </GlButton>
+              </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5">
+              {TRUST_BADGES.map((badge) => (
+                <span
+                  key={badge}
+                  className="inline-flex items-center gap-2 text-[13px] font-medium text-gl-text-muted"
+                >
+                  <span className="inline-flex size-[18px] items-center justify-center rounded-full bg-gl-primary-soft text-gl-primary">
+                    <IconCheck size={11} />
+                  </span>
+                  {badge}
+                </span>
+              ))}
+            </div>
+
           </div>
-        </div>
+        </FadeIn>
       </div>
     </section>
   );

@@ -72,7 +72,7 @@ export const MOCK_ENTRIES: MockEntry[] = [
   {
     id: '2', day: '14', month: 'May', type: 'Learning',
     categoryName: 'Reading', subcategoryName: 'DDIA',
-    text: 'Chapter 4 — Designing Data-Intensive Applications. Replication patterns; conflict resolution figure finally clicked.',
+    text: 'Chapter 4: Designing Data-Intensive Applications. Replication patterns; conflict resolution figure finally clicked.',
     score: 7, swatchColor: '#B87DA2',
   },
   {
@@ -84,7 +84,7 @@ export const MOCK_ENTRIES: MockEntry[] = [
   {
     id: '4', day: '13', month: 'May', type: 'Learning',
     categoryName: 'System Design', subcategoryName: 'Caching',
-    text: 'Read up on cache stampedes — request coalescing, lock-and-refresh, probabilistic early expiration. Trade-offs make sense now.',
+    text: 'Read up on cache stampedes: request coalescing, lock-and-refresh, probabilistic early expiration. Trade-offs make sense now.',
     score: 6, swatchColor: '#8285BA',
   },
   {

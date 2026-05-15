@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { TypeBadge } from '@/components/common/type-badge';
 import { IconCheck, IconPen, IconFolder, IconChart } from '@/components/common/icons';
+import { FadeIn } from '@/components/common/fade-in';
 
 // ── Log preview ───────────────────────────────────────────────────────────────
 
@@ -208,7 +209,7 @@ const FEATURES: Feature[] = [
     icon: IconFolder,
     tab: 'Organise',
     title: 'Organised by your own categories.',
-    body: 'Define up to 5 main categories and their sub-categories — Backend, System Design, Soft Skills, whatever fits your journey. Every entry belongs somewhere meaningful.',
+    body: 'Define up to 5 main categories and their sub-categories: Backend, System Design, Soft Skills, whatever fits your journey. Every entry belongs somewhere meaningful.',
     bullets: [
       'Up to 5 custom top-level categories',
       'Sub-categories for precision without complexity',
@@ -263,17 +264,20 @@ export function FeaturesSection(): JSX.Element {
   return (
     <section id="features" className="py-12 sm:py-16 lg:py-20">
       {/* Header */}
-      <div className="mx-auto mb-8 max-w-[680px] text-center">
-        <h2 className="mb-3.5 text-[36px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
-          Everything you need to track your growth.
-        </h2>
-        <p className="text-[17px] leading-[1.55] text-gl-text-muted text-pretty">
-          One place for your work logs and your learning — structured, searchable, and always
-          there when you need it.
-        </p>
-      </div>
+      <FadeIn>
+        <div className="mx-auto mb-8 max-w-[680px] text-center">
+          <h2 className="mb-3.5 text-[36px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
+            Everything you need to track your growth.
+          </h2>
+          <p className="text-[17px] leading-[1.55] text-gl-text-muted text-pretty">
+            One place for your work logs and your learning, structured, searchable, and always
+            there when you need it.
+          </p>
+        </div>
+      </FadeIn>
 
       {/* Tab pills */}
+      <FadeIn delay={130}>
       <div className="mb-10 flex justify-center gap-2">
         {FEATURES.map(({ icon: Icon, tab }, i) => (
           <button
@@ -342,6 +346,7 @@ export function FeaturesSection(): JSX.Element {
           );
         })}
       </div>
+      </FadeIn>
     </section>
   );
 }

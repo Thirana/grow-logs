@@ -80,7 +80,7 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
           return (
             <span
               key={slotIndex}
-              className="flex cursor-default items-center justify-between gap-1.5 rounded-xl border border-gl-border bg-gl-surface-2 px-3 py-1.5 transition-all duration-[450ms] hover:-translate-y-0.5"
+              className={`cursor-default items-center justify-between gap-1.5 rounded-xl border border-gl-border bg-gl-surface-2 px-3 py-1.5 transition-all duration-[450ms] hover:-translate-y-0.5 ${slotIndex >= 4 ? 'hidden sm:flex' : 'flex'}`}
               style={{ opacity: isFading ? 0 : 1 }}
             >
               <span className="flex items-center gap-1.5 min-w-0">

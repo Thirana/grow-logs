@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { IconCalendar, IconBook, IconBriefcase } from '@/components/common/icons';
+import { FadeIn } from '@/components/common/fade-in';
 
 const PROBLEMS = [
   {
@@ -56,16 +57,19 @@ export function ProblemSection(): JSX.Element {
   return (
     <section id="problem" className="py-12 sm:py-16 lg:pt-16 lg:pb-8">
       {/* Header */}
-      <div className="mx-auto mb-10 max-w-[640px] text-center">
-        <h2 className="mb-3.5 text-[36px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
-          Sound familiar?
-        </h2>
-        <p className="text-[17px] leading-[1.55] text-gl-text-muted">
-          A few frustrations every learner and engineer eventually runs into.
-        </p>
-      </div>
+      <FadeIn>
+        <div className="mx-auto mb-10 max-w-[640px] text-center">
+          <h2 className="mb-3.5 text-[36px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
+            Sound familiar?
+          </h2>
+          <p className="text-[17px] leading-[1.55] text-gl-text-muted">
+            A few frustrations every learner and engineer eventually runs into.
+          </p>
+        </div>
+      </FadeIn>
 
       {/* Cards */}
+      <FadeIn delay={130}>
       <div className="relative">
         <div
           ref={scrollRef}
@@ -118,6 +122,7 @@ export function ProblemSection(): JSX.Element {
           />
         ))}
       </div>
+      </FadeIn>
     </section>
   );
 }

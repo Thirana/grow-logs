@@ -24,13 +24,13 @@ const HERO_ENTRIES = [
   {
     day: '14', month: 'MAY', type: 'Work' as const,
     catName: 'Backend', swatchColor: '#6FC8A0',
-    text: 'Refactored auth into a single guard — test surface dropped by half.',
+    text: 'Refactored auth into a single guard. Test surface dropped by half.',
     score: 8,
   },
   {
     day: '14', month: 'MAY', type: 'Learning' as const,
     catName: 'Reading', swatchColor: '#BFA8E5',
-    text: 'Chapter 4 — DDIA. Replication patterns; conflict resolution finally clicked.',
+    text: 'Chapter 4: DDIA. Replication patterns; conflict resolution finally clicked.',
     score: 7,
   },
   {

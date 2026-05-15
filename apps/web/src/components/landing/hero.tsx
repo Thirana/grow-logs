@@ -42,7 +42,7 @@ export function Hero() {
       {/* Subtitle */}
       <p className="mx-auto mb-10 max-w-[620px] text-[17px] leading-[1.55] text-gl-text-muted text-pretty sm:text-[20px]">
         Grow Logs is a daily logging tool for developers and self-learners. Track your work
-        and learning, organised by your own categories — so your progress is always visible
+        and learning, organised by your own categories, so your progress is always visible
         and never lost.
       </p>
 
