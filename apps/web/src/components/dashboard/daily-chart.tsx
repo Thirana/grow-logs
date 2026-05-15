@@ -73,7 +73,7 @@ export function DailyChart({ data }: DailyChartProps){
                   style={{ height: `${wh}%`, opacity: 0.85 }}
                 />
                 <div
-                  className="flex-1 rounded-t-[2px] bg-gl-primary"
+                  className="flex-1 rounded-t-[2px] bg-gl-learn"
                   style={{ height: `${lh}%`, opacity: 0.95 }}
                 />
               </div>
@@ -112,7 +112,7 @@ export function DailyChart({ data }: DailyChartProps){
               {tooltip.workCount} Work
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-[7px] rounded-full bg-gl-primary" aria-hidden="true" />
+              <span className="size-[7px] rounded-full bg-gl-learn" aria-hidden="true" />
               {tooltip.learnCount} Learning
             </span>
           </div>

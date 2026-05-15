@@ -28,19 +28,18 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps){
   return (
     <div className="mb-4 rounded-xl border border-gl-border bg-gl-surface shadow-gl">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gl-border px-[22px] py-[18px]">
-        <h2 className="text-[17px] font-bold leading-snug tracking-[-0.015em] text-gl-text">
-          Recent entries
-        </h2>
-
-        <div className="flex items-center gap-3">
-          {/* Filter pills */}
+      <div className="border-b border-gl-border px-4 py-3.5 sm:px-[22px] sm:py-[18px]">
+        {/* Mobile: title row */}
+        <div className="flex items-center justify-between gap-2 sm:hidden">
+          <h2 className="text-[16px] font-bold leading-snug tracking-[-0.015em] text-gl-text">
+            Recent entries
+          </h2>
           <div className="flex gap-0.5 rounded-lg border border-gl-border bg-gl-bg-subtle p-[3px]">
             {FILTER_LABELS.map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`rounded-[7px] px-3 py-1.5 text-[12.5px] font-medium transition-colors duration-[120ms] ${
+                className={`rounded-[6px] px-2.5 py-1 text-[11.5px] font-medium transition-colors duration-[120ms] ${
                   filter === key
                     ? 'bg-gl-primary-soft font-semibold text-gl-primary'
                     : 'text-gl-text-muted hover:text-gl-text'
@@ -50,14 +49,36 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps){
               </button>
             ))}
           </div>
+        </div>
 
-          {/* View all */}
-          <a
-            href="#"
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-gl-primary hover:text-gl-primary-hover whitespace-nowrap"
-          >
-            View all <IconArrowRight size={12} />
-          </a>
+        {/* Desktop: single row */}
+        <div className="hidden sm:flex items-center justify-between">
+          <h2 className="text-[17px] font-bold leading-snug tracking-[-0.015em] text-gl-text">
+            Recent entries
+          </h2>
+          <div className="flex items-center gap-3">
+            <div className="flex gap-0.5 rounded-lg border border-gl-border bg-gl-bg-subtle p-[3px]">
+              {FILTER_LABELS.map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setFilter(key)}
+                  className={`rounded-[7px] px-3 py-1.5 text-[12.5px] font-medium transition-colors duration-[120ms] ${
+                    filter === key
+                      ? 'bg-gl-primary-soft font-semibold text-gl-primary'
+                      : 'text-gl-text-muted hover:text-gl-text'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <a
+              href="#"
+              className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-gl-primary hover:text-gl-primary-hover whitespace-nowrap"
+            >
+              View all <IconArrowRight size={12} />
+            </a>
+          </div>
         </div>
       </div>
 

@@ -28,8 +28,8 @@ const PERIODS: { key: Period; label: string }[] = [
 const DEFAULT_STREAK = 9;
 const DEFAULT_DATE = 'Thursday, 15 May';
 const DEFAULT_TODAY_CATEGORIES: TodayCategory[] = [
-  { name: 'Backend', swatchColor: '#6FC8A0' },
-  { name: 'Reading', swatchColor: '#BFA8E5' },
+  { name: 'Backend', swatchColor: '#69B598' },
+  { name: 'Reading', swatchColor: '#B87DA2' },
 ];
 
 export function TopBar({

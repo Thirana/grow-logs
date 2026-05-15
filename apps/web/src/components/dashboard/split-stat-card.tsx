@@ -19,7 +19,7 @@ export function SplitStatCard({ workPct, learnPct, className }: SplitStatCardPro
           <div className="mt-1 text-[11px] text-gl-text-muted">Work</div>
         </div>
         <div className="text-right">
-          <div className="font-mono text-[24px] font-bold leading-none tabular-nums text-gl-primary">
+          <div className="font-mono text-[24px] font-bold leading-none tabular-nums text-gl-learn">
             {learnPct}%
           </div>
           <div className="mt-1 text-[11px] text-gl-text-muted">Learning</div>
@@ -32,7 +32,7 @@ export function SplitStatCard({ workPct, learnPct, className }: SplitStatCardPro
           style={{ width: `${workPct}%`, opacity: 0.85 }}
         />
         <div
-          className="bg-gl-primary"
+          className="bg-gl-learn"
           style={{ width: `${learnPct}%`, opacity: 0.95 }}
         />
       </div>

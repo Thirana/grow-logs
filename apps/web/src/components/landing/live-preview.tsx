@@ -35,11 +35,18 @@ export function LivePreview() {
             <span className="text-[13px] font-bold leading-none tracking-[-0.01em] text-gl-text">
               Dashboard
             </span>
-            <span className="ml-1.5 font-mono text-[11px] text-gl-text-faint">live · click around</span>
+            <span className="ml-1.5 inline-flex items-center gap-1.5">
+              <span className="relative inline-flex size-1.5">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-gl-primary opacity-60" />
+                <span className="relative inline-flex size-1.5 rounded-full bg-gl-primary" />
+              </span>
+              <span className="font-mono text-[11px] font-semibold text-gl-primary">live</span>
+              <span className="font-mono text-[11px] text-gl-text-faint">· click around</span>
+            </span>
           </div>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-gl-primary hover:text-gl-primary-hover whitespace-nowrap"
+            className="hidden sm:inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-gl-primary hover:text-gl-primary-hover whitespace-nowrap"
           >
             Open full dashboard <IconArrowRight size={12} />
           </Link>

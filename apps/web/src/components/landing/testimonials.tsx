@@ -1,5 +1,5 @@
 
-const SWATCHES = ['#6FC8A0', '#7C8FE0', '#BFA8E5'] as const;
+const SWATCHES = ['#69B598', '#8285BA', '#B87DA2'] as const;
 
 const QUOTES = [
   {
