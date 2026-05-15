@@ -306,6 +306,13 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Larger lift for big headlines — more visual weight than gl-fade-up */
+@keyframes gl-fade-up-lg {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
 @keyframes gl-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -346,6 +353,10 @@
   .animate-fade-up {
     animation: gl-fade-up 0.4s ease both;
   }
+  .animate-fade-up-lg {
+    animation: gl-fade-up-lg 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
   .animate-fade-in {
     animation: gl-fade-in 0.25s ease both;
   }
@@ -373,6 +384,8 @@
   .animation-delay-400 { animation-delay: 400ms; }
   .animation-delay-500 { animation-delay: 500ms; }
   .animation-delay-600 { animation-delay: 600ms; }
+  .animation-delay-700 { animation-delay: 700ms; }
+  .animation-delay-800 { animation-delay: 800ms; }
 
   /* No scrollbar — used on sidebar overflow */
   .no-scrollbar::-webkit-scrollbar { display: none; }

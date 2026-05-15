@@ -23,12 +23,19 @@ export function Hero() {
         <IconArrow size={12} className="text-gl-text-muted" />
       </div>
 
-      {/* H1 */}
-      <h1 className="mx-auto mb-6 max-w-[820px] text-[52px] font-bold leading-[1.02] tracking-[-0.035em] text-gl-text text-balance sm:text-[64px] lg:text-[78px]">
-        Never forget what
+      {/* H1 — three-beat reveal: line 1 → line 2 → "built" stamps in */}
+      <h1 className="mx-auto mb-6 max-w-[820px] text-[52px] font-bold leading-[1.02] tracking-[-0.035em] text-gl-text sm:text-[64px] lg:text-[78px]">
+        <span className="inline-block animate-fade-up-lg">
+          <span className="bg-gradient-to-r from-[#E0AE52] to-[#F5CC60] bg-clip-text text-transparent">
+            Never forget
+          </span>
+          {' '}what
+        </span>
         <br />
-        you learned or{' '}
-        <span className="text-gl-primary">built</span>.
+        <span className="inline-block animate-fade-up-lg animation-delay-500">
+          you learned or{' '}
+          <span className="text-gl-primary animate-scale-in animation-delay-800">built</span>.
+        </span>
       </h1>
 
       {/* Subtitle */}

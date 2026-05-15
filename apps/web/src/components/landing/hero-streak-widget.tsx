@@ -9,7 +9,7 @@ interface HeroStreakWidgetProps {
 const STREAKS = [7, 9, 12, 15] as const;
 
 export function HeroStreakWidget({ className = '' }: HeroStreakWidgetProps) {
-  const { current: streak, visible } = useFadeCycle(STREAKS, 3800, 300);
+  const { current: streak, visible } = useFadeCycle(STREAKS, 5500, 500);
 
   return (
     <div
@@ -20,7 +20,7 @@ export function HeroStreakWidget({ className = '' }: HeroStreakWidgetProps) {
       </p>
 
       <span
-        className="my-1 text-[52px] font-bold leading-none tabular-nums text-gl-warning transition-opacity duration-[300ms]"
+        className="my-1 text-[52px] font-bold leading-none tabular-nums text-gl-warning transition-opacity duration-[500ms]"
         style={{ opacity: visible ? 1 : 0 }}
       >
         {streak}

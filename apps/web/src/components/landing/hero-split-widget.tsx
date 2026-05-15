@@ -14,10 +14,10 @@ const SPLITS = [
 ] as const;
 
 // Bar width transitions via CSS; percentage numbers fade out/in when the split changes.
-const BAR_TRANSITION = 'width 0.9s cubic-bezier(0.34, 1.2, 0.64, 1)';
+const BAR_TRANSITION = 'width 1.4s cubic-bezier(0.34, 1.2, 0.64, 1)';
 
 export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
-  const { current: split, visible } = useFadeCycle(SPLITS, 4200, 320);
+  const { current: split, visible } = useFadeCycle(SPLITS, 6500, 500);
 
   return (
     <div
@@ -31,7 +31,7 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
         {/* Work */}
         <div className="flex-1">
           <div
-            className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[320ms]"
+            className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[500ms]"
             style={{ opacity: visible ? 1 : 0 }}
           >
             <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-work">
@@ -56,7 +56,7 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
         {/* Learning */}
         <div className="flex-1">
           <div
-            className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[320ms]"
+            className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[500ms]"
             style={{ opacity: visible ? 1 : 0 }}
           >
             <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-primary">

@@ -16,8 +16,8 @@ const CATEGORY_POOL = [
 ] as const;
 
 const SLOT_COUNT = 4; // number of pills always visible
-const SWAP_INTERVAL_MS = 2600;
-const FADE_MS = 280;
+const SWAP_INTERVAL_MS = 4000;
+const FADE_MS = 450;
 
 export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetProps) {
   // Each slot holds an index into CATEGORY_POOL. Layout stays stable (always SLOT_COUNT pills).
@@ -83,7 +83,7 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
             // so only opacity changes, not a full remount
             <span
               key={slotIndex}
-              className="inline-flex cursor-default items-center gap-1.5 rounded-full border border-gl-border bg-gl-surface-2 px-3 py-1.5 text-[12.5px] font-medium text-gl-text transition-all duration-[280ms] hover:-translate-y-0.5"
+              className="inline-flex cursor-default items-center gap-1.5 rounded-full border border-gl-border bg-gl-surface-2 px-3 py-1.5 text-[12.5px] font-medium text-gl-text transition-all duration-[450ms] hover:-translate-y-0.5"
               style={{ opacity: isFading ? 0 : 1 }}
             >
               <span

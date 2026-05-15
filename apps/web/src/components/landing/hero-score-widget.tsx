@@ -18,7 +18,7 @@ const SCORES = [7.4, 8.1, 6.9, 9.2] as const;
 
 export function HeroScoreWidget({ className = '' }: HeroScoreWidgetProps) {
   // Cycle the displayed score number with a fade; the arc transitions via CSS.
-  const { current: score, visible } = useFadeCycle(SCORES, 4000, 280);
+  const { current: score, visible } = useFadeCycle(SCORES, 6000, 480);
   const dashOffset = computeDashOffset(score);
 
   return (
@@ -51,13 +51,13 @@ export function HeroScoreWidget({ className = '' }: HeroScoreWidgetProps) {
             strokeDasharray={ARC_LENGTH}
             strokeDashoffset={dashOffset}
             transform="rotate(135 50 50)"
-            style={{ transition: 'stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1)' }}
+            style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(0.22, 1, 0.36, 1)' }}
           />
         </svg>
 
         {/* Center label — fades with the score cycle */}
         <div
-          className="absolute flex flex-col items-center transition-opacity duration-[280ms]"
+          className="absolute flex flex-col items-center transition-opacity duration-[480ms]"
           style={{ opacity: visible ? 1 : 0 }}
         >
           <span className="text-[24px] font-bold leading-none tabular-nums text-gl-text">

@@ -44,9 +44,9 @@ const ENTRIES: HeroEntry[] = [
 ];
 
 // Timing constants — tweak here to adjust the feel globally
-const CHAR_DELAY_MS = 16;   // ms per typed character
-const READ_PAUSE_MS = 2400;  // ms to hold after typing finishes
-const FADE_MS = 360;         // ms for fade-out before swapping entry (must match CSS duration)
+const CHAR_DELAY_MS = 24;   // ms per typed character
+const READ_PAUSE_MS = 3500;  // ms to hold after typing finishes
+const FADE_MS = 600;         // ms for fade-out before swapping entry (must match CSS duration)
 
 export function HeroEntryCard() {
   const [entryIndex, setEntryIndex] = useState(0);
