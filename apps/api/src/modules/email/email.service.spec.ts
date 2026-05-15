@@ -28,6 +28,7 @@ describe('EmailService', () => {
   let service: EmailService;
   let mockSend: jest.Mock;
   let logSpy: jest.SpyInstance;
+  let errorSpy: jest.SpyInstance;
 
   const buildService = async (
     configOverrides: Record<string, unknown> = {},
@@ -52,6 +53,9 @@ describe('EmailService', () => {
     service = await buildService();
     logSpy = jest
       .spyOn(Logger.prototype, 'log')
+      .mockImplementation(() => undefined);
+    errorSpy = jest
+      .spyOn(Logger.prototype, 'error')
       .mockImplementation(() => undefined);
   });
 
@@ -112,7 +116,7 @@ describe('EmailService', () => {
       );
     });
 
-    it('throws InternalServerErrorException when Resend returns an error', async () => {
+    it('logs the error and throws InternalServerErrorException when Resend returns an error', async () => {
       mockSend.mockResolvedValue({
         data: null,
         error: { message: 'Invalid API key' },
@@ -121,6 +125,9 @@ describe('EmailService', () => {
       await expect(
         service.sendVerificationEmail('user@example.com', 'prod-token'),
       ).rejects.toThrow(InternalServerErrorException);
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Invalid API key'),
+      );
     });
 
     it('does not log the dev URL in production mode', async () => {

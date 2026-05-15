@@ -50,6 +50,7 @@ model Category {
   id        String   @id @default(uuid())
   userId    String
   name      String
+  color     String   @default("#69B598") @db.VarChar(7)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

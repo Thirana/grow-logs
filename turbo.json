@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/types/**"]
     },
     "dev": {
       "cache": false,
@@ -19,6 +19,10 @@
       "dependsOn": ["^build"]
     },
     "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "test:ci": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
     }

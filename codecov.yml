@@ -11,13 +11,29 @@ coverage:
         target: 50%
         threshold: 5%
 
+flags:
+  api:
+    paths:
+      - apps/api/src/
+    carryforward: false
+  web:
+    paths:
+      - apps/web/src/
+    carryforward: false
+
 comment:
   layout: "reach,diff,flags,tree"
   behavior: default
   require_changes: true # only post a comment if coverage changed
 
 ignore:
+  # API
   - "apps/api/src/main.ts"
   - "apps/api/prisma/**"
   - "apps/api/test/**"
   - "apps/api/dist/**"
+  # Web
+  - "apps/web/src/app/**"
+  - "apps/web/src/components/ui/**"
+  - "apps/web/src/test/**"
+  - "apps/web/.next/**"
