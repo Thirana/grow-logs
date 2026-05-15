@@ -11,18 +11,9 @@ const glButtonVariants = cva(
   {
     variants: {
       variant: {
-        primary: [
-          'bg-gl-primary/[0.16] text-gl-primary',
-          'hover:bg-gl-primary/[0.24]',
-        ],
-        secondary: [
-          'bg-gl-text/[0.06] text-gl-text',
-          'hover:bg-gl-text/[0.10]',
-        ],
-        ghost: [
-          'bg-transparent text-gl-text-muted',
-          'hover:bg-gl-text/[0.05] hover:text-gl-text',
-        ],
+        primary: ['bg-gl-primary/[0.16] text-gl-primary', 'hover:bg-gl-primary/[0.24]'],
+        secondary: ['bg-gl-text/[0.06] text-gl-text', 'hover:bg-gl-text/[0.10]'],
+        ghost: ['bg-transparent text-gl-text-muted', 'hover:bg-gl-text/[0.05] hover:text-gl-text'],
       },
       size: {
         sm: 'gap-1.5 rounded-lg px-3 py-1.5 text-[13px]',
@@ -38,8 +29,7 @@ const glButtonVariants = cva(
 );
 
 interface GlButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof glButtonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof glButtonVariants> {
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
 }

@@ -19,7 +19,7 @@ export function useFadeCycle<T>(
     const interval = setInterval(() => {
       setVisible(false);
       fadeTimerRef.current = setTimeout(() => {
-        setIndex(i => (i + 1) % items.length);
+        setIndex((i) => (i + 1) % items.length);
         setVisible(true);
       }, fadeMs);
     }, displayMs);
@@ -41,6 +41,7 @@ export function useTypewriter(text: string, charDelayMs = 16): string {
   const [displayed, setDisplayed] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDisplayed('');
     if (!text) return;
 

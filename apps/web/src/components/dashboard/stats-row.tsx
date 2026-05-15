@@ -6,14 +6,10 @@ interface StatsRowProps {
   stats: DashboardStats;
 }
 
-export function StatsRow({ stats }: StatsRowProps){
+export function StatsRow({ stats }: StatsRowProps) {
   return (
     <div className="mb-4 grid grid-cols-2 gap-3.5 lg:grid-cols-5">
-      <StatCard
-        label="Total entries"
-        value={stats.totalEntries}
-        sub="since you started"
-      />
+      <StatCard label="Total entries" value={stats.totalEntries} sub="since you started" />
       <StatCard
         label="This week"
         value={stats.thisWeek}

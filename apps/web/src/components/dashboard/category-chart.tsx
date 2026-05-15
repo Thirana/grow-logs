@@ -4,7 +4,7 @@ interface CategoryChartProps {
   categories: MockCategory[];
 }
 
-export function CategoryChart({ categories }: CategoryChartProps){
+export function CategoryChart({ categories }: CategoryChartProps) {
   const max = Math.max(...categories.map((c) => c.entryCount), 1);
 
   return (
@@ -17,7 +17,7 @@ export function CategoryChart({ categories }: CategoryChartProps){
         >
           {/* Label */}
           <div>
-            <div className="flex items-center gap-2 text-[13px] font-semibold leading-snug text-gl-text">
+            <div className="text-gl-text flex items-center gap-2 text-[13px] leading-snug font-semibold">
               <span
                 className="size-[9px] shrink-0 rounded-full"
                 style={{ background: c.swatchColor }}
@@ -25,13 +25,13 @@ export function CategoryChart({ categories }: CategoryChartProps){
               />
               {c.name}
             </div>
-            <div className="mt-1 font-mono text-[11px] text-gl-text-faint">
+            <div className="text-gl-text-faint mt-1 font-mono text-[11px]">
               avg {c.avgScore.toFixed(1)}/10
             </div>
           </div>
 
           {/* Bar */}
-          <div className="relative h-[26px] overflow-hidden rounded-lg bg-gl-bg-subtle">
+          <div className="bg-gl-bg-subtle relative h-[26px] overflow-hidden rounded-lg">
             <div
               className="h-full"
               style={{
@@ -43,7 +43,7 @@ export function CategoryChart({ categories }: CategoryChartProps){
           </div>
 
           {/* Count */}
-          <div className="text-right font-mono text-[13px] font-semibold tabular-nums text-gl-text">
+          <div className="text-gl-text text-right font-mono text-[13px] font-semibold tabular-nums">
             {c.entryCount}
           </div>
         </div>

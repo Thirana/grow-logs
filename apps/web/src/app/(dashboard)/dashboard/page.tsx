@@ -14,7 +14,7 @@ export const metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="flex min-h-screen bg-gl-bg text-gl-text">
+    <div className="bg-gl-bg text-gl-text flex min-h-screen">
       {/* Sidebar — hidden on mobile, visible on large screens */}
       <div className="hidden lg:block">
         <Sidebar categories={MOCK_CATEGORIES} />

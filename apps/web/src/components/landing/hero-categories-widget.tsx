@@ -1,21 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 
 interface HeroCategoriesWidgetProps {
   className?: string;
 }
 
 const CATEGORY_POOL = [
-  { name: 'Backend',       count: 38, swatchColor: '#69B598' },
+  { name: 'Backend', count: 38, swatchColor: '#69B598' },
   { name: 'System Design', count: 24, swatchColor: '#8285BA' },
-  { name: 'Reading',       count: 22, swatchColor: '#B87DA2' },
-  { name: 'Side Project',  count: 19, swatchColor: '#C4A05E' },
-  { name: 'Soft Skills',   count: 15, swatchColor: '#62AEBF' },
-  { name: 'Open Source',   count: 11, swatchColor: '#B87060' },
-  { name: 'Architecture',  count: 9,  swatchColor: '#8285BA' },
-  { name: 'DevOps',        count: 7,  swatchColor: '#69B598' },
-  { name: 'Testing',       count: 5,  swatchColor: '#C4A05E' },
+  { name: 'Reading', count: 22, swatchColor: '#B87DA2' },
+  { name: 'Side Project', count: 19, swatchColor: '#C4A05E' },
+  { name: 'Soft Skills', count: 15, swatchColor: '#62AEBF' },
+  { name: 'Open Source', count: 11, swatchColor: '#B87060' },
+  { name: 'Architecture', count: 9, swatchColor: '#8285BA' },
+  { name: 'DevOps', count: 7, swatchColor: '#69B598' },
+  { name: 'Testing', count: 5, swatchColor: '#C4A05E' },
 ] as const;
 
 const SLOT_COUNT = 6;
@@ -29,16 +29,16 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
   const [fadingSlot, setFadingSlot] = useState<number | null>(null);
 
   const slotsRef = useRef(slots);
-  slotsRef.current = slots;
+  useLayoutEffect(() => {
+    slotsRef.current = slots;
+  }, [slots]);
 
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const current = slotsRef.current;
-      const hidden = CATEGORY_POOL
-        .map((_, i) => i)
-        .filter(i => !current.includes(i));
+      const hidden = CATEGORY_POOL.map((_, i) => i).filter((i) => !current.includes(i));
 
       if (hidden.length === 0) return;
 
@@ -48,7 +48,7 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
       setFadingSlot(slotToChange);
 
       fadeTimerRef.current = setTimeout(() => {
-        setSlots(prev => {
+        setSlots((prev) => {
           const next = [...prev];
           next[slotToChange] = newCatIndex;
           return next;
@@ -65,9 +65,9 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
 
   return (
     <div
-      className={`rounded-xl border border-gl-border bg-gl-surface p-5 shadow-gl transition-all duration-[150ms] hover:-translate-y-0.5 hover:shadow-gl-lg ${className}`}
+      className={`border-gl-border bg-gl-surface shadow-gl hover:shadow-gl-lg rounded-xl border p-5 transition-all duration-[150ms] hover:-translate-y-0.5 ${className}`}
     >
-      <p className="mb-3.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gl-text-faint">
+      <p className="text-gl-text-faint mb-3.5 text-[10px] font-bold tracking-[0.12em] uppercase">
         Top categories
       </p>
 
@@ -80,20 +80,18 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
           return (
             <span
               key={slotIndex}
-              className={`cursor-default items-center justify-between gap-1.5 rounded-xl border border-gl-border bg-gl-surface-2 px-3 py-1.5 transition-all duration-[450ms] hover:-translate-y-0.5 ${slotIndex >= 4 ? 'hidden sm:flex' : 'flex'}`}
+              className={`border-gl-border bg-gl-surface-2 cursor-default items-center justify-between gap-1.5 rounded-xl border px-3 py-1.5 transition-all duration-[450ms] hover:-translate-y-0.5 ${slotIndex >= 4 ? 'hidden sm:flex' : 'flex'}`}
               style={{ opacity: isFading ? 0 : 1 }}
             >
-              <span className="flex items-center gap-1.5 min-w-0">
+              <span className="flex min-w-0 items-center gap-1.5">
                 <span
                   className="size-2 shrink-0 rounded-full"
                   style={{ background: cat.swatchColor }}
                   aria-hidden="true"
                 />
-                <span className="truncate text-[12.5px] font-medium text-gl-text">
-                  {cat.name}
-                </span>
+                <span className="text-gl-text truncate text-[12.5px] font-medium">{cat.name}</span>
               </span>
-              <span className="ml-1 shrink-0 font-mono text-[10.5px] tabular-nums text-gl-text-faint">
+              <span className="text-gl-text-faint ml-1 shrink-0 font-mono text-[10.5px] tabular-nums">
                 {cat.count}
               </span>
             </span>

@@ -10,7 +10,7 @@ import { Footer } from '@/components/landing/footer';
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-gl-bg text-gl-text">
+    <div className="bg-gl-bg text-gl-text relative min-h-screen overflow-x-hidden">
       {/* Full-width sage + cream halo behind the nav and hero */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[1100px]"

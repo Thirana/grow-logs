@@ -13,7 +13,7 @@ export function TypeBadge({ type, className }: TypeBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap leading-none tracking-[0.01em]',
+        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] leading-none font-semibold tracking-[0.01em] whitespace-nowrap',
         isWork ? 'bg-gl-work-bg text-gl-work' : 'bg-gl-learn-bg text-gl-learn',
         className,
       )}

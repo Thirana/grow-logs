@@ -36,25 +36,18 @@ export function Nav() {
     <header
       className={cn(
         'sticky top-0 z-50 transition-all duration-300',
-        scrolled
-          ? 'border-b border-gl-border bg-gl-bg/80 backdrop-blur-2xl'
-          : 'bg-transparent',
+        scrolled ? 'border-gl-border bg-gl-bg/80 border-b backdrop-blur-2xl' : 'bg-transparent',
       )}
     >
-      <nav
-        className="flex items-center justify-between py-5 md:py-6"
-        aria-label="Main navigation"
-      >
+      <nav className="flex items-center justify-between py-5 md:py-6" aria-label="Main navigation">
         {/* Logo + wordmark */}
         <Link
           href="/"
-          className="group flex items-center gap-2.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-gl-primary"
+          className="group focus-visible:ring-gl-primary flex items-center gap-2.5 rounded-lg outline-none focus-visible:ring-2"
           aria-label="Grow Logs home"
         >
           <Logo size={22} />
-          <span className="text-[17px] font-bold tracking-[-0.015em] text-gl-text">
-            Grow Logs
-          </span>
+          <span className="text-gl-text text-[17px] font-bold tracking-[-0.015em]">Grow Logs</span>
         </Link>
 
         {/* Desktop nav links */}
@@ -64,7 +57,7 @@ export function Nav() {
               key={link.href}
               href={link.href}
               role="listitem"
-              className="rounded-lg px-3 py-2 text-[14px] font-medium text-gl-text-muted transition-colors duration-150 hover:text-gl-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gl-primary"
+              className="text-gl-text-muted hover:text-gl-text focus-visible:ring-gl-primary rounded-lg px-3 py-2 text-[14px] font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none"
             >
               {link.label}
             </a>
@@ -73,10 +66,10 @@ export function Nav() {
 
         {/* Desktop actions */}
         <div className="hidden items-center gap-1 md:flex">
-          <span className="mx-2 h-[18px] w-px bg-gl-border" aria-hidden="true" />
+          <span className="bg-gl-border mx-2 h-[18px] w-px" aria-hidden="true" />
           <Link
             href="/login"
-            className="rounded-lg px-3 py-2 text-[14px] font-semibold text-gl-text transition-colors duration-150 hover:text-gl-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gl-primary"
+            className="text-gl-text hover:text-gl-primary focus-visible:ring-gl-primary rounded-lg px-3 py-2 text-[14px] font-semibold transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none"
           >
             Log in
           </Link>
@@ -90,7 +83,7 @@ export function Nav() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMobileOpen((v) => !v)}
-          className="flex items-center justify-center rounded-lg p-2 text-gl-text-muted transition-colors hover:text-gl-text md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gl-primary"
+          className="text-gl-text-muted hover:text-gl-text focus-visible:ring-gl-primary flex items-center justify-center rounded-lg p-2 transition-colors focus-visible:ring-2 focus-visible:outline-none md:hidden"
           aria-expanded={mobileOpen}
           aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
         >
@@ -106,22 +99,22 @@ export function Nav() {
         )}
         aria-hidden={!mobileOpen}
       >
-        <div className="flex flex-col gap-1 border-t border-gl-border py-4">
+        <div className="border-gl-border flex flex-col gap-1 border-t py-4">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-gl-text-muted transition-colors hover:bg-gl-surface hover:text-gl-text"
+              className="text-gl-text-muted hover:bg-gl-surface hover:text-gl-text rounded-lg px-3 py-2.5 text-[15px] font-medium transition-colors"
             >
               {link.label}
             </a>
           ))}
-          <div className="mt-3 flex flex-col gap-2 pt-3 border-t border-gl-border">
+          <div className="border-gl-border mt-3 flex flex-col gap-2 border-t pt-3">
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-[15px] font-semibold text-gl-text transition-colors hover:bg-gl-surface"
+              className="text-gl-text hover:bg-gl-surface rounded-lg px-3 py-2.5 text-[15px] font-semibold transition-colors"
             >
               Log in
             </Link>

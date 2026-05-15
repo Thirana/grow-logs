@@ -21,9 +21,9 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
 
   return (
     <div
-      className={`rounded-xl border border-gl-border bg-gl-surface p-5 shadow-gl transition-all duration-[150ms] hover:-translate-y-0.5 hover:shadow-gl-lg ${className}`}
+      className={`border-gl-border bg-gl-surface shadow-gl hover:shadow-gl-lg rounded-xl border p-5 transition-all duration-[150ms] hover:-translate-y-0.5 ${className}`}
     >
-      <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.12em] text-gl-text-faint">
+      <p className="text-gl-text-faint mb-4 text-[10px] font-bold tracking-[0.12em] uppercase">
         Activity split · this month
       </p>
 
@@ -34,12 +34,12 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
             className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[500ms]"
             style={{ opacity: visible ? 1 : 0 }}
           >
-            <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-work">
+            <span className="text-gl-work font-mono text-[28px] leading-none font-bold tabular-nums">
               {split.workPct}%
             </span>
-            <span className="text-[11px] font-medium text-gl-text-muted">Work</span>
+            <span className="text-gl-text-muted text-[11px] font-medium">Work</span>
           </div>
-          <div className="h-2.5 overflow-hidden rounded-full bg-gl-bg-subtle">
+          <div className="bg-gl-bg-subtle h-2.5 overflow-hidden rounded-full">
             <div
               className="h-full rounded-full opacity-85"
               style={{
@@ -51,7 +51,7 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
           </div>
         </div>
 
-        <div className="h-10 w-px shrink-0 bg-gl-border" aria-hidden="true" />
+        <div className="bg-gl-border h-10 w-px shrink-0" aria-hidden="true" />
 
         {/* Learning */}
         <div className="flex-1">
@@ -59,12 +59,12 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
             className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[500ms]"
             style={{ opacity: visible ? 1 : 0 }}
           >
-            <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-learn">
+            <span className="text-gl-learn font-mono text-[28px] leading-none font-bold tabular-nums">
               {split.learnPct}%
             </span>
-            <span className="text-[11px] font-medium text-gl-text-muted">Learning</span>
+            <span className="text-gl-text-muted text-[11px] font-medium">Learning</span>
           </div>
-          <div className="h-2.5 overflow-hidden rounded-full bg-gl-bg-subtle">
+          <div className="bg-gl-bg-subtle h-2.5 overflow-hidden rounded-full">
             <div
               className="h-full rounded-full opacity-90"
               style={{

@@ -13,37 +13,39 @@ export function Hero() {
   return (
     <section className="relative pt-16 pb-20 text-center sm:pt-20 sm:pb-24">
       {/* Announcement badge */}
-      <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-gl-border bg-gl-surface px-3 py-1 pr-3.5 text-[12px] font-medium text-gl-text-muted">
-        <span className="rounded-full bg-gl-primary-soft px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.08em] text-gl-primary">
+      <div className="border-gl-border bg-gl-surface text-gl-text-muted mb-8 inline-flex items-center gap-2 rounded-full border px-3 py-1 pr-3.5 text-[12px] font-medium">
+        <span className="bg-gl-primary-soft text-gl-primary rounded-full px-2 py-0.5 text-[10.5px] font-bold tracking-[0.08em] uppercase">
           New
         </span>
         <span className="text-gl-text">
           <span className="sm:hidden">Free to start · no setup required</span>
-          <span className="hidden sm:inline">Free to start · no setup required · built for developers</span>
+          <span className="hidden sm:inline">
+            Free to start · no setup required · built for developers
+          </span>
         </span>
         <IconArrow size={12} className="text-gl-text-muted" />
       </div>
 
       {/* H1 — three-beat reveal: line 1 → line 2 → "built" stamps in */}
-      <h1 className="mx-auto mb-6 max-w-[820px] text-[52px] font-bold leading-[1.02] tracking-[-0.035em] text-gl-text sm:text-[64px] lg:text-[78px]">
-        <span className="inline-block animate-fade-up-lg">
+      <h1 className="text-gl-text mx-auto mb-6 max-w-[820px] text-[52px] leading-[1.02] font-bold tracking-[-0.035em] sm:text-[64px] lg:text-[78px]">
+        <span className="animate-fade-up-lg inline-block">
           <span className="bg-gradient-to-r from-[#2EB8A0] to-[#7DDFD0] bg-clip-text text-transparent">
             Never forget
-          </span>
-          {' '}what
+          </span>{' '}
+          what
         </span>
         <br />
-        <span className="inline-block animate-fade-up-lg animation-delay-500">
+        <span className="animate-fade-up-lg animation-delay-500 inline-block">
           you learned or{' '}
           <span className="text-gl-primary animate-scale-in animation-delay-800">built</span>.
         </span>
       </h1>
 
       {/* Subtitle */}
-      <p className="mx-auto mb-10 max-w-[620px] text-[17px] leading-[1.55] text-gl-text-muted text-pretty sm:text-[20px]">
-        Grow Logs is a daily logging tool for developers and self-learners. Track your work
-        and learning, organised by your own categories, so your progress is always visible
-        and never lost.
+      <p className="text-gl-text-muted mx-auto mb-10 max-w-[620px] text-[17px] leading-[1.55] text-pretty sm:text-[20px]">
+        Grow Logs is a daily logging tool for developers and self-learners. Track your work and
+        learning, organised by your own categories, so your progress is always visible and never
+        lost.
       </p>
 
       {/* CTA buttons */}
@@ -65,9 +67,9 @@ export function Hero() {
         {TRUST_BADGES.map((badge) => (
           <div
             key={badge}
-            className="inline-flex items-center gap-[7px] text-[13px] font-medium text-gl-text-muted whitespace-nowrap"
+            className="text-gl-text-muted inline-flex items-center gap-[7px] text-[13px] font-medium whitespace-nowrap"
           >
-            <span className="inline-flex size-[18px] items-center justify-center rounded-full bg-gl-primary-soft text-gl-primary">
+            <span className="bg-gl-primary-soft text-gl-primary inline-flex size-[18px] items-center justify-center rounded-full">
               <IconCheck size={11} />
             </span>
             {badge}

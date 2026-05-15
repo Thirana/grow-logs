@@ -5,28 +5,26 @@ interface SplitStatCardProps {
 
 export function SplitStatCard({ workPct, learnPct }: SplitStatCardProps) {
   return (
-    <div className="rounded-xl border border-gl-border bg-gl-surface p-5">
-      <p className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-gl-text-muted">
-        This month's split
+    <div className="border-gl-border bg-gl-surface rounded-xl border p-5">
+      <p className="text-gl-text-muted text-[10.5px] font-bold tracking-[0.12em] uppercase">
+        This month&apos;s split
       </p>
 
       <div className="mt-3.5 mb-2.5 flex items-baseline justify-between">
         <div>
-          <span className="font-mono text-2xl font-bold tabular-nums text-gl-work">
-            {workPct}%
-          </span>
-          <p className="mt-1 text-[11px] font-medium text-gl-text-muted">Work</p>
+          <span className="text-gl-work font-mono text-2xl font-bold tabular-nums">{workPct}%</span>
+          <p className="text-gl-text-muted mt-1 text-[11px] font-medium">Work</p>
         </div>
         <div className="text-right">
-          <span className="font-mono text-2xl font-bold tabular-nums text-gl-primary">
+          <span className="text-gl-primary font-mono text-2xl font-bold tabular-nums">
             {learnPct}%
           </span>
-          <p className="mt-1 text-[11px] font-medium text-gl-text-muted">Learning</p>
+          <p className="text-gl-text-muted mt-1 text-[11px] font-medium">Learning</p>
         </div>
       </div>
 
       {/* Segmented bar */}
-      <div className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-gl-bg-subtle">
+      <div className="bg-gl-bg-subtle mt-2 flex h-2.5 overflow-hidden rounded-full">
         <div
           className="h-full opacity-85"
           style={{ width: `${workPct}%`, background: 'var(--gl-work-fg)' }}

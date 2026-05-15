@@ -16,7 +16,7 @@ interface DailyChartProps {
 
 const CHART_H = 220;
 
-export function DailyChart({ data }: DailyChartProps){
+export function DailyChart({ data }: DailyChartProps) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const max = Math.max(...data.map((d) => Math.max(d.workCount, d.learnCount)), 1);
 
@@ -24,15 +24,14 @@ export function DailyChart({ data }: DailyChartProps){
     <div className="relative">
       {/* Chart area: extra bottom space for x-axis labels */}
       <div className="relative pl-8" style={{ height: CHART_H + 28 }}>
-
         {/* Y-axis gridlines */}
         {[1, 0.75, 0.5, 0.25].map((frac) => (
           <div
             key={frac}
-            className="absolute left-8 right-0 border-t border-dashed border-gl-border"
+            className="border-gl-border absolute right-0 left-8 border-t border-dashed"
             style={{ top: (1 - frac) * CHART_H + 4 }}
           >
-            <span className="absolute -left-7 -top-[9px] font-mono text-[10px] text-gl-text-faint">
+            <span className="text-gl-text-faint absolute -top-[9px] -left-7 font-mono text-[10px]">
               {Math.round(frac * max)}
             </span>
           </div>
@@ -40,15 +39,17 @@ export function DailyChart({ data }: DailyChartProps){
 
         {/* Zero line */}
         <div
-          className="absolute left-8 right-0 border-t border-gl-border"
+          className="border-gl-border absolute right-0 left-8 border-t"
           style={{ top: CHART_H + 4 }}
         >
-          <span className="absolute -left-7 -top-[9px] font-mono text-[10px] text-gl-text-faint">0</span>
+          <span className="text-gl-text-faint absolute -top-[9px] -left-7 font-mono text-[10px]">
+            0
+          </span>
         </div>
 
         {/* Bars */}
         <div
-          className="absolute left-8 right-0 top-1 flex items-end gap-[3px]"
+          className="absolute top-1 right-0 left-8 flex items-end gap-[3px]"
           style={{ height: CHART_H }}
         >
           {data.map((d, i) => {
@@ -57,7 +58,7 @@ export function DailyChart({ data }: DailyChartProps){
             return (
               <div
                 key={d.dayIndex}
-                className="flex flex-1 h-full cursor-default items-end gap-[2px]"
+                className="flex h-full flex-1 cursor-default items-end gap-[2px]"
                 onMouseEnter={() =>
                   setTooltip({
                     colIndex: i,
@@ -69,11 +70,11 @@ export function DailyChart({ data }: DailyChartProps){
                 onMouseLeave={() => setTooltip(null)}
               >
                 <div
-                  className="flex-1 rounded-t-[2px] bg-gl-work"
+                  className="bg-gl-work flex-1 rounded-t-[2px]"
                   style={{ height: `${wh}%`, opacity: 0.85 }}
                 />
                 <div
-                  className="flex-1 rounded-t-[2px] bg-gl-learn"
+                  className="bg-gl-learn flex-1 rounded-t-[2px]"
                   style={{ height: `${lh}%`, opacity: 0.95 }}
                 />
               </div>
@@ -82,14 +83,11 @@ export function DailyChart({ data }: DailyChartProps){
         </div>
 
         {/* X-axis labels */}
-        <div
-          className="absolute left-8 right-0 flex"
-          style={{ top: CHART_H + 12 }}
-        >
+        <div className="absolute right-0 left-8 flex" style={{ top: CHART_H + 12 }}>
           {data.map((d, i) => (
             <div key={i} className="flex-1 text-center">
               {d.dateLabel && (
-                <span className="font-mono text-[10px] text-gl-text-faint whitespace-nowrap">
+                <span className="text-gl-text-faint font-mono text-[10px] whitespace-nowrap">
                   {d.dateLabel}
                 </span>
               )}
@@ -101,18 +99,18 @@ export function DailyChart({ data }: DailyChartProps){
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="pointer-events-none absolute top-0 z-10 -translate-x-1/2 -translate-y-full rounded-lg border border-gl-border bg-gl-surface px-3 py-2 shadow-gl-lg"
+          className="border-gl-border bg-gl-surface shadow-gl-lg pointer-events-none absolute top-0 z-10 -translate-x-1/2 -translate-y-full rounded-lg border px-3 py-2"
           style={{ left: `${((tooltip.colIndex + 0.5) / data.length) * 100}%` }}
           role="tooltip"
         >
-          <div className="mb-1 font-mono text-[11px] text-gl-text-muted">{tooltip.dateLabel}</div>
-          <div className="flex gap-2.5 text-[12px] text-gl-text">
+          <div className="text-gl-text-muted mb-1 font-mono text-[11px]">{tooltip.dateLabel}</div>
+          <div className="text-gl-text flex gap-2.5 text-[12px]">
             <span className="flex items-center gap-1.5">
-              <span className="size-[7px] rounded-full bg-gl-work" aria-hidden="true" />
+              <span className="bg-gl-work size-[7px] rounded-full" aria-hidden="true" />
               {tooltip.workCount} Work
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-[7px] rounded-full bg-gl-learn" aria-hidden="true" />
+              <span className="bg-gl-learn size-[7px] rounded-full" aria-hidden="true" />
               {tooltip.learnCount} Learning
             </span>
           </div>

@@ -13,21 +13,21 @@ export function HeroStreakWidget({ className = '' }: HeroStreakWidgetProps) {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center gap-1.5 rounded-xl border border-gl-border bg-gl-surface p-5 text-center shadow-gl transition-all duration-[150ms] hover:-translate-y-0.5 hover:shadow-gl-lg ${className}`}
+      className={`border-gl-border bg-gl-surface shadow-gl hover:shadow-gl-lg flex flex-col items-center justify-center gap-1.5 rounded-xl border p-5 text-center transition-all duration-[150ms] hover:-translate-y-0.5 ${className}`}
     >
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gl-text-faint">
+      <p className="text-gl-text-faint text-[10px] font-bold tracking-[0.12em] uppercase">
         Current streak
       </p>
 
       <span
-        className="my-1 text-[52px] font-bold leading-none tabular-nums text-gl-warning transition-opacity duration-[500ms]"
+        className="text-gl-warning my-1 text-[52px] leading-none font-bold tabular-nums transition-opacity duration-[500ms]"
         style={{ opacity: visible ? 1 : 0 }}
       >
         {streak}
       </span>
 
-      <p className="text-[13px] font-semibold text-gl-warning">day streak</p>
-      <p className="text-[10.5px] text-gl-text-faint">Personal best: 23d</p>
+      <p className="text-gl-warning text-[13px] font-semibold">day streak</p>
+      <p className="text-gl-text-faint text-[10.5px]">Personal best: 23d</p>
     </div>
   );
 }

@@ -439,6 +439,7 @@ The `refresh_token` cookie is cleared on the response.
     {
       "id": "uuid",
       "name": "Backend Development",
+      "color": "#69B598",
       "createdAt": "2024-01-15T10:30:00Z",
       "subcategories": [
         {
@@ -461,19 +462,21 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Creates a new main category. Maximum 5 categories per user enforced here.
+**Description:** Creates a new main category. Maximum 5 categories per user enforced here. If `color` is omitted the server auto-assigns from the predefined palette.
 
 **Request body:**
 
 ```json
 {
-  "name": "Backend Development"
+  "name": "Backend Development",
+  "color": "#69B598"
 }
 ```
 
 **Validation:**
 
 - name: string, 1 to 100 characters, required
+- color: one of the 8 predefined palette hex values, optional (server assigns if omitted)
 
 **Response 201:**
 
@@ -482,6 +485,7 @@ The `refresh_token` cookie is cleared on the response.
   "data": {
     "id": "uuid",
     "name": "Backend Development",
+    "color": "#69B598",
     "createdAt": "2024-01-15T10:30:00Z",
     "subcategories": []
   },
@@ -509,9 +513,15 @@ The `refresh_token` cookie is cleared on the response.
 
 ```json
 {
-  "name": "Backend Engineering"
+  "name": "Backend Engineering",
+  "color": "#8285BA"
 }
 ```
+
+**Validation:**
+
+- name: string, 1 to 100 characters, optional
+- color: one of the 8 predefined palette hex values, optional
 
 **Response 200:**
 
@@ -520,6 +530,7 @@ The `refresh_token` cookie is cleared on the response.
   "data": {
     "id": "uuid",
     "name": "Backend Engineering",
+    "color": "#8285BA",
     "updatedAt": "2024-01-15T10:30:00Z"
   },
   "meta": {}
@@ -764,7 +775,7 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Returns activity summary broken down by category. Powers the dashboard summary section.
+**Description:** Returns the full dashboard analytics in a single response: totals, per-category breakdown, per-day activity series, weekly productivity trend, week-over-week comparison, and streak stats.
 
 **Query parameters:**
 
@@ -772,6 +783,11 @@ The `refresh_token` cookie is cleared on the response.
 | --------- | ------ | -------- | ------- | --------------------- |
 | period    | string | NO       | 30d     | Options: 7d, 30d, all |
 | type      | string | NO       |         | WORK or LEARNING      |
+
+**Period scoping rules:**
+- `period` scopes: `totalEntries`, `totalByType`, `averageProductivityScore`, `byCategory`, `dailyActivity`
+- Always full-history (not period-scoped): `weeklyTrend` (fixed 8-week window), `currentStreak`, `longestStreak`
+- Always ISO-calendar-week-based (not period-scoped): `thisWeekCount`, `lastWeekCount`
 
 **Response 200:**
 
@@ -785,11 +801,16 @@ The `refresh_token` cookie is cleared on the response.
       "LEARNING": 16
     },
     "averageProductivityScore": 7.4,
+    "thisWeekCount": 5,
+    "lastWeekCount": 7,
+    "currentStreak": 9,
+    "longestStreak": 23,
     "byCategory": [
       {
         "category": {
           "id": "uuid",
-          "name": "Backend Development"
+          "name": "Backend Development",
+          "color": "#69B598"
         },
         "entryCount": 14,
         "averageProductivityScore": 8.1,
@@ -798,13 +819,33 @@ The `refresh_token` cookie is cleared on the response.
           "LEARNING": 8
         }
       }
+    ],
+    "dailyActivity": [
+      { "date": "2024-04-15", "workCount": 2, "learnCount": 1 },
+      { "date": "2024-04-16", "workCount": 0, "learnCount": 3 }
+    ],
+    "weeklyTrend": [
+      { "week": "2024-W10", "avgScore": 6.8 },
+      { "week": "2024-W11", "avgScore": 7.1 },
+      { "week": "2024-W12", "avgScore": null },
+      { "week": "2024-W13", "avgScore": 7.4 },
+      { "week": "2024-W14", "avgScore": 7.6 },
+      { "week": "2024-W15", "avgScore": 7.8 },
+      { "week": "2024-W16", "avgScore": 8.0 },
+      { "week": "2024-W17", "avgScore": 7.9 }
     ]
   },
   "meta": {}
 }
 ```
 
-**Note:** averageProductivityScore is null if no scored entries exist for that period. Categories with zero entries in the selected period are excluded.
+**Notes:**
+- `averageProductivityScore` is `null` if no scored entries exist for that period
+- Categories with zero entries in the selected period are excluded from `byCategory`
+- `dailyActivity` omits dates with zero entries — frontend fills gaps
+- `weeklyTrend` always returns exactly 8 entries; `avgScore` is `null` for weeks with no scored entries
+- `currentStreak` uses a grace rule: if the user has not logged today, yesterday counts as the streak anchor so an active streak is not prematurely broken
+- `longestStreak` is all-time personal best, not scoped to `period`
 
 ---
 

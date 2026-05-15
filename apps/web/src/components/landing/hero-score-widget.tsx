@@ -23,9 +23,9 @@ export function HeroScoreWidget({ className = '' }: HeroScoreWidgetProps) {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center gap-2 rounded-xl border border-gl-border bg-gl-surface p-5 text-center shadow-gl transition-all duration-[150ms] hover:-translate-y-0.5 hover:shadow-gl-lg ${className}`}
+      className={`border-gl-border bg-gl-surface shadow-gl hover:shadow-gl-lg flex flex-col items-center justify-center gap-2 rounded-xl border p-5 text-center transition-all duration-[150ms] hover:-translate-y-0.5 ${className}`}
     >
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-gl-text-faint">
+      <p className="text-gl-text-faint text-[10px] font-bold tracking-[0.12em] uppercase">
         Avg productivity
       </p>
 
@@ -33,7 +33,9 @@ export function HeroScoreWidget({ className = '' }: HeroScoreWidgetProps) {
         <svg width="108" height="108" viewBox="0 0 100 100" aria-hidden="true">
           {/* Background track — full 270° arc */}
           <circle
-            cx="50" cy="50" r="36"
+            cx="50"
+            cy="50"
+            r="36"
             fill="none"
             stroke="var(--gl-bg-subtle)"
             strokeWidth="7"
@@ -43,7 +45,9 @@ export function HeroScoreWidget({ className = '' }: HeroScoreWidgetProps) {
           />
           {/* Filled arc — transitions smoothly when dashOffset changes */}
           <circle
-            cx="50" cy="50" r="36"
+            cx="50"
+            cy="50"
+            r="36"
             fill="none"
             stroke="var(--gl-primary)"
             strokeWidth="7"
@@ -60,14 +64,14 @@ export function HeroScoreWidget({ className = '' }: HeroScoreWidgetProps) {
           className="absolute flex flex-col items-center transition-opacity duration-[480ms]"
           style={{ opacity: visible ? 1 : 0 }}
         >
-          <span className="text-[24px] font-bold leading-none tabular-nums text-gl-text">
+          <span className="text-gl-text text-[24px] leading-none font-bold tabular-nums">
             {score.toFixed(1)}
           </span>
-          <span className="mt-0.5 text-[10px] text-gl-text-faint">/ 10</span>
+          <span className="text-gl-text-faint mt-0.5 text-[10px]">/ 10</span>
         </div>
       </div>
 
-      <p className="text-[11px] text-gl-text-muted">across 147 entries</p>
+      <p className="text-gl-text-muted text-[11px]">across 147 entries</p>
     </div>
   );
 }

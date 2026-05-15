@@ -40,17 +40,17 @@ export function HeroTrend() {
   const last = pts[pts.length - 1];
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-xl border border-gl-border bg-gl-surface p-5">
-      <p className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-gl-text-muted">
+    <div className="border-gl-border bg-gl-surface flex flex-col gap-2.5 rounded-xl border p-5">
+      <p className="text-gl-text-muted text-[10.5px] font-bold tracking-[0.12em] uppercase">
         Productivity · 8 wk
       </p>
 
       <div className="flex items-baseline justify-between">
-        <span className="font-sans text-[28px] font-bold tabular-nums tracking-[-0.025em] text-gl-text">
+        <span className="text-gl-text font-sans text-[28px] font-bold tracking-[-0.025em] tabular-nums">
           {last.v?.toFixed(1)}
-          <span className="ml-0.5 text-[15px] font-semibold text-gl-text-muted"> / 10</span>
+          <span className="text-gl-text-muted ml-0.5 text-[15px] font-semibold"> / 10</span>
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-gl-primary-soft px-2 py-1 text-[11px] font-semibold text-gl-primary whitespace-nowrap">
+        <span className="bg-gl-primary-soft text-gl-primary inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold whitespace-nowrap">
           ↗ +1.2
         </span>
       </div>

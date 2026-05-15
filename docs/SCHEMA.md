@@ -77,13 +77,14 @@ LEARNING   -- Learning related log entry
 
 ### categories
 
-| Column     | Type                     | Nullable | Default           | Notes                                    |
-| ---------- | ------------------------ | -------- | ----------------- | ---------------------------------------- |
-| id         | UUID                     | NO       | gen_random_uuid() | Primary key                              |
-| user_id    | UUID                     | NO       |                   | FK to users                              |
-| name       | VARCHAR(100)             | NO       |                   | Unique per user via composite constraint |
-| created_at | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                          |
-| updated_at | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                          |
+| Column     | Type                     | Nullable | Default     | Notes                                                   |
+| ---------- | ------------------------ | -------- | ----------- | ------------------------------------------------------- |
+| id         | UUID                     | NO       | gen_random_uuid() | Primary key                                       |
+| user_id    | UUID                     | NO       |             | FK to users                                             |
+| name       | VARCHAR(100)             | NO       |             | Unique per user via composite constraint                |
+| color      | VARCHAR(7)               | NO       | '#69B598'   | Hex color from predefined 8-color palette; auto-assigned on create if not provided |
+| created_at | TIMESTAMP WITH TIME ZONE | NO       | now()       |                                                         |
+| updated_at | TIMESTAMP WITH TIME ZONE | NO       | now()       |                                                         |
 
 **Primary Key:** id
 

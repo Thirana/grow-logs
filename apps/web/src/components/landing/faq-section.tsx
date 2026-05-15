@@ -39,10 +39,10 @@ export function FaqSection() {
       {/* Header */}
       <FadeIn>
         <div className="mx-auto mb-10 max-w-[640px] text-center">
-          <h2 className="mb-3.5 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
+          <h2 className="text-gl-text mb-3.5 text-[34px] leading-[1.08] font-bold tracking-[-0.025em] text-balance sm:text-[44px] sm:tracking-[-0.028em]">
             Common <span className="text-gl-primary">questions</span>.
           </h2>
-          <p className="text-[17px] leading-[1.55] text-gl-text-muted text-pretty">
+          <p className="text-gl-text-muted text-[17px] leading-[1.55] text-pretty">
             Everything you need to know before you start.
           </p>
         </div>
@@ -50,54 +50,54 @@ export function FaqSection() {
 
       {/* FAQ list — individual cards with gaps */}
       <FadeIn delay={130}>
-      <div className="mx-auto flex max-w-[720px] flex-col gap-3">
-        {FAQS.map(({ q, a }, i) => {
-          const isOpen = open === i;
+        <div className="mx-auto flex max-w-[720px] flex-col gap-3">
+          {FAQS.map(({ q, a }, i) => {
+            const isOpen = open === i;
 
-          return (
-            <div
-              key={q}
-              className="overflow-hidden rounded-2xl border border-gl-border bg-gl-surface shadow-gl transition-colors duration-150"
-            >
-              <button
-                onClick={() => setOpen(isOpen ? null : i)}
-                className="flex w-full items-start justify-between gap-4 px-6 py-5 text-left hover:bg-gl-surface-2 transition-colors duration-150"
-                aria-expanded={isOpen}
-              >
-                <span
-                  className={`text-[15.5px] font-semibold leading-snug transition-colors duration-150 sm:text-[16px] ${
-                    isOpen ? 'text-gl-primary' : 'text-gl-text'
-                  }`}
-                >
-                  {q}
-                </span>
-                <span
-                  className={`mt-0.5 shrink-0 text-gl-text-muted transition-transform duration-300 ${
-                    isOpen ? 'rotate-180 text-gl-primary' : ''
-                  }`}
-                >
-                  <IconChevronDown size={16} />
-                </span>
-              </button>
-
-              {/* Smooth height reveal via CSS grid trick */}
+            return (
               <div
-                className={`grid transition-all duration-300 ease-in-out ${
-                  isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                }`}
+                key={q}
+                className="border-gl-border bg-gl-surface shadow-gl overflow-hidden rounded-2xl border transition-colors duration-150"
               >
-                <div className="overflow-hidden">
-                  <div className="px-6 pb-5">
-                    <p className="border-l-2 border-gl-primary pl-4 text-[15px] leading-[1.7] text-gl-text-muted">
-                      {a}
-                    </p>
+                <button
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  className="hover:bg-gl-surface-2 flex w-full items-start justify-between gap-4 px-6 py-5 text-left transition-colors duration-150"
+                  aria-expanded={isOpen}
+                >
+                  <span
+                    className={`text-[15.5px] leading-snug font-semibold transition-colors duration-150 sm:text-[16px] ${
+                      isOpen ? 'text-gl-primary' : 'text-gl-text'
+                    }`}
+                  >
+                    {q}
+                  </span>
+                  <span
+                    className={`text-gl-text-muted mt-0.5 shrink-0 transition-transform duration-300 ${
+                      isOpen ? 'text-gl-primary rotate-180' : ''
+                    }`}
+                  >
+                    <IconChevronDown size={16} />
+                  </span>
+                </button>
+
+                {/* Smooth height reveal via CSS grid trick */}
+                <div
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="px-6 pb-5">
+                      <p className="border-gl-primary text-gl-text-muted border-l-2 pl-4 text-[15px] leading-[1.7]">
+                        {a}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
       </FadeIn>
     </section>
   );

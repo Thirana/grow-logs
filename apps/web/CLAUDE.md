@@ -40,6 +40,7 @@ apps/web/src/
 ```
 
 **Rules:**
+
 - `app/` contains routes and layouts only — no data fetching logic, no business logic inline
 - `components/ui/` is owned by shadcn — never modify files in this folder directly; add or override in `components/common/` or feature folders instead
 - Every feature that has more than one component gets its own subfolder under `components/`
@@ -48,15 +49,15 @@ apps/web/src/
 
 ## Naming Conventions
 
-| Thing | Convention | Example |
-|---|---|---|
-| Files | `kebab-case.tsx` | `entry-card.tsx`, `create-entry-form.tsx` |
-| Components | `PascalCase` | `EntryCard`, `CreateEntryForm` |
-| Hooks | `use` prefix, camelCase | `useEntries`, `useCreateEntry` |
-| Zustand stores | `use` prefix + `Store` suffix | `useAuthStore`, `useUiStore` |
-| Types / interfaces | `PascalCase` | `EntryCardProps`, `ApiError` |
-| Route groups | `(kebab-case)` | `(auth)`, `(dashboard)` |
-| Constants | `UPPER_SNAKE_CASE` | `MAX_CATEGORIES`, `DEFAULT_PAGE_SIZE` |
+| Thing              | Convention                    | Example                                   |
+| ------------------ | ----------------------------- | ----------------------------------------- |
+| Files              | `kebab-case.tsx`              | `entry-card.tsx`, `create-entry-form.tsx` |
+| Components         | `PascalCase`                  | `EntryCard`, `CreateEntryForm`            |
+| Hooks              | `use` prefix, camelCase       | `useEntries`, `useCreateEntry`            |
+| Zustand stores     | `use` prefix + `Store` suffix | `useAuthStore`, `useUiStore`              |
+| Types / interfaces | `PascalCase`                  | `EntryCardProps`, `ApiError`              |
+| Route groups       | `(kebab-case)`                | `(auth)`, `(dashboard)`                   |
+| Constants          | `UPPER_SNAKE_CASE`            | `MAX_CATEGORIES`, `DEFAULT_PAGE_SIZE`     |
 
 ---
 
@@ -72,6 +73,7 @@ apps/web/src/
 ### When to Extract a Component
 
 Extract into its own file when **any** of these are true:
+
 - The UI block is used in more than one place
 - The JSX in a single file exceeds ~50 lines
 - The block has its own loading, error, or empty state
@@ -116,13 +118,13 @@ const EntryCard: React.FC<{ entry: Entry }> = ({ entry }) => { ... }
 
 ### Responsive Breakpoints
 
-| Prefix | Min-width | Use for |
-|---|---|---|
-| (none) | 0px | Mobile — always the base |
-| `sm:` | 640px | Large phones / small tablets |
-| `md:` | 768px | Tablets |
-| `lg:` | 1024px | Laptops |
-| `xl:` | 1280px | Desktops |
+| Prefix | Min-width | Use for                      |
+| ------ | --------- | ---------------------------- |
+| (none) | 0px       | Mobile — always the base     |
+| `sm:`  | 640px     | Large phones / small tablets |
+| `md:`  | 768px     | Tablets                      |
+| `lg:`  | 1024px    | Laptops                      |
+| `xl:`  | 1280px    | Desktops                     |
 
 ---
 
@@ -171,9 +173,68 @@ No silent failures. No rendering `undefined` without a guard.
 
 ---
 
+## Shared Packages
+
+The monorepo has two shared packages consumed by both `apps/api` and `apps/web`. Use them correctly — never duplicate what they already define.
+
+### `packages/schemas` — Zod validation schemas
+
+**Decision rule:** if a schema validates data that crosses the API boundary (a request body or a query param), it belongs in `packages/schemas`. If it is purely a UI-level concern (e.g. a search input that never goes to the API), keep it local.
+
+**What already exists** — import from `@grow-logs/schemas`, never redefine locally:
+
+| Export                                               | Use in frontend             |
+| ---------------------------------------------------- | --------------------------- |
+| `registerSchema` / `RegisterDto`                     | Register form validation    |
+| `loginSchema` / `LoginDto`                           | Login form validation       |
+| `verifyEmailSchema` / `VerifyEmailDto`               | Email verification form     |
+| `resendVerificationSchema` / `ResendVerificationDto` | Resend form                 |
+| `changePasswordSchema` / `ChangePasswordDto`         | Change password form        |
+| `updateUserSchema` / `UpdateUserDto`                 | Edit profile form           |
+| `uuidSchema`                                         | Validating UUID path params |
+| `paginationSchema` / `PaginationParams`              | Paginated list query params |
+
+**When adding a new schema** (e.g. `createEntrySchema`, `createCategorySchema`): add it to `packages/schemas/src/<feature>.ts`, export it from `packages/schemas/src/index.ts`, then import in both `apps/api` (Zod pipe) and `apps/web` (form validation). Never define a schema in one app only.
+
+### `packages/types` — shared TypeScript interfaces
+
+**What it is for:** TypeScript interfaces that describe the shapes returned by the API — things both apps agree on. Currently empty (`export {}`); it will be populated as frontend API hooks are built.
+
+**Decision rule:** if a TypeScript interface describes an API response shape that the frontend needs to consume, define it in `packages/types`. If it is a UI-only type (component props, local state shape), define it locally in `src/types/` or inline above the component.
+
+**When wiring up a resource hook**, add the response interface to `packages/types/src/index.ts`:
+
+```typescript
+// packages/types/src/index.ts
+export interface UserProfile {
+  id: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
+  isEmailVerified: boolean;
+  onboardingCompleted: boolean;
+  subscriptionStatus: string;
+  subscriptionPlan: string | null;
+  createdAt: string;
+}
+
+export interface Category { ... }
+export interface Entry { ... }
+```
+
+Then import in the hook:
+
+```typescript
+import type { UserProfile } from '@grow-logs/types';
+```
+
+**`src/data/dashboard-mock.ts` is temporary.** The interfaces defined there (`MockEntry`, `MockCategory`, `DashboardStats`, etc.) are placeholders used until the dashboard is wired to real API hooks. When each resource hook is built, replace the mock interface with the real type from `@grow-logs/types` and delete the mock equivalent.
+
+---
+
 ## Form Rules
 
 - Every form uses **React Hook Form** + a **Zod schema** from `packages/schemas`
+- Auth schemas (`registerSchema`, `loginSchema`, etc.) already exist — import them, never redefine
 - Never duplicate a validation rule — if it belongs to a shared resource, it goes in `packages/schemas` and is imported here
 - Every field shows inline validation errors — no page-level error summaries as a substitute
 - Forms are extracted into their own component files — never inline a full form inside a page
@@ -200,13 +261,13 @@ const form = useForm<CreateEntryInput>({
 
 ## State Management Rules
 
-| State type | Where it lives |
-|---|---|
-| Server data (entries, categories, user profile) | React Query |
-| Auth (current user object, isAuthenticated) | Zustand `useAuthStore` |
-| UI state (sidebar, modals, toasts) | Zustand `useUiStore` or local `useState` |
-| Form state | React Hook Form |
-| URL state (filters, pagination, active tab) | `useSearchParams` |
+| State type                                      | Where it lives                           |
+| ----------------------------------------------- | ---------------------------------------- |
+| Server data (entries, categories, user profile) | React Query                              |
+| Auth (current user object, isAuthenticated)     | Zustand `useAuthStore`                   |
+| UI state (sidebar, modals, toasts)              | Zustand `useUiStore` or local `useState` |
+| Form state                                      | React Hook Form                          |
+| URL state (filters, pagination, active tab)     | `useSearchParams`                        |
 
 No prop drilling past 2 levels — if a prop needs to go deeper, move it to the appropriate store or context.
 
@@ -223,7 +284,7 @@ No prop drilling past 2 levels — if a prop needs to go deeper, move it to the 
 // correct
 onError: (error) => {
   toast.error(getApiErrorMessage(error) ?? 'Something went wrong. Please try again.');
-}
+};
 ```
 
 ---
@@ -255,7 +316,8 @@ When a frontend step is fully implemented, update these files before ending the 
 **1. `CONTEXT.md` — update the Current Phase section** with last completed step, next step, and progress count.
 
 **2. `README.md` — update after every step:**
+
 - Update the progress counter
 - Add any new commands introduced (e.g. `npm run dev` from `apps/web`)
 
-**3. `docs/phases/frontend/PHASES.md`** *(to be created when frontend phases are defined)* — mark the step complete.
+**3. `docs/phases/frontend/PHASES.md`** _(to be created when frontend phases are defined)_ — mark the step complete.

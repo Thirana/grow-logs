@@ -20,18 +20,18 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({
-  stats, entries, categories, daily, trend,
-}: DashboardClientProps){
+  stats,
+  entries,
+  categories,
+  daily,
+  trend,
+}: DashboardClientProps) {
   const [period, setPeriod] = useState<Period>('30d');
   const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <>
-      <TopBar
-        period={period}
-        onPeriodChange={setPeriod}
-        onAddEntry={() => setSheetOpen(true)}
-      />
+      <TopBar period={period} onPeriodChange={setPeriod} onAddEntry={() => setSheetOpen(true)} />
 
       <div className="flex-1 px-8 py-6 pb-16">
         <StatsRow stats={stats} />
@@ -39,16 +39,12 @@ export function DashboardClient({
         <RecentEntries entries={entries} onAddEntry={() => setSheetOpen(true)} />
         <ProductivityTrend data={trend} />
 
-        <div className="mt-6 flex items-center justify-between border-t border-gl-border pt-5 text-[12px] text-gl-text-faint">
+        <div className="border-gl-border text-gl-text-faint mt-6 flex items-center justify-between border-t pt-5 text-[12px]">
           <span>Last sync · just now</span>
         </div>
       </div>
 
-      <AddEntrySheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        categories={categories}
-      />
+      <AddEntrySheet open={sheetOpen} onClose={() => setSheetOpen(false)} categories={categories} />
     </>
   );
 }

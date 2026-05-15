@@ -29,9 +29,12 @@ function EntryMenu() {
   return (
     <div className="relative shrink-0" ref={ref}>
       <button
-        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((v) => !v);
+        }}
         aria-label="Entry options"
-        className={`inline-flex size-7 items-center justify-center rounded-[7px] text-gl-text-muted transition-colors ${
+        className={`text-gl-text-muted inline-flex size-7 items-center justify-center rounded-[7px] transition-colors ${
           open ? 'bg-gl-bg-subtle' : 'hover:bg-gl-bg-subtle'
         }`}
       >
@@ -41,12 +44,12 @@ function EntryMenu() {
       {open && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className="absolute right-0 top-full z-20 mt-1 min-w-[140px] rounded-[9px] border border-gl-border bg-gl-surface p-1 shadow-gl"
+          className="border-gl-border bg-gl-surface shadow-gl absolute top-full right-0 z-20 mt-1 min-w-[140px] rounded-[9px] border p-1"
         >
           {(['Edit', 'Delete'] as const).map((action) => (
             <button
               key={action}
-              className={`block w-full rounded-md px-2.5 py-[7px] text-left text-[13px] font-medium transition-colors hover:bg-gl-bg-subtle ${
+              className={`hover:bg-gl-bg-subtle block w-full rounded-md px-2.5 py-[7px] text-left text-[13px] font-medium transition-colors ${
                 action === 'Delete' ? 'text-gl-danger' : 'text-gl-text'
               }`}
             >
@@ -63,8 +66,7 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast }: EntryRow
   const borderClass = isLast ? '' : 'border-b border-gl-border';
 
   return (
-    <div className={`group cursor-pointer transition-colors hover:bg-gl-surface-2 ${borderClass}`}>
-
+    <div className={`group hover:bg-gl-surface-2 cursor-pointer transition-colors ${borderClass}`}>
       {/* ── Mobile card layout ─────────────────────────────────────────── */}
       <div className="flex flex-col gap-2 px-4 py-3.5 sm:hidden" onClick={onToggleExpand}>
         {/* Top row: type badge + score + menu */}
@@ -83,18 +85,18 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast }: EntryRow
             style={{ background: entry.swatchColor }}
             aria-hidden="true"
           />
-          <span className="text-[13px] font-semibold leading-none text-gl-text">
+          <span className="text-gl-text text-[13px] leading-none font-semibold">
             {entry.categoryName}
           </span>
-          <span className="text-[11px] leading-none text-gl-text-faint">/</span>
-          <span className="truncate text-[12px] leading-none text-gl-text-muted">
+          <span className="text-gl-text-faint text-[11px] leading-none">/</span>
+          <span className="text-gl-text-muted truncate text-[12px] leading-none">
             {entry.subcategoryName}
           </span>
         </div>
 
         {/* Entry text — 2 lines preview, full on expand */}
         <p
-          className={`text-[13px] italic leading-[1.5] text-gl-text-muted ${
+          className={`text-gl-text-muted text-[13px] leading-[1.5] italic ${
             isExpanded ? '' : 'line-clamp-2'
           }`}
         >
@@ -103,16 +105,13 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast }: EntryRow
       </div>
 
       {/* ── Desktop row layout ─────────────────────────────────────────── */}
-      <div
-        className="hidden sm:flex items-center gap-4 px-[22px] py-3.5"
-        onClick={onToggleExpand}
-      >
+      <div className="hidden items-center gap-4 px-[22px] py-3.5 sm:flex" onClick={onToggleExpand}>
         {/* Date */}
         <div className="w-11 shrink-0 text-center">
-          <div className="text-[17px] font-bold leading-none tracking-[-0.015em] text-gl-text">
+          <div className="text-gl-text text-[17px] leading-none font-bold tracking-[-0.015em]">
             {entry.day}
           </div>
-          <div className="mt-[3px] font-mono text-[10px] uppercase tracking-[0.06em] text-gl-text-faint">
+          <div className="text-gl-text-faint mt-[3px] font-mono text-[10px] tracking-[0.06em] uppercase">
             {entry.month}
           </div>
         </div>
@@ -130,16 +129,16 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast }: EntryRow
               style={{ background: entry.swatchColor }}
               aria-hidden="true"
             />
-            <span className="text-[13px] font-semibold leading-none text-gl-text">
+            <span className="text-gl-text text-[13px] leading-none font-semibold">
               {entry.categoryName}
             </span>
-            <span className="text-[11px] leading-none text-gl-text-faint">/</span>
-            <span className="truncate text-[12px] leading-none text-gl-text-muted">
+            <span className="text-gl-text-faint text-[11px] leading-none">/</span>
+            <span className="text-gl-text-muted truncate text-[12px] leading-none">
               {entry.subcategoryName}
             </span>
           </div>
           <p
-            className={`text-[13px] italic leading-[1.5] text-gl-text-muted ${
+            className={`text-gl-text-muted text-[13px] leading-[1.5] italic ${
               isExpanded ? '' : 'truncate'
             }`}
           >

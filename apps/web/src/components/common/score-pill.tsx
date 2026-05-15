@@ -16,12 +16,12 @@ export function ScorePill({ score, className }: ScorePillProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-lg px-2.5 py-1 font-mono text-[12px] font-semibold whitespace-nowrap tabular-nums leading-none',
+        'inline-flex items-center gap-1 rounded-lg px-2.5 py-1 font-mono text-[12px] leading-none font-semibold whitespace-nowrap tabular-nums',
         colorClass,
         className,
       )}
     >
-      <span className="text-current/60 font-normal">score</span>
+      <span className="font-normal text-current/60">score</span>
       {score} / 10
     </span>
   );
