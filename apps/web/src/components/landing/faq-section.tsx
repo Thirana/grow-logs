@@ -40,7 +40,7 @@ export function FaqSection() {
       <FadeIn>
         <div className="mx-auto mb-10 max-w-[640px] text-center">
           <h2 className="mb-3.5 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
-            Common questions.
+            Common <span className="text-gl-primary">questions</span>.
           </h2>
           <p className="text-[17px] leading-[1.55] text-gl-text-muted text-pretty">
             Everything you need to know before you start.

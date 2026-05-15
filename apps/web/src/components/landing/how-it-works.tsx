@@ -173,7 +173,7 @@ export function HowItWorks() {
       <FadeIn>
         <div className="mx-auto mb-10 max-w-[640px] text-center">
           <h2 className="text-[36px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
-            Up and running in minutes.
+            Set up and start <span className="text-gl-primary">growing</span>.
           </h2>
         </div>
       </FadeIn>
