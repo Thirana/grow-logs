@@ -297,37 +297,50 @@ export function FeaturesSection(): JSX.Element {
         ))}
       </div>
 
-      {/* Content — opacity + lift transition; displayed lags active by FADE_MS */}
-      <div
-        className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-16"
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0px)' : 'translateY(10px)',
-          transition: `opacity ${FADE_MS}ms ease, transform ${FADE_MS}ms ease`,
-        }}
-      >
-        {/* Left: copy */}
-        <div>
-          <h3 className="mb-4 text-[28px] font-bold leading-[1.18] tracking-[-0.022em] text-gl-text text-balance sm:text-[32px]">
-            {FEATURES[displayed].title}
-          </h3>
-          <p className="mb-7 text-[16px] leading-[1.65] text-gl-text-muted">
-            {FEATURES[displayed].body}
-          </p>
-          <ul className="flex flex-col gap-3.5">
-            {FEATURES[displayed].bullets.map(bullet => (
-              <li key={bullet} className="flex items-start gap-3 text-[14.5px] text-gl-text-muted">
-                <span className="mt-[3px] inline-flex size-[18px] shrink-0 items-center justify-center rounded-full bg-gl-primary-soft text-gl-primary">
-                  <IconCheck size={10} />
-                </span>
-                {bullet}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Content — all 3 panels stacked in the same grid cell so the container
+          height is always the tallest tab, eliminating layout shift below. */}
+      <div style={{ display: 'grid' }}>
+        {FEATURES.map(({ title, body, bullets, preview }, i) => {
+          const isShown = displayed === i;
+          const isFadedIn = isShown && visible;
+          return (
+            <div
+              key={i}
+              className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-16"
+              style={{
+                gridArea: '1 / 1',
+                opacity: isFadedIn ? 1 : 0,
+                transform: isFadedIn ? 'translateY(0px)' : 'translateY(10px)',
+                transition: `opacity ${FADE_MS}ms ease, transform ${FADE_MS}ms ease`,
+                // visibility: hidden removes from a11y tree while preserving space;
+                // the snap from hidden → visible is imperceptible since opacity is 0 at that moment
+                visibility: isShown ? 'visible' : 'hidden',
+                pointerEvents: isShown ? 'auto' : 'none',
+              }}
+            >
+              {/* Left: copy */}
+              <div>
+                <h3 className="mb-4 text-[28px] font-bold leading-[1.18] tracking-[-0.022em] text-gl-text text-balance sm:text-[32px]">
+                  {title}
+                </h3>
+                <p className="mb-7 text-[16px] leading-[1.65] text-gl-text-muted">{body}</p>
+                <ul className="flex flex-col gap-3.5">
+                  {bullets.map(bullet => (
+                    <li key={bullet} className="flex items-start gap-3 text-[14.5px] text-gl-text-muted">
+                      <span className="mt-[3px] inline-flex size-[18px] shrink-0 items-center justify-center rounded-full bg-gl-primary-soft text-gl-primary">
+                        <IconCheck size={10} />
+                      </span>
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-        {/* Right: rich preview */}
-        <div>{FEATURES[displayed].preview}</div>
+              {/* Right: rich preview */}
+              <div>{preview}</div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

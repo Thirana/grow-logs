@@ -13,21 +13,21 @@ const CATEGORY_POOL = [
   { name: 'Side Project',  count: 19, swatchColor: '#C4A05E' },
   { name: 'Soft Skills',   count: 15, swatchColor: '#62AEBF' },
   { name: 'Open Source',   count: 11, swatchColor: '#B87060' },
+  { name: 'Architecture',  count: 9,  swatchColor: '#8285BA' },
+  { name: 'DevOps',        count: 7,  swatchColor: '#69B598' },
+  { name: 'Testing',       count: 5,  swatchColor: '#C4A05E' },
 ] as const;
 
-const SLOT_COUNT = 4; // number of pills always visible
+const SLOT_COUNT = 6;
 const SWAP_INTERVAL_MS = 4000;
 const FADE_MS = 450;
 
 export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetProps) {
-  // Each slot holds an index into CATEGORY_POOL. Layout stays stable (always SLOT_COUNT pills).
   const [slots, setSlots] = useState<number[]>(() =>
     Array.from({ length: SLOT_COUNT }, (_, i) => i),
   );
-  // Which slot index (0 … SLOT_COUNT-1) is currently fading out
   const [fadingSlot, setFadingSlot] = useState<number | null>(null);
 
-  // useRef so the interval always reads the latest slots without being in its own dep array
   const slotsRef = useRef(slots);
   slotsRef.current = slots;
 
@@ -45,10 +45,8 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
       const slotToChange = Math.floor(Math.random() * SLOT_COUNT);
       const newCatIndex = hidden[Math.floor(Math.random() * hidden.length)];
 
-      // Start fade-out for the chosen slot
       setFadingSlot(slotToChange);
 
-      // After the fade-out completes, swap the category and fade back in
       fadeTimerRef.current = setTimeout(() => {
         setSlots(prev => {
           const next = [...prev];
@@ -63,7 +61,7 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
       clearInterval(interval);
       if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
     };
-  }, []); // intentionally empty — slotsRef handles fresh reads
+  }, []);
 
   return (
     <div
@@ -73,26 +71,29 @@ export function HeroCategoriesWidget({ className = '' }: HeroCategoriesWidgetPro
         Top categories
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      {/* Fixed 2-col (mobile) / 3-col (sm+) grid — no flex-wrap reflow, height is always stable */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {slots.map((catIndex, slotIndex) => {
           const cat = CATEGORY_POOL[catIndex];
           const isFading = fadingSlot === slotIndex;
 
           return (
-            // key is the slot index, NOT the category — keeps the DOM element in place
-            // so only opacity changes, not a full remount
             <span
               key={slotIndex}
-              className="inline-flex cursor-default items-center gap-1.5 rounded-full border border-gl-border bg-gl-surface-2 px-3 py-1.5 text-[12.5px] font-medium text-gl-text transition-all duration-[450ms] hover:-translate-y-0.5"
+              className="flex cursor-default items-center justify-between gap-1.5 rounded-xl border border-gl-border bg-gl-surface-2 px-3 py-1.5 transition-all duration-[450ms] hover:-translate-y-0.5"
               style={{ opacity: isFading ? 0 : 1 }}
             >
-              <span
-                className="size-2 shrink-0 rounded-full"
-                style={{ background: cat.swatchColor }}
-                aria-hidden="true"
-              />
-              {cat.name}
-              <span className="ml-0.5 font-mono text-[10.5px] tabular-nums text-gl-text-faint">
+              <span className="flex items-center gap-1.5 min-w-0">
+                <span
+                  className="size-2 shrink-0 rounded-full"
+                  style={{ background: cat.swatchColor }}
+                  aria-hidden="true"
+                />
+                <span className="truncate text-[12.5px] font-medium text-gl-text">
+                  {cat.name}
+                </span>
+              </span>
+              <span className="ml-1 shrink-0 font-mono text-[10.5px] tabular-nums text-gl-text-faint">
                 {cat.count}
               </span>
             </span>

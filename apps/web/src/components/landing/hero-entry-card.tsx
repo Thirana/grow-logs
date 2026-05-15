@@ -119,8 +119,8 @@ export function HeroEntryCard() {
           </span>
         </div>
 
-        {/* Title — appears instantly with fade-in of the content block */}
-        <h3 className="mt-0.5 text-[22px] font-bold leading-[1.32] tracking-[-0.018em] text-gl-text text-balance">
+        {/* Title — min-h reserves 2 lines so short/long titles don't shift card height */}
+        <h3 className="mt-0.5 min-h-[58px] text-[22px] font-bold leading-[1.32] tracking-[-0.018em] text-gl-text text-balance">
           {entry.title}
         </h3>
 
