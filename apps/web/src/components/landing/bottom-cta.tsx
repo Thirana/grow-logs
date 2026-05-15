@@ -8,7 +8,7 @@ const BARS_LEFT  = [32, 48, 20, 64] as const;
 
 export function BottomCta() {
   return (
-    <section className="py-16 sm:py-20 lg:pt-20 lg:pb-24">
+    <section className="py-12 sm:py-16 lg:pt-16 lg:pb-20">
       <div className="relative overflow-hidden rounded-3xl border border-gl-border bg-gl-surface px-6 py-20 text-center sm:px-10">
 
         {/* Sage radial halo */}

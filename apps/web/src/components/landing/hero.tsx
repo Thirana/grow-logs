@@ -18,7 +18,8 @@ export function Hero() {
           New
         </span>
         <span className="text-gl-text">
-          Free to start · no setup required · built for developers
+          <span className="sm:hidden">Free to start · no setup required</span>
+          <span className="hidden sm:inline">Free to start · no setup required · built for developers</span>
         </span>
         <IconArrow size={12} className="text-gl-text-muted" />
       </div>

@@ -347,6 +347,12 @@
   to   { transform: scaleX(1); }
 }
 
+/* Tab progress — fills the active tab pill over the auto-advance interval */
+@keyframes gl-tab-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 @layer utilities {
   .animate-cursor-blink {
     animation: gl-cursor-blink 1s steps(2) infinite;
@@ -375,6 +381,10 @@
   }
   .animate-expand-x {
     animation: gl-expand-x 0.65s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+    transform-origin: left;
+  }
+  .animate-tab-progress {
+    animation: gl-tab-progress 5s linear both;
     transform-origin: left;
   }
 

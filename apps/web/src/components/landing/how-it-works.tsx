@@ -1,4 +1,3 @@
-import { Eyebrow } from '@/components/common/eyebrow';
 
 const STEPS = [
   {
@@ -20,10 +19,9 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how" className="py-20 sm:py-24 lg:pt-[100px] lg:pb-16">
+    <section id="how" className="py-12 sm:py-16 lg:pt-16 lg:pb-12">
       {/* Header */}
-      <div className="mx-auto mb-16 max-w-[640px] text-center">
-        <Eyebrow className="mb-3.5">How it works</Eyebrow>
+      <div className="mx-auto mb-10 max-w-[640px] text-center">
         <h2 className="text-[36px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
           Up and running in minutes.
         </h2>

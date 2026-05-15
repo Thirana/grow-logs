@@ -1,4 +1,3 @@
-import { Eyebrow } from '@/components/common/eyebrow';
 
 const SWATCHES = ['#6FC8A0', '#7C8FE0', '#BFA8E5'] as const;
 
@@ -34,10 +33,9 @@ function initials(name: string) {
 
 export function Testimonials() {
   return (
-    <section id="testimonials" className="py-16 sm:py-20 lg:py-24">
+    <section id="testimonials" className="py-12 sm:py-16 lg:py-20">
       {/* Header */}
-      <div className="mx-auto mb-14 max-w-[640px] text-center">
-        <Eyebrow className="mb-3.5">Stories</Eyebrow>
+      <div className="mx-auto mb-10 max-w-[640px] text-center">
         <h2 className="mb-3 text-[34px] font-bold leading-[1.1] tracking-[-0.022em] text-gl-text text-balance sm:text-[40px] sm:tracking-[-0.025em]">
           Built for people who never stop learning.
         </h2>

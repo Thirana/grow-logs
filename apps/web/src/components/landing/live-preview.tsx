@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Eyebrow } from '@/components/common/eyebrow';
 import { GlButton } from '@/components/common/gl-button';
 import { IconArrow, IconArrowRight } from '@/components/common/icons';
 import { Logo } from '@/components/common/logo';
@@ -16,10 +15,9 @@ import {
 
 export function LivePreview() {
   return (
-    <section id="preview" className="py-16 sm:py-20 lg:py-24">
+    <section id="preview" className="py-12 sm:py-16 lg:py-20">
       {/* Section header */}
-      <div className="mx-auto mb-14 max-w-[680px] text-center">
-        <Eyebrow className="mb-3.5">Live preview</Eyebrow>
+      <div className="mx-auto mb-10 max-w-[680px] text-center">
         <h2 className="mb-3.5 text-[34px] font-bold leading-[1.08] tracking-[-0.025em] text-gl-text text-balance sm:text-[44px] sm:tracking-[-0.028em]">
           See it in <span className="text-gl-primary">action</span>.
         </h2>
