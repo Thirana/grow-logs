@@ -26,7 +26,7 @@ export function Hero() {
       {/* H1 — three-beat reveal: line 1 → line 2 → "built" stamps in */}
       <h1 className="mx-auto mb-6 max-w-[820px] text-[52px] font-bold leading-[1.02] tracking-[-0.035em] text-gl-text sm:text-[64px] lg:text-[78px]">
         <span className="inline-block animate-fade-up-lg">
-          <span className="bg-gradient-to-r from-[#E0AE52] to-[#F5CC60] bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-[#2EB8A0] to-[#7DDFD0] bg-clip-text text-transparent">
             Never forget
           </span>
           {' '}what

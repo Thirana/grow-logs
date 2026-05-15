@@ -22,21 +22,21 @@ type Phase = 'typing' | 'reading' | 'fading';
 const ENTRIES: HeroEntry[] = [
   {
     dayNum: '14', month: 'MAY', type: 'Work',
-    catName: 'Backend', catSub: 'NestJS', swatchColor: '#6FC8A0',
+    catName: 'Backend', catSub: 'NestJS', swatchColor: '#69B598',
     score: 8,
     title: 'Refactored auth into a single guard.',
     body: 'Pulled the refresh-token rotation out of the login handler. Tests dropped by half once the responsibilities were separated.',
   },
   {
     dayNum: '13', month: 'MAY', type: 'Learning',
-    catName: 'Reading', catSub: 'DDIA', swatchColor: '#BFA8E5',
+    catName: 'Reading', catSub: 'DDIA', swatchColor: '#B87DA2',
     score: 7,
     title: 'Chapter 4 — replication patterns.',
     body: 'Conflict resolution finally clicked. Drew the quorum diagram from scratch to test my understanding, then wrote it up in Notion.',
   },
   {
     dayNum: '12', month: 'MAY', type: 'Work',
-    catName: 'Side Project', catSub: 'CSV import', swatchColor: '#E0AE52',
+    catName: 'Side Project', catSub: 'CSV import', swatchColor: '#C4A05E',
     score: 9,
     title: 'Shipped the CSV import flow.',
     body: 'Row-level error highlighting lets users fix data inline and re-import without losing their place. Saved around 20 minutes per run.',

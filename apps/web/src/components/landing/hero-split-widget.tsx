@@ -59,7 +59,7 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
             className="mb-1.5 flex items-baseline gap-1.5 transition-opacity duration-[500ms]"
             style={{ opacity: visible ? 1 : 0 }}
           >
-            <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-primary">
+            <span className="font-mono text-[28px] font-bold leading-none tabular-nums text-gl-learn">
               {split.learnPct}%
             </span>
             <span className="text-[11px] font-medium text-gl-text-muted">Learning</span>
@@ -69,7 +69,7 @@ export function HeroSplitWidget({ className = '' }: HeroSplitWidgetProps) {
               className="h-full rounded-full opacity-90"
               style={{
                 width: `${split.learnPct}%`,
-                background: 'var(--gl-primary)',
+                background: 'var(--gl-learn-fg)',
                 transition: BAR_TRANSITION,
               }}
             />

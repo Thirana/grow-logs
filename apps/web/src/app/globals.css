@@ -6,132 +6,133 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Grow Logs Design Tokens
-   Dark-only palette. Warm deep-navy surfaces, cream ink, sage-mint accent.
-   Cream hard borders (#F2EAD3) are the signature on chunky/stat elements.
+   Dark-only palette. Forest-charcoal surfaces, cool off-white ink.
+   Brand palette mirrors Fathom Analytics: purple primary, green/cyan/pink/amber accents.
+   Off-white hard borders (#D8DDD6) are the signature on chunky/stat elements.
    ───────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Surfaces */
-  --gl-bg:            #16142A;
-  --gl-bg-subtle:     #100E22;
-  --gl-surface:       #211F38;
-  --gl-surface-2:     #2A2842;
+  /* Surfaces — forest-charcoal (not purple-navy) */
+  --gl-bg:            #161918;
+  --gl-bg-subtle:     #101210;
+  --gl-surface:       #1D201E;
+  --gl-surface-2:     #252924;
 
   /* Borders */
-  --gl-border:        #322F4D;
-  --gl-border-strong: #F2EAD3;
-  --gl-border-input:  #3F3D5B;
+  --gl-border:        #2C312D;
+  --gl-border-strong: #D8DDD6;
+  --gl-border-input:  #383D39;
 
-  /* Text — warm cream-white */
-  --gl-text:          #F5F1E6;
-  --gl-text-muted:    #A8ACC4;
-  --gl-text-faint:    #727694;
+  /* Text — cool off-white with slight sage tone */
+  --gl-text:          #EEF0EC;
+  --gl-text-muted:    #8A9189;
+  --gl-text-faint:    #606963;
 
-  /* Accent — calm sage-mint */
-  --gl-primary:       #6FC8A0;
-  --gl-primary-hover: #88D4B2;
-  --gl-primary-soft:  #1B2E26;
-  --gl-primary-ink:   #0C1A14;
+  /* Accent — deep teal-green (growth, momentum) */
+  --gl-primary:       #2EB8A0;
+  --gl-primary-hover: #3ECDB5;
+  --gl-primary-soft:  #0D2420;
+  --gl-primary-ink:   #051A16;
 
-  /* Entry type colours */
-  --gl-work-bg:       #272C4C;
-  --gl-work-fg:       #A6B0E0;
-  --gl-learn-bg:      #2C2447;
-  --gl-learn-fg:      #BFA8E5;
+  /* Entry type colours — warm ochre for work, periwinkle for learning */
+  --gl-work-bg:       #28200C;
+  --gl-work-fg:       #C4A05E;
+  --gl-learn-bg:      #161628;
+  --gl-learn-fg:      #8285BA;
 
-  /* Semantic states */
-  --gl-success:       #5DAF7A;
-  --gl-success-soft:  #1E3329;
-  --gl-warning:       #E0AE52;
-  --gl-warning-soft:  #3A2C12;
-  --gl-danger:        #E8675B;
-  --gl-danger-soft:   #3A1C18;
+  /* Semantic states — matte equivalents */
+  --gl-success:       #69B598;
+  --gl-success-soft:  #0D2419;
+  --gl-warning:       #C4A05E;
+  --gl-warning-soft:  #231A07;
+  --gl-danger:        #B87060;
+  --gl-danger-soft:   #261009;
 
-  /* Category swatches — eucalyptus leads */
-  --gl-swatch-1:      #6FC8A0;
-  --gl-swatch-2:      #7C8FE0;
-  --gl-swatch-3:      #BFA8E5;
-  --gl-swatch-4:      #E0AE52;
-  --gl-swatch-5:      #E8866F;
-  --gl-swatch-6:      #5FB8CD;
+  /* Category swatches — matte 6-hue palette */
+  --gl-swatch-1:      #69B598;
+  --gl-swatch-2:      #8285BA;
+  --gl-swatch-3:      #B87DA2;
+  --gl-swatch-4:      #C4A05E;
+  --gl-swatch-5:      #B87060;
+  --gl-swatch-6:      #62AEBF;
 
   /* Shadows */
   --gl-shadow:      0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -10px rgba(0, 0, 0, 0.55);
   --gl-shadow-lg:   0 2px 4px rgba(0, 0, 0, 0.55), 0 28px 48px -20px rgba(0, 0, 0, 0.7);
-  --gl-shadow-hard: 4px 4px 0 #f2ead3;
+  --gl-shadow-hard: 4px 4px 0 #D8DDD6;
 
   /* ── shadcn semantic tokens → GL values ──────────────────────────────────── */
-  --background:               #16142A;
-  --foreground:               #F5F1E6;
-  --card:                     #211F38;
-  --card-foreground:          #F5F1E6;
-  --popover:                  #211F38;
-  --popover-foreground:       #F5F1E6;
-  --primary:                  #6FC8A0;
-  --primary-foreground:       #0C1A14;
-  --secondary:                #2A2842;
-  --secondary-foreground:     #F5F1E6;
-  --muted:                    #2A2842;
-  --muted-foreground:         #A8ACC4;
-  --accent:                   #1B2E26;
-  --accent-foreground:        #6FC8A0;
-  --destructive:              #E8675B;
-  --border:                   #322F4D;
-  --input:                    #3F3D5B;
-  --ring:                     #6FC8A0;
+  --background:               #161918;
+  --foreground:               #EEF0EC;
+  --card:                     #1D201E;
+  --card-foreground:          #EEF0EC;
+  --popover:                  #1D201E;
+  --popover-foreground:       #EEF0EC;
+  --primary:                  #2EB8A0;
+  --primary-foreground:       #051A16;
+  --secondary:                #252924;
+  --secondary-foreground:     #EEF0EC;
+  --muted:                    #252924;
+  --muted-foreground:         #8A9189;
+  --accent:                   #0D2420;
+  --accent-foreground:        #2EB8A0;
+  --destructive:              #B87060;
+  --border:                   #2C312D;
+  --input:                    #383D39;
+  --ring:                     #2EB8A0;
   --radius:                   0.75rem;
 
   /* Charts — map to swatches */
-  --chart-1: #6FC8A0;
-  --chart-2: #7C8FE0;
-  --chart-3: #BFA8E5;
-  --chart-4: #E0AE52;
-  --chart-5: #E8866F;
+  --chart-1: #69B598;
+  --chart-2: #8285BA;
+  --chart-3: #B87DA2;
+  --chart-4: #C4A05E;
+  --chart-5: #B87060;
 
   /* Sidebar */
-  --sidebar:                    #100E22;
-  --sidebar-foreground:         #F5F1E6;
-  --sidebar-primary:            #6FC8A0;
-  --sidebar-primary-foreground: #0C1A14;
-  --sidebar-accent:             #211F38;
-  --sidebar-accent-foreground:  #F5F1E6;
-  --sidebar-border:             #322F4D;
-  --sidebar-ring:               #6FC8A0;
+  --sidebar:                    #101210;
+  --sidebar-foreground:         #EEF0EC;
+  --sidebar-primary:            #2EB8A0;
+  --sidebar-primary-foreground: #051A16;
+  --sidebar-accent:             #1D201E;
+  --sidebar-accent-foreground:  #EEF0EC;
+  --sidebar-border:             #2C312D;
+  --sidebar-ring:               #2EB8A0;
 }
 
 /* Dark-only design system — mirrors :root exactly */
 .dark {
-  --background:               #16142A;
-  --foreground:               #F5F1E6;
-  --card:                     #211F38;
-  --card-foreground:          #F5F1E6;
-  --popover:                  #211F38;
-  --popover-foreground:       #F5F1E6;
-  --primary:                  #6FC8A0;
-  --primary-foreground:       #0C1A14;
-  --secondary:                #2A2842;
-  --secondary-foreground:     #F5F1E6;
-  --muted:                    #2A2842;
-  --muted-foreground:         #A8ACC4;
-  --accent:                   #1B2E26;
-  --accent-foreground:        #6FC8A0;
-  --destructive:              #E8675B;
-  --border:                   #322F4D;
-  --input:                    #3F3D5B;
-  --ring:                     #6FC8A0;
-  --chart-1: #6FC8A0;
-  --chart-2: #7C8FE0;
-  --chart-3: #BFA8E5;
-  --chart-4: #E0AE52;
-  --chart-5: #E8866F;
-  --sidebar:                    #100E22;
-  --sidebar-foreground:         #F5F1E6;
-  --sidebar-primary:            #6FC8A0;
-  --sidebar-primary-foreground: #0C1A14;
-  --sidebar-accent:             #211F38;
-  --sidebar-accent-foreground:  #F5F1E6;
-  --sidebar-border:             #322F4D;
-  --sidebar-ring:               #6FC8A0;
+  --background:               #161918;
+  --foreground:               #EEF0EC;
+  --card:                     #1D201E;
+  --card-foreground:          #EEF0EC;
+  --popover:                  #1D201E;
+  --popover-foreground:       #EEF0EC;
+  --primary:                  #2EB8A0;
+  --primary-foreground:       #051A16;
+  --secondary:                #252924;
+  --secondary-foreground:     #EEF0EC;
+  --muted:                    #252924;
+  --muted-foreground:         #8A9189;
+  --accent:                   #0D2420;
+  --accent-foreground:        #2EB8A0;
+  --destructive:              #B87060;
+  --border:                   #2C312D;
+  --input:                    #383D39;
+  --ring:                     #2EB8A0;
+  --chart-1: #69B598;
+  --chart-2: #8285BA;
+  --chart-3: #B87DA2;
+  --chart-4: #C4A05E;
+  --chart-5: #B87060;
+  --sidebar:                    #101210;
+  --sidebar-foreground:         #EEF0EC;
+  --sidebar-primary:            #2EB8A0;
+  --sidebar-primary-foreground: #051A16;
+  --sidebar-accent:             #1D201E;
+  --sidebar-accent-foreground:  #EEF0EC;
+  --sidebar-border:             #2C312D;
+  --sidebar-ring:               #2EB8A0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -258,7 +259,7 @@
 
   /* Text selection */
   ::selection {
-    background-color: rgba(111, 200, 160, 0.22);
+    background-color: rgba(46, 184, 160, 0.22);
     color: var(--gl-text);
   }
 
@@ -328,10 +329,10 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* Amber glow pulse — used on streak number ring */
+/* Teal glow pulse — used on streak number */
 @keyframes gl-glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 174, 82, 0); }
-  50%       { box-shadow: 0 0 0 12px rgba(224, 174, 82, 0.18), 0 0 28px rgba(224, 174, 82, 0.10); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 184, 160, 0); }
+  50%       { box-shadow: 0 0 0 12px rgba(46, 184, 160, 0.18), 0 0 28px rgba(46, 184, 160, 0.10); }
 }
 
 /* SVG arc fill — stroke-dashoffset: 169.65 (empty 270° arc, r=36) → 44.11 (7.4/10 filled) */

@@ -7,12 +7,12 @@ interface HeroCategoriesWidgetProps {
 }
 
 const CATEGORY_POOL = [
-  { name: 'Backend',       count: 38, swatchColor: '#6FC8A0' },
-  { name: 'System Design', count: 24, swatchColor: '#7C8FE0' },
-  { name: 'Reading',       count: 22, swatchColor: '#BFA8E5' },
-  { name: 'Side Project',  count: 19, swatchColor: '#E0AE52' },
-  { name: 'Soft Skills',   count: 15, swatchColor: '#E8866F' },
-  { name: 'Open Source',   count: 11, swatchColor: '#5FB8CD' },
+  { name: 'Backend',       count: 38, swatchColor: '#69B598' },
+  { name: 'System Design', count: 24, swatchColor: '#8285BA' },
+  { name: 'Reading',       count: 22, swatchColor: '#B87DA2' },
+  { name: 'Side Project',  count: 19, swatchColor: '#C4A05E' },
+  { name: 'Soft Skills',   count: 15, swatchColor: '#62AEBF' },
+  { name: 'Open Source',   count: 11, swatchColor: '#B87060' },
 ] as const;
 
 const SLOT_COUNT = 4; // number of pills always visible
