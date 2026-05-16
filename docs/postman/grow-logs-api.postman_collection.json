@@ -2341,6 +2341,364 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Entries",
+      "item": [
+        {
+          "name": "List entries — happy path (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries?page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('data is array', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('meta has pagination fields', () => {",
+                  "  pm.expect(body.meta).to.have.all.keys('total', 'page', 'limit', 'totalPages');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List entries — filter by type=WORK",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries?type=WORK",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"],
+              "query": [{ "key": "type", "value": "WORK" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('all entries are WORK type', () => {",
+                  "  body.data.forEach(e => pm.expect(e.type).to.equal('WORK'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List entries — filter by date range",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries?from=2024-01-01&to=2024-12-31",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"],
+              "query": [
+                { "key": "from", "value": "2024-01-01" },
+                { "key": "to", "value": "2024-12-31" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create entry — happy path (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"WORK\",\n  \"text\": \"Implemented the EntriesModule CRUD endpoints with full ownership checks and daily limit enforcement.\",\n  \"categoryId\": \"{{CATEGORY_ID}}\",\n  \"productivityScore\": 8\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('entry has id', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "pm.test('entry includes category name', () => pm.expect(body.data.category.name).to.be.a('string'));",
+                  "pm.environment.set('ENTRY_ID', body.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create entry — 422 future entryDate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"WORK\",\n  \"text\": \"This entry should fail because it has a future date.\",\n  \"categoryId\": \"{{CATEGORY_ID}}\",\n  \"entryDate\": \"9999-12-31\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions future', () => pm.expect(body.message).to.include('future'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create entry — 404 wrong categoryId",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"WORK\",\n  \"text\": \"This entry should fail because the category does not exist.\",\n  \"categoryId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get entry — happy path (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('entry id matches', () => pm.expect(body.data.id).to.equal(pm.environment.get('ENTRY_ID')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get entry — 404 not found",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/00000000-0000-0000-0000-000000000000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update entry — happy path (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productivityScore\": 9\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('productivityScore updated', () => pm.expect(body.data.productivityScore).to.equal(9));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update entry — 422 future entryDate",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entryDate\": \"9999-12-31\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete entry — happy path (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete entry — 404 not found",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/00000000-0000-0000-0000-000000000000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

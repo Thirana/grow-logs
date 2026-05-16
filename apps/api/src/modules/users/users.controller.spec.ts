@@ -18,7 +18,11 @@ const mockUsersService = {
   updateEmail: jest.fn(),
 };
 
-const mockUser = { userId: 'user-uuid', role: 'USER' };
+const mockUser = {
+  userId: 'user-uuid',
+  role: 'USER',
+  subscriptionStatus: 'FREE',
+};
 
 describe('UsersController', () => {
   let controller: UsersController;
