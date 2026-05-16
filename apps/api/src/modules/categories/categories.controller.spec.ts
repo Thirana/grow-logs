@@ -9,6 +9,9 @@ const mockService = {
   create: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  createSubcategory: jest.fn(),
+  updateSubcategory: jest.fn(),
+  deleteSubcategory: jest.fn(),
 };
 
 const user: AuthenticatedUser = { userId: 'user-1', role: UserRole.USER };
@@ -91,6 +94,72 @@ describe('CategoriesController', () => {
       const result = await controller.delete(user, 'cat-1');
 
       expect(mockService.delete).toHaveBeenCalledWith('user-1', 'cat-1');
+      expect(result).toBeUndefined();
+    });
+  });
+
+  const subcategoryItem = {
+    id: 'sub-1',
+    categoryId: 'cat-1',
+    name: 'NestJS',
+    isCompleted: false,
+    createdAt: new Date('2024-01-01'),
+  };
+
+  describe('createSubcategory', () => {
+    it('delegates to service with categoryId and dto', async () => {
+      mockService.createSubcategory.mockResolvedValue(subcategoryItem);
+
+      const result = await controller.createSubcategory(user, 'cat-1', {
+        name: 'NestJS',
+      });
+
+      expect(mockService.createSubcategory).toHaveBeenCalledWith(
+        'user-1',
+        'cat-1',
+        { name: 'NestJS' },
+      );
+      expect(result).toEqual({ data: subcategoryItem, meta: {} });
+    });
+  });
+
+  describe('updateSubcategory', () => {
+    it('delegates to service with categoryId, subId, and dto', async () => {
+      mockService.updateSubcategory.mockResolvedValue({
+        ...subcategoryItem,
+        isCompleted: true,
+      });
+
+      const result = await controller.updateSubcategory(
+        user,
+        'cat-1',
+        'sub-1',
+        {
+          isCompleted: true,
+        },
+      );
+
+      expect(mockService.updateSubcategory).toHaveBeenCalledWith(
+        'user-1',
+        'cat-1',
+        'sub-1',
+        { isCompleted: true },
+      );
+      expect(result.data.isCompleted).toBe(true);
+    });
+  });
+
+  describe('deleteSubcategory', () => {
+    it('delegates to service and returns void', async () => {
+      mockService.deleteSubcategory.mockResolvedValue(undefined);
+
+      const result = await controller.deleteSubcategory(user, 'cat-1', 'sub-1');
+
+      expect(mockService.deleteSubcategory).toHaveBeenCalledWith(
+        'user-1',
+        'cat-1',
+        'sub-1',
+      );
       expect(result).toBeUndefined();
     });
   });

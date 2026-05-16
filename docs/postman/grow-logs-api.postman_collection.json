@@ -1849,6 +1849,496 @@
               }
             }
           ]
+        },
+        {
+          "name": "Create subcategory \u2014 happy path (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"NestJS\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has data envelope', () => pm.expect(body).to.have.property('data'));",
+                  "pm.test('subcategory has isCompleted false', () => pm.expect(body.data.isCompleted).to.be.false);",
+                  "pm.test('subcategory has categoryId', () => pm.expect(body.data.categoryId).to.equal(pm.environment.get('CATEGORY_ID')));",
+                  "pm.environment.set('SUBCATEGORY_ID', body.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create subcategory \u2014 422 parent category completed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Express\"\n}"
+            }
+          },
+          "description": "Mark the parent category as complete first",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions completed', () => pm.expect(body.message).to.include('completed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create subcategory \u2014 409 name conflict",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"NestJS\"\n}"
+            }
+          },
+          "description": "Run after creating NestJS subcategory above",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create subcategory \u2014 422 active limit reached",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sixth Subcategory\"\n}"
+            }
+          },
+          "description": "Create 5 active subcategories first \u2014 this sixth should 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions limit', () => pm.expect(body.message).to.include('5 active subcategories'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update subcategory \u2014 complete (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories/{{SUBCATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories",
+                "{{SUBCATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('isCompleted is true', () => pm.expect(body.data.isCompleted).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update subcategory \u2014 reactivate (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories/{{SUBCATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories",
+                "{{SUBCATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": false\n}"
+            }
+          },
+          "description": "Complete the subcategory first; parent category must be active",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('isCompleted is false', () => pm.expect(body.data.isCompleted).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update subcategory \u2014 rename (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories/{{SUBCATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories",
+                "{{SUBCATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"NestJS Renamed\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('name updated', () => pm.expect(body.data.name).to.equal('NestJS Renamed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update subcategory \u2014 422 rename while completed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories/{{SUBCATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories",
+                "{{SUBCATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cannot Rename\"\n}"
+            }
+          },
+          "description": "Complete the subcategory first; this rename should 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions completed', () => pm.expect(body.message).to.include('completed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update subcategory \u2014 422 reactivate with completed parent",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories/{{SUBCATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories",
+                "{{SUBCATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": false\n}"
+            }
+          },
+          "description": "Complete both the subcategory and its parent category first",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions parent', () => pm.expect(body.message).to.include('parent category'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete subcategory \u2014 happy path (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories/{{SUBCATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories",
+                "{{SUBCATEGORY_ID}}"
+              ]
+            }
+          },
+          "description": "Subcategory must have no entries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete subcategory \u2014 422 has entries",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}/subcategories/{{SUBCATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}",
+                "subcategories",
+                "{{SUBCATEGORY_ID}}"
+              ]
+            }
+          },
+          "description": "Create entries in the subcategory first \u2014 delete should 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions entries', () => pm.expect(body.message).to.include('entries'));"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

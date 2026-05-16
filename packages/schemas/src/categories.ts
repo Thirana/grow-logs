@@ -35,9 +35,24 @@ export const categoryFiltersSchema = z.object({
     .optional(),
 });
 
+export const createSubcategorySchema = z.object({
+  name: z.string().min(1).max(100),
+});
+
+export const updateSubcategorySchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    isCompleted: z.boolean().optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field must be provided',
+  });
+
 export type CreateCategoryDto = z.infer<typeof createCategorySchema>;
 export type UpdateCategoryDto = z.infer<typeof updateCategorySchema>;
 export type CategoryFiltersDto = z.infer<typeof categoryFiltersSchema>;
+export type CreateSubcategoryDto = z.infer<typeof createSubcategorySchema>;
+export type UpdateSubcategoryDto = z.infer<typeof updateSubcategorySchema>;
 export type ColorPalette = (typeof COLOR_PALETTE)[number];
 
 export { COLOR_PALETTE };

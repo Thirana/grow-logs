@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { OnboardingService } from './onboarding.service.js';
 

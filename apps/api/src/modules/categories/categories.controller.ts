@@ -27,9 +27,13 @@ import {
   createCategorySchema,
   updateCategorySchema,
   categoryFiltersSchema,
+  createSubcategorySchema,
+  updateSubcategorySchema,
   type CreateCategoryDto,
   type UpdateCategoryDto,
   type CategoryFiltersDto,
+  type CreateSubcategoryDto,
+  type UpdateSubcategoryDto,
 } from '@grow-logs/schemas';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
@@ -38,6 +42,7 @@ import { ZodValidationPipe } from '../../common/pipes/index.js';
 import {
   CategoriesService,
   type CategoryItem,
+  type SubcategoryResponse,
 } from './categories.service.js';
 
 /**
@@ -75,12 +80,23 @@ export class CategoriesController {
       type: 'object',
       required: ['name'],
       properties: {
-        name: { type: 'string', minLength: 1, maxLength: 100, example: 'Backend' },
+        name: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 100,
+          example: 'Backend',
+        },
         color: {
           type: 'string',
           enum: [
-            '#69B598', '#8285BA', '#B87DA2', '#C4A05E',
-            '#62AEBF', '#B87060', '#7DB8B0', '#A87DB8',
+            '#69B598',
+            '#8285BA',
+            '#B87DA2',
+            '#C4A05E',
+            '#62AEBF',
+            '#B87060',
+            '#7DB8B0',
+            '#A87DB8',
           ],
           example: '#69B598',
         },
@@ -110,12 +126,23 @@ export class CategoriesController {
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string', minLength: 1, maxLength: 100, example: 'Backend' },
+        name: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 100,
+          example: 'Backend',
+        },
         color: {
           type: 'string',
           enum: [
-            '#69B598', '#8285BA', '#B87DA2', '#C4A05E',
-            '#62AEBF', '#B87060', '#7DB8B0', '#A87DB8',
+            '#69B598',
+            '#8285BA',
+            '#B87DA2',
+            '#C4A05E',
+            '#62AEBF',
+            '#B87060',
+            '#7DB8B0',
+            '#A87DB8',
           ],
         },
         isCompleted: { type: 'boolean', example: true },
@@ -155,5 +182,111 @@ export class CategoriesController {
     @Param('id') categoryId: string,
   ): Promise<void> {
     await this.categoriesService.delete(user.userId, categoryId);
+  }
+
+  // ─── Subcategory endpoints ────────────────────────────────────────────────
+
+  @Post(':id/subcategories')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a subcategory under a category' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['name'],
+      properties: {
+        name: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 100,
+          example: 'NestJS',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({ description: 'Subcategory created' })
+  @ApiConflictResponse({
+    description: 'Subcategory name already exists in this category',
+  })
+  @ApiUnprocessableEntityResponse({
+    description:
+      'Category not found, category is completed, or active subcategory limit reached',
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT missing or invalid' })
+  async createSubcategory(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') categoryId: string,
+    @Body(new ZodValidationPipe(createSubcategorySchema))
+    dto: CreateSubcategoryDto,
+  ): Promise<{ data: SubcategoryResponse; meta: object }> {
+    const subcategory = await this.categoriesService.createSubcategory(
+      user.userId,
+      categoryId,
+      dto,
+    );
+    return { data: subcategory, meta: {} };
+  }
+
+  @Patch(':id/subcategories/:subId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Update a subcategory — rename, complete, or reactivate',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 100,
+          example: 'NestJS',
+        },
+        isCompleted: { type: 'boolean', example: true },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Subcategory updated' })
+  @ApiConflictResponse({
+    description: 'Subcategory name already taken in this category',
+  })
+  @ApiUnprocessableEntityResponse({
+    description:
+      'Subcategory not found, rename blocked on completed subcategory, parent completed on reactivation, or active limit exceeded',
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT missing or invalid' })
+  async updateSubcategory(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') categoryId: string,
+    @Param('subId') subId: string,
+    @Body(new ZodValidationPipe(updateSubcategorySchema))
+    dto: UpdateSubcategoryDto,
+  ): Promise<{ data: SubcategoryResponse; meta: object }> {
+    const subcategory = await this.categoriesService.updateSubcategory(
+      user.userId,
+      categoryId,
+      subId,
+      dto,
+    );
+    return { data: subcategory, meta: {} };
+  }
+
+  @Delete(':id/subcategories/:subId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete an empty subcategory (no entries)' })
+  @ApiNoContentResponse({ description: 'Subcategory deleted' })
+  @ApiUnprocessableEntityResponse({
+    description: 'Subcategory not found or has entries (mark complete instead)',
+  })
+  @ApiUnauthorizedResponse({ description: 'JWT missing or invalid' })
+  async deleteSubcategory(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') categoryId: string,
+    @Param('subId') subId: string,
+  ): Promise<void> {
+    await this.categoriesService.deleteSubcategory(
+      user.userId,
+      categoryId,
+      subId,
+    );
   }
 }

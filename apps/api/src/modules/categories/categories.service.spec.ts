@@ -1,11 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ConflictException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { CategoriesService } from './categories.service.js';
 
 const mockPrisma = {
   category: {
     findMany: jest.fn(),
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    count: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+  subcategory: {
     findUnique: jest.fn(),
     findFirst: jest.fn(),
     count: jest.fn(),
@@ -100,6 +111,7 @@ describe('CategoriesService', () => {
 
       expect(mockPrisma.category.create).toHaveBeenCalledWith(
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: expect.objectContaining({ color: '#69B598', name: 'Backend' }),
         }),
       );
@@ -120,6 +132,7 @@ describe('CategoriesService', () => {
 
       expect(mockPrisma.category.create).toHaveBeenCalledWith(
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           data: expect.objectContaining({ color: '#8285BA' }),
         }),
       );
@@ -131,9 +144,9 @@ describe('CategoriesService', () => {
         .mockResolvedValueOnce(3); // totalCount
       mockPrisma.category.findFirst.mockResolvedValue(null);
 
-      await expect(
-        service.create('user-1', { name: 'New' }),
-      ).rejects.toThrow(UnprocessableEntityException);
+      await expect(service.create('user-1', { name: 'New' })).rejects.toThrow(
+        UnprocessableEntityException,
+      );
       expect(mockPrisma.category.create).not.toHaveBeenCalled();
     });
 
@@ -309,6 +322,334 @@ describe('CategoriesService', () => {
       await expect(service.delete('user-1', 'cat-1')).resolves.toBeUndefined();
       expect(mockPrisma.category.delete).toHaveBeenCalledWith({
         where: { id: 'cat-1' },
+      });
+    });
+  });
+
+  // ─── createSubcategory ───────────────────────────────────────────────────────
+
+  describe('createSubcategory', () => {
+    const baseSub = {
+      id: 'sub-1',
+      categoryId: 'cat-1',
+      userId: 'user-1',
+      name: 'NestJS',
+      isCompleted: false,
+      createdAt: new Date('2024-01-01'),
+    };
+
+    it('creates a subcategory under an active category', async () => {
+      mockPrisma.category.findUnique.mockResolvedValue(baseCategory);
+      mockPrisma.subcategory.count.mockResolvedValue(2); // 2 active (< 5)
+      mockPrisma.subcategory.findFirst.mockResolvedValue(null);
+      mockPrisma.subcategory.create.mockResolvedValue(baseSub);
+
+      const result = await service.createSubcategory('user-1', 'cat-1', {
+        name: 'NestJS',
+      });
+
+      expect(mockPrisma.subcategory.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { categoryId: 'cat-1', userId: 'user-1', name: 'NestJS' },
+        }),
+      );
+      expect(result.isCompleted).toBe(false);
+    });
+
+    it('throws UnprocessableEntityException when category not found', async () => {
+      mockPrisma.category.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.createSubcategory('user-1', 'cat-1', { name: 'NestJS' }),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('throws NotFoundException when category belongs to another user', async () => {
+      mockPrisma.category.findUnique.mockResolvedValue({
+        ...baseCategory,
+        userId: 'other-user',
+      });
+
+      await expect(
+        service.createSubcategory('user-1', 'cat-1', { name: 'NestJS' }),
+      ).rejects.toThrow('Category not found');
+    });
+
+    it('throws UnprocessableEntityException when parent category is completed', async () => {
+      mockPrisma.category.findUnique.mockResolvedValue({
+        ...baseCategory,
+        isCompleted: true,
+      });
+
+      await expect(
+        service.createSubcategory('user-1', 'cat-1', { name: 'NestJS' }),
+      ).rejects.toThrow(UnprocessableEntityException);
+      expect(mockPrisma.subcategory.create).not.toHaveBeenCalled();
+    });
+
+    it('throws UnprocessableEntityException when active subcategory limit reached', async () => {
+      mockPrisma.category.findUnique.mockResolvedValue(baseCategory);
+      mockPrisma.subcategory.count.mockResolvedValue(5); // at limit
+      mockPrisma.subcategory.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.createSubcategory('user-1', 'cat-1', { name: 'NestJS' }),
+      ).rejects.toThrow(UnprocessableEntityException);
+      expect(mockPrisma.subcategory.create).not.toHaveBeenCalled();
+    });
+
+    it('throws ConflictException when subcategory name already exists', async () => {
+      mockPrisma.category.findUnique.mockResolvedValue(baseCategory);
+      mockPrisma.subcategory.count.mockResolvedValue(2);
+      mockPrisma.subcategory.findFirst.mockResolvedValue({
+        id: 'existing-sub',
+      });
+
+      await expect(
+        service.createSubcategory('user-1', 'cat-1', { name: 'NestJS' }),
+      ).rejects.toThrow(ConflictException);
+    });
+  });
+
+  // ─── updateSubcategory ───────────────────────────────────────────────────────
+
+  describe('updateSubcategory', () => {
+    const baseSub = {
+      id: 'sub-1',
+      categoryId: 'cat-1',
+      userId: 'user-1',
+      name: 'NestJS',
+      isCompleted: false,
+      createdAt: new Date('2024-01-01'),
+    };
+
+    it('throws UnprocessableEntityException when subcategory not found', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', { name: 'New' }),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('throws UnprocessableEntityException when subcategory categoryId does not match URL param', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        categoryId: 'different-cat',
+      });
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', { name: 'New' }),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('throws NotFoundException when subcategory belongs to another user', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        userId: 'other-user',
+      });
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', { name: 'New' }),
+      ).rejects.toThrow('Subcategory not found');
+    });
+
+    it('completes an active subcategory (idempotent)', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue(baseSub);
+      mockPrisma.subcategory.update.mockResolvedValue({
+        ...baseSub,
+        isCompleted: true,
+      });
+
+      const result = await service.updateSubcategory(
+        'user-1',
+        'cat-1',
+        'sub-1',
+        {
+          isCompleted: true,
+        },
+      );
+      expect(result.isCompleted).toBe(true);
+    });
+
+    it('completing an already-completed subcategory does not error', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        isCompleted: true,
+      });
+      mockPrisma.subcategory.update.mockResolvedValue({
+        ...baseSub,
+        isCompleted: true,
+      });
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', {
+          isCompleted: true,
+        }),
+      ).resolves.not.toThrow();
+    });
+
+    it('reactivates a subcategory when parent is active and under limit', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        isCompleted: true,
+      });
+      mockPrisma.category.findUnique.mockResolvedValue({
+        ...baseCategory,
+        isCompleted: false,
+      });
+      mockPrisma.subcategory.count.mockResolvedValue(3); // 3 active (< 5)
+      mockPrisma.subcategory.update.mockResolvedValue({
+        ...baseSub,
+        isCompleted: false,
+      });
+
+      const result = await service.updateSubcategory(
+        'user-1',
+        'cat-1',
+        'sub-1',
+        {
+          isCompleted: false,
+        },
+      );
+      expect(result.isCompleted).toBe(false);
+    });
+
+    it('throws UnprocessableEntityException when reactivating with completed parent', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        isCompleted: true,
+      });
+      mockPrisma.category.findUnique.mockResolvedValue({
+        ...baseCategory,
+        isCompleted: true,
+      });
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', {
+          isCompleted: false,
+        }),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('throws UnprocessableEntityException when reactivation exceeds active subcategory limit', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        isCompleted: true,
+      });
+      mockPrisma.category.findUnique.mockResolvedValue({
+        ...baseCategory,
+        isCompleted: false,
+      });
+      mockPrisma.subcategory.count.mockResolvedValue(5); // at limit
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', {
+          isCompleted: false,
+        }),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('renames an active subcategory', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue(baseSub);
+      mockPrisma.subcategory.findFirst.mockResolvedValue(null);
+      mockPrisma.subcategory.update.mockResolvedValue({
+        ...baseSub,
+        name: 'Renamed',
+      });
+
+      const result = await service.updateSubcategory(
+        'user-1',
+        'cat-1',
+        'sub-1',
+        {
+          name: 'Renamed',
+        },
+      );
+      expect(result.name).toBe('Renamed');
+    });
+
+    it('throws UnprocessableEntityException when renaming a completed subcategory', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        isCompleted: true,
+      });
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', { name: 'New' }),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('throws ConflictException when renaming to an existing name', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue(baseSub);
+      mockPrisma.subcategory.findFirst.mockResolvedValue({ id: 'other-sub' });
+
+      await expect(
+        service.updateSubcategory('user-1', 'cat-1', 'sub-1', {
+          name: 'Existing',
+        }),
+      ).rejects.toThrow(ConflictException);
+    });
+  });
+
+  // ─── deleteSubcategory ───────────────────────────────────────────────────────
+
+  describe('deleteSubcategory', () => {
+    const baseSub = {
+      id: 'sub-1',
+      categoryId: 'cat-1',
+      userId: 'user-1',
+    };
+
+    it('throws UnprocessableEntityException when subcategory not found', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.deleteSubcategory('user-1', 'cat-1', 'sub-1'),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('throws UnprocessableEntityException when subcategory categoryId does not match', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        categoryId: 'wrong-cat',
+      });
+
+      await expect(
+        service.deleteSubcategory('user-1', 'cat-1', 'sub-1'),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('throws NotFoundException when subcategory belongs to another user', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue({
+        ...baseSub,
+        userId: 'other-user',
+      });
+
+      await expect(
+        service.deleteSubcategory('user-1', 'cat-1', 'sub-1'),
+      ).rejects.toThrow('Subcategory not found');
+    });
+
+    it('throws UnprocessableEntityException when subcategory has entries', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue(baseSub);
+      mockPrisma.entry.count.mockResolvedValue(2);
+
+      await expect(
+        service.deleteSubcategory('user-1', 'cat-1', 'sub-1'),
+      ).rejects.toThrow(UnprocessableEntityException);
+      expect(mockPrisma.subcategory.delete).not.toHaveBeenCalled();
+    });
+
+    it('deletes an empty subcategory', async () => {
+      mockPrisma.subcategory.findUnique.mockResolvedValue(baseSub);
+      mockPrisma.entry.count.mockResolvedValue(0);
+      mockPrisma.subcategory.delete.mockResolvedValue(baseSub);
+
+      await expect(
+        service.deleteSubcategory('user-1', 'cat-1', 'sub-1'),
+      ).resolves.toBeUndefined();
+      expect(mockPrisma.subcategory.delete).toHaveBeenCalledWith({
+        where: { id: 'sub-1' },
       });
     });
   });
