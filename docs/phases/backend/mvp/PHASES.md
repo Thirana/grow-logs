@@ -27,7 +27,7 @@ Each step is a single focused unit — one concern, one agent session.
 | [18](steps/step-18-email-ses.md) | EmailModule: Resend Integration | Phase 5 | ✅ |
 | [19](steps/step-19-users-module.md) | UsersModule | Phase 6 | ✅ |
 | [20](steps/step-20-onboarding-module.md) | OnboardingModule | Phase 6 | ✅ |
-| [21](steps/step-21-categories-module.md) | CategoriesModule: Categories CRUD | Phase 7 | ⬜ |
+| [21](steps/step-21-categories-module.md) | CategoriesModule: Categories CRUD | Phase 7 | ✅ |
 | [22](steps/step-22-subcategories-module.md) | CategoriesModule: Subcategories CRUD | Phase 7 | ⬜ |
 | [23](steps/step-23-entries-crud.md) | EntriesModule: CRUD | Phase 8 | ⬜ |
 | [24](steps/step-24-entries-summary.md) | EntriesModule: Summary Analytics | Phase 8 | ⬜ |

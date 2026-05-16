@@ -27,9 +27,9 @@ export class OnboardingService {
       }),
     ]);
 
-    if (categoryCount < 3) {
+    if (categoryCount < 1) {
       throw new BadRequestException(
-        'You need at least 3 categories to complete onboarding',
+        'You need at least 1 category to complete onboarding',
       );
     }
 

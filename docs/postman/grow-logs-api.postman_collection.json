@@ -27,13 +27,25 @@
       "name": "Auth",
       "item": [
         {
-          "name": "Register — happy path",
+          "name": "Register \u2014 happy path",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/register",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"{{USER_PASSWORD}}\"\n}"
@@ -60,13 +72,25 @@
           ]
         },
         {
-          "name": "Register — duplicate email (409)",
+          "name": "Register \u2014 duplicate email (409)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/register",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"{{USER_PASSWORD}}\"\n}"
@@ -88,13 +112,25 @@
           ]
         },
         {
-          "name": "Register — validation failure, weak password (400)",
+          "name": "Register \u2014 validation failure, weak password (400)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/register",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"valid@example.com\",\n  \"password\": \"short\"\n}"
@@ -116,13 +152,25 @@
           ]
         },
         {
-          "name": "Register — validation failure, invalid email (400)",
+          "name": "Register \u2014 validation failure, invalid email (400)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/register", "host": ["{{BASE_URL}}"], "path": ["auth", "register"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/register",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"ValidPass1!\"\n}"
@@ -143,13 +191,25 @@
           ]
         },
         {
-          "name": "Login — happy path",
+          "name": "Login \u2014 happy path",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"{{USER_PASSWORD}}\"\n}"
@@ -184,13 +244,25 @@
           ]
         },
         {
-          "name": "Login — wrong password (401)",
+          "name": "Login \u2014 wrong password (401)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{USER_EMAIL}}\",\n  \"password\": \"wrongpassword\"\n}"
@@ -213,13 +285,25 @@
           ]
         },
         {
-          "name": "Login — unknown email gives same error as wrong password (401)",
+          "name": "Login \u2014 unknown email gives same error as wrong password (401)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"nosuchuser@example.com\",\n  \"password\": \"AnyPassword1!\"\n}"
@@ -233,7 +317,7 @@
                 "exec": [
                   "pm.test('status is 401', () => pm.response.to.have.status(401));",
                   "const body = pm.response.json();",
-                  "pm.test('same generic message as wrong password — no user enumeration', () => {",
+                  "pm.test('same generic message as wrong password \u2014 no user enumeration', () => {",
                   "  pm.expect(body.message).to.equal('Invalid email or password');",
                   "});"
                 ]
@@ -242,13 +326,25 @@
           ]
         },
         {
-          "name": "Login — unverified email (401)",
+          "name": "Login \u2014 unverified email (401)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{UNVERIFIED_USER_EMAIL}}\",\n  \"password\": \"{{UNVERIFIED_USER_PASSWORD}}\"\n}"
@@ -271,13 +367,25 @@
           ]
         },
         {
-          "name": "Login — validation failure, missing password (400)",
+          "name": "Login \u2014 validation failure, missing password (400)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/login", "host": ["{{BASE_URL}}"], "path": ["auth", "login"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{USER_EMAIL}}\"\n}"
@@ -298,14 +406,26 @@
           ]
         },
         {
-          "name": "Verify Email — happy path (200)",
+          "name": "Verify Email \u2014 happy path (200)",
           "description": "Paste the token printed to the dev server console after registering. In dev mode the server logs: [DEV] Verify: http://localhost:3001/verify-email?token=<TOKEN>. Copy the token value and set it as {{VERIFICATION_TOKEN}} in your environment.",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/verify-email",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"token\": \"{{VERIFICATION_TOKEN}}\"\n}"
@@ -328,14 +448,26 @@
           ]
         },
         {
-          "name": "Verify Email — idempotent, second call succeeds (200)",
+          "name": "Verify Email \u2014 idempotent, second call succeeds (200)",
           "description": "Calling verify-email twice with the same valid token must return 200 both times. Email clients pre-fetch links, so the second call must not error.",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/verify-email",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"token\": \"{{VERIFICATION_TOKEN}}\"\n}"
@@ -354,13 +486,25 @@
           ]
         },
         {
-          "name": "Verify Email — tampered token (401)",
+          "name": "Verify Email \u2014 tampered token (401)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/verify-email",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"token\": \"this.is.not.a.valid.jwt\"\n}"
@@ -383,13 +527,25 @@
           ]
         },
         {
-          "name": "Verify Email — validation failure, missing token (400)",
+          "name": "Verify Email \u2014 validation failure, missing token (400)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/verify-email", "host": ["{{BASE_URL}}"], "path": ["auth", "verify-email"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/verify-email",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -410,13 +566,25 @@
           ]
         },
         {
-          "name": "Resend Verification — registered unverified email (200)",
+          "name": "Resend Verification \u2014 registered unverified email (200)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/resend-verification", "host": ["{{BASE_URL}}"], "path": ["auth", "resend-verification"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/resend-verification",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "resend-verification"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{USER_EMAIL}}\"\n}"
@@ -438,14 +606,26 @@
           ]
         },
         {
-          "name": "Resend Verification — unknown email returns same 200 (no enumeration)",
+          "name": "Resend Verification \u2014 unknown email returns same 200 (no enumeration)",
           "description": "The endpoint must return 200 with the same message even for email addresses that have no account. This prevents an attacker from discovering which emails are registered.",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/resend-verification", "host": ["{{BASE_URL}}"], "path": ["auth", "resend-verification"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/resend-verification",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "resend-verification"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"nosuchuser@example.com\"\n}"
@@ -468,13 +648,25 @@
           ]
         },
         {
-          "name": "Resend Verification — validation failure, invalid email (400)",
+          "name": "Resend Verification \u2014 validation failure, invalid email (400)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/resend-verification", "host": ["{{BASE_URL}}"], "path": ["auth", "resend-verification"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/resend-verification",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "resend-verification"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"not-an-email\"\n}"
@@ -495,15 +687,30 @@
           ]
         },
         {
-          "name": "Change Password — happy path (200)",
+          "name": "Change Password \u2014 happy path (200)",
           "description": "Requires a valid ACCESS_TOKEN set by the Login request. Run Login first.",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/change-password", "host": ["{{BASE_URL}}"], "path": ["auth", "change-password"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"currentPassword\": \"{{USER_PASSWORD}}\",\n  \"newPassword\": \"{{USER_NEW_PASSWORD}}\"\n}"
@@ -525,14 +732,29 @@
           ]
         },
         {
-          "name": "Change Password — wrong current password (401)",
+          "name": "Change Password \u2014 wrong current password (401)",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/change-password", "host": ["{{BASE_URL}}"], "path": ["auth", "change-password"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"currentPassword\": \"WrongPass1!\",\n  \"newPassword\": \"NewPass1!\"\n}"
@@ -555,15 +777,30 @@
           ]
         },
         {
-          "name": "Change Password — same new password as current (400)",
+          "name": "Change Password \u2014 same new password as current (400)",
           "description": "The Zod schema refine rejects a new password that matches the current password.",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/change-password", "host": ["{{BASE_URL}}"], "path": ["auth", "change-password"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"currentPassword\": \"{{USER_PASSWORD}}\",\n  \"newPassword\": \"{{USER_PASSWORD}}\"\n}"
@@ -584,13 +821,25 @@
           ]
         },
         {
-          "name": "Change Password — missing JWT (401)",
+          "name": "Change Password \u2014 missing JWT (401)",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/change-password", "host": ["{{BASE_URL}}"], "path": ["auth", "change-password"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"currentPassword\": \"OldPass1!\",\n  \"newPassword\": \"NewPass1!\"\n}"
@@ -609,14 +858,29 @@
           ]
         },
         {
-          "name": "Change Password — validation failure, weak new password (400)",
+          "name": "Change Password \u2014 validation failure, weak new password (400)",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/auth/change-password", "host": ["{{BASE_URL}}"], "path": ["auth", "change-password"] },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"currentPassword\": \"{{USER_PASSWORD}}\",\n  \"newPassword\": \"short\"\n}"
@@ -642,13 +906,25 @@
       "name": "Users",
       "item": [
         {
-          "name": "Get profile — happy path (200)",
+          "name": "Get profile \u2014 happy path (200)",
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/users/me", "host": ["{{BASE_URL}}"], "path": ["users", "me"] }
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
           },
           "event": [
             {
@@ -677,11 +953,20 @@
           ]
         },
         {
-          "name": "Get profile — missing JWT (401)",
+          "name": "Get profile \u2014 missing JWT (401)",
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{BASE_URL}}/users/me", "host": ["{{BASE_URL}}"], "path": ["users", "me"] }
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            }
           },
           "event": [
             {
@@ -696,15 +981,30 @@
           ]
         },
         {
-          "name": "Update email — happy path (200)",
+          "name": "Update email \u2014 happy path (200)",
           "description": "Run Login first to get ACCESS_TOKEN. Set USER_NEW_EMAIL in the environment to a different email address.",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/users/me", "host": ["{{BASE_URL}}"], "path": ["users", "me"] },
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{USER_NEW_EMAIL}}\"\n}"
@@ -728,15 +1028,30 @@
           ]
         },
         {
-          "name": "Update email — duplicate email (409)",
+          "name": "Update email \u2014 duplicate email (409)",
           "description": "Try to claim an email address that belongs to another registered account.",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/users/me", "host": ["{{BASE_URL}}"], "path": ["users", "me"] },
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"another-registered@example.com\"\n}"
@@ -757,14 +1072,29 @@
           ]
         },
         {
-          "name": "Update email — invalid email format (400)",
+          "name": "Update email \u2014 invalid email format (400)",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/users/me", "host": ["{{BASE_URL}}"], "path": ["users", "me"] },
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"not-an-email\"\n}"
@@ -785,13 +1115,25 @@
           ]
         },
         {
-          "name": "Update email — missing JWT (401)",
+          "name": "Update email \u2014 missing JWT (401)",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/users/me", "host": ["{{BASE_URL}}"], "path": ["users", "me"] },
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"new@example.com\"\n}"
@@ -815,16 +1157,34 @@
       "name": "Onboarding",
       "item": [
         {
-          "name": "Complete onboarding — happy path (200)",
+          "name": "Complete onboarding \u2014 happy path (200)",
           "description": "Run Login first to get ACCESS_TOKEN. User must have at least 3 categories.",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/onboarding/complete", "host": ["{{BASE_URL}}"], "path": ["onboarding", "complete"] },
-            "body": { "mode": "raw", "raw": "{}" }
+            "url": {
+              "raw": "{{BASE_URL}}/onboarding/complete",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "onboarding",
+                "complete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -843,16 +1203,34 @@
           ]
         },
         {
-          "name": "Complete onboarding — fewer than 3 categories (400)",
-          "description": "User has fewer than 3 categories — onboarding should be blocked.",
+          "name": "Complete onboarding \u2014 fewer than 3 categories (400)",
+          "description": "User has fewer than 3 categories \u2014 onboarding should be blocked.",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/onboarding/complete", "host": ["{{BASE_URL}}"], "path": ["onboarding", "complete"] },
-            "body": { "mode": "raw", "raw": "{}" }
+            "url": {
+              "raw": "{{BASE_URL}}/onboarding/complete",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "onboarding",
+                "complete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -869,16 +1247,34 @@
           ]
         },
         {
-          "name": "Complete onboarding — already completed (409)",
+          "name": "Complete onboarding \u2014 already completed (409)",
           "description": "Call this after the happy-path request to verify the conflict response.",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/onboarding/complete", "host": ["{{BASE_URL}}"], "path": ["onboarding", "complete"] },
-            "body": { "mode": "raw", "raw": "{}" }
+            "url": {
+              "raw": "{{BASE_URL}}/onboarding/complete",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "onboarding",
+                "complete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -895,14 +1291,29 @@
           ]
         },
         {
-          "name": "Complete onboarding — missing JWT (401)",
+          "name": "Complete onboarding \u2014 missing JWT (401)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "url": { "raw": "{{BASE_URL}}/onboarding/complete", "host": ["{{BASE_URL}}"], "path": ["onboarding", "complete"] },
-            "body": { "mode": "raw", "raw": "{}" }
+            "url": {
+              "raw": "{{BASE_URL}}/onboarding/complete",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "onboarding",
+                "complete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
           },
           "event": [
             {
@@ -911,6 +1322,529 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List all categories (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has data array', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('each category has isCompleted field', () => {",
+                  "  body.data.forEach(cat => pm.expect(cat).to.have.property('isCompleted'));",
+                  "});",
+                  "if (body.data.length > 0) {",
+                  "  pm.environment.set('CATEGORY_ID', body.data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List active categories only (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories?isCompleted=false",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "isCompleted",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('all returned categories are active', () => {",
+                  "  body.data.forEach(cat => pm.expect(cat.isCompleted).to.be.false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create category \u2014 happy path (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend\",\n  \"color\": \"#69B598\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('response has data envelope', () => pm.expect(body).to.have.property('data'));",
+                  "pm.test('category has expected fields', () => {",
+                  "  pm.expect(body.data).to.have.property('id');",
+                  "  pm.expect(body.data).to.have.property('name');",
+                  "  pm.expect(body.data).to.have.property('color');",
+                  "  pm.expect(body.data).to.have.property('isCompleted');",
+                  "  pm.expect(body.data.isCompleted).to.be.false;",
+                  "});",
+                  "pm.environment.set('CATEGORY_ID', body.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create category \u2014 409 name conflict",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend\"\n}"
+            }
+          },
+          "description": "Run after creating 'Backend' above \u2014 same name should 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create category \u2014 422 active limit reached",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Fourth Category\"\n}"
+            }
+          },
+          "description": "Create 3 active categories first \u2014 this fourth request should 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error message mentions limit', () => pm.expect(body.message).to.include('3 active categories'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update category \u2014 rename (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Backend Renamed\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('name updated', () => pm.expect(body.data.name).to.equal('Backend Renamed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update category \u2014 complete (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('isCompleted is true', () => pm.expect(body.data.isCompleted).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update category \u2014 reactivate (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": false\n}"
+            }
+          },
+          "description": "Complete the category above first, then reactivate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('isCompleted is false', () => pm.expect(body.data.isCompleted).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update category \u2014 422 rename while completed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cannot Rename\"\n}"
+            }
+          },
+          "description": "Complete the category first; this rename attempt should 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions completed', () => pm.expect(body.message).to.include('completed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update category \u2014 422 reactivation limit exceeded",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isCompleted\": false\n}"
+            }
+          },
+          "description": "Ensure 3 other active categories exist and this one is completed \u2014 reactivation should 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete category \u2014 happy path (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            }
+          },
+          "description": "Category must have no entries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete category \u2014 422 has entries",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            }
+          },
+          "description": "Create entries in the category first \u2014 delete should 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions entries', () => pm.expect(body.message).to.include('entries'));"
                 ]
               }
             }

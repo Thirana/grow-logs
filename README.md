@@ -75,7 +75,7 @@ A Postman collection covering all implemented endpoints lives in `docs/postman/`
 
 ## Status
 
-> **In development.** Backend implementation in progress — 20 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
+> **In development.** Backend implementation in progress — 19 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed after all other steps.
 
 ---
 
