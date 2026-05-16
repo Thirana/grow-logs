@@ -32,7 +32,7 @@ Each step is a single focused unit — one concern, one agent session.
 | [23](steps/step-23-entries-crud.md) | EntriesModule: CRUD | Phase 8 | ✅ |
 | [24](steps/step-24-entries-summary.md) | EntriesModule: Summary Analytics | Phase 8 | ✅ |
 | [25](steps/step-25-feature-flags-module.md) | FeatureFlagsModule | Phase 9 | ✅ |
-| [26](steps/step-26-admin-module.md) | AdminModule | Phase 9 | ⬜ |
+| [26](steps/step-26-admin-module.md) | AdminModule | Phase 9 | ✅ |
 
 `⬜` not started · `✅` complete
 

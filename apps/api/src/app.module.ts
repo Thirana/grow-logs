@@ -19,6 +19,7 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module.js';
 import { CategoriesModule } from './modules/categories/categories.module.js';
 import { EntriesModule } from './modules/entries/entries.module.js';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module.js';
+import { AdminModule } from './modules/admin/admin.module.js';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module
     CategoriesModule,
     EntriesModule,
     FeatureFlagsModule,
+    AdminModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

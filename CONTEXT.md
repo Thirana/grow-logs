@@ -14,12 +14,12 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Overall status:** Implementation in progress.
 
-**Last completed step:** Step 25 — FeatureFlagsModule
+**Last completed step:** Step 26 — AdminModule
 
-**Next step:** Step 26 — AdminModule
-`docs/phases/backend/mvp/steps/step-26-admin-module.md`
+**Next step:** Steps 08 and 09 (OpenTelemetry and Axiom — previously deferred)
+See their step files for full context.
 
-**Progress:** 23 / 26 steps complete
+**Progress:** 24 / 26 steps complete (backend MVP feature complete — Steps 08 and 09 are the only remaining items)
 
 > **Note:** Steps 08 (OpenTelemetry) and 09 (Axiom) are intentionally deferred. They will be implemented after all other steps are complete. See their step files for full context on what was attempted and what needs to be resolved before re-implementing.
 See full step index: `docs/phases/backend/mvp/PHASES.md`

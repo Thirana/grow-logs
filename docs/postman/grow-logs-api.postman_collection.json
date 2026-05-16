@@ -2879,6 +2879,254 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List users — happy path (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?page=1&limit=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('data is array', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('meta has pagination fields', () => {",
+                  "  pm.expect(body.meta).to.have.all.keys('total', 'page', 'limit', 'totalPages');",
+                  "});",
+                  "pm.test('no sensitive fields in user items', () => {",
+                  "  body.data.forEach(u => {",
+                  "    pm.expect(u).to.not.have.property('passwordHash');",
+                  "    pm.expect(u).to.not.have.property('stripeCustomerId');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users — filter by role=ADMIN (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?role=ADMIN",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"],
+              "query": [{ "key": "role", "value": "ADMIN" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('all users have ADMIN role', () => {",
+                  "  body.data.forEach(u => pm.expect(u.role).to.equal('ADMIN'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users — 403 USER role token",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users — 401 missing JWT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — enable (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/ai_weekly_summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "ai_weekly_summary"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('flag is enabled', () => pm.expect(body.data.enabled).to.be.true);",
+                  "pm.test('key matches', () => pm.expect(body.data.key).to.equal('ai_weekly_summary'));",
+                  "pm.test('updatedAt is present', () => pm.expect(body.data.updatedAt).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — disable (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/ai_weekly_summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "ai_weekly_summary"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('flag is disabled', () => pm.expect(pm.response.json().data.enabled).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — 404 nonexistent key",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/nonexistent_flag",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "nonexistent_flag"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — 403 USER role token",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/ai_weekly_summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "ai_weekly_summary"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
