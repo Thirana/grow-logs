@@ -97,7 +97,11 @@ describe('AuthController', () => {
 
   describe('changePassword', () => {
     it('delegates to authService.changePassword with userId from CurrentUser and the DTO', async () => {
-      const user = { userId: 'user-uuid', role: 'USER' as const };
+      const user = {
+        userId: 'user-uuid',
+        role: 'USER' as const,
+        subscriptionStatus: 'FREE' as const,
+      };
       const dto = { currentPassword: 'OldPass1!', newPassword: 'NewPass1!' };
       const expected = { message: 'Password changed successfully' };
       mockAuthService.changePassword.mockResolvedValue(expected);

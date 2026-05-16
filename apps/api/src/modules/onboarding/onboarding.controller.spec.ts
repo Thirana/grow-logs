@@ -6,7 +6,11 @@ const mockOnboardingService = {
   complete: jest.fn(),
 };
 
-const mockUser = { userId: 'user-uuid', role: 'USER' };
+const mockUser = {
+  userId: 'user-uuid',
+  role: 'USER',
+  subscriptionStatus: 'FREE',
+};
 
 describe('OnboardingController', () => {
   let controller: OnboardingController;

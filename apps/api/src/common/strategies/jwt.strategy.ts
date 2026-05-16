@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserRole } from '@prisma/client';
+import { SubscriptionStatus, UserRole } from '@prisma/client';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthenticatedUser } from '../types/authenticated-user.type.js';
 
@@ -28,7 +28,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * The returned object becomes req.user, read by @CurrentUser()
    * in every protected controller method.
    */
-  validate(payload: { sub: string; role: UserRole }): AuthenticatedUser {
-    return { userId: payload.sub, role: payload.role };
+  validate(payload: {
+    sub: string;
+    role: UserRole;
+    subscriptionStatus: SubscriptionStatus;
+  }): AuthenticatedUser {
+    return {
+      userId: payload.sub,
+      role: payload.role,
+      subscriptionStatus: payload.subscriptionStatus,
+    };
   }
 }

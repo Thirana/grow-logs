@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CategoriesController } from './categories.controller.js';
 import { CategoriesService } from './categories.service.js';
 import type { AuthenticatedUser } from '../../common/types/authenticated-user.type.js';
-import { UserRole } from '@prisma/client';
+import { SubscriptionStatus, UserRole } from '@prisma/client';
 
 const mockService = {
   findAll: jest.fn(),
@@ -14,7 +14,11 @@ const mockService = {
   deleteSubcategory: jest.fn(),
 };
 
-const user: AuthenticatedUser = { userId: 'user-1', role: UserRole.USER };
+const user: AuthenticatedUser = {
+  userId: 'user-1',
+  role: UserRole.USER,
+  subscriptionStatus: SubscriptionStatus.FREE,
+};
 
 const categoryItem = {
   id: 'cat-1',

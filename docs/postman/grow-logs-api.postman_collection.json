@@ -2341,6 +2341,792 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Entries",
+      "item": [
+        {
+          "name": "List entries — happy path (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries?page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('data is array', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('meta has pagination fields', () => {",
+                  "  pm.expect(body.meta).to.have.all.keys('total', 'page', 'limit', 'totalPages');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List entries — filter by type=WORK",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries?type=WORK",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"],
+              "query": [{ "key": "type", "value": "WORK" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('all entries are WORK type', () => {",
+                  "  body.data.forEach(e => pm.expect(e.type).to.equal('WORK'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List entries — filter by date range",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries?from=2024-01-01&to=2024-12-31",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"],
+              "query": [
+                { "key": "from", "value": "2024-01-01" },
+                { "key": "to", "value": "2024-12-31" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create entry — happy path (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"WORK\",\n  \"text\": \"Implemented the EntriesModule CRUD endpoints with full ownership checks and daily limit enforcement.\",\n  \"categoryId\": \"{{CATEGORY_ID}}\",\n  \"productivityScore\": 8\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('entry has id', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "pm.test('entry includes category name', () => pm.expect(body.data.category.name).to.be.a('string'));",
+                  "pm.environment.set('ENTRY_ID', body.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create entry — 422 future entryDate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"WORK\",\n  \"text\": \"This entry should fail because it has a future date.\",\n  \"categoryId\": \"{{CATEGORY_ID}}\",\n  \"entryDate\": \"9999-12-31\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));",
+                  "const body = pm.response.json();",
+                  "pm.test('error mentions future', () => pm.expect(body.message).to.include('future'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create entry — 404 wrong categoryId",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"WORK\",\n  \"text\": \"This entry should fail because the category does not exist.\",\n  \"categoryId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get entry — happy path (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('entry id matches', () => pm.expect(body.data.id).to.equal(pm.environment.get('ENTRY_ID')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get entry — 404 not found",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/00000000-0000-0000-0000-000000000000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update entry — happy path (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productivityScore\": 9\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('productivityScore updated', () => pm.expect(body.data.productivityScore).to.equal(9));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update entry — 422 future entryDate",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entryDate\": \"9999-12-31\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 422', () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete entry — happy path (204)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/{{ENTRY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "{{ENTRY_ID}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete entry — 404 not found",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/00000000-0000-0000-0000-000000000000",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get summary — happy path 30d (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary?period=30d",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"],
+              "query": [
+                { "key": "period", "value": "30d" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('has required summary fields', () => {",
+                  "  pm.expect(body.data).to.have.all.keys('period', 'totalEntries', 'totalByType', 'averageProductivityScore', 'thisWeekCount', 'lastWeekCount', 'currentStreak', 'longestStreak', 'byCategory', 'dailyActivity', 'weeklyTrend');",
+                  "});",
+                  "pm.test('period matches query', () => pm.expect(body.data.period).to.equal('30d'));",
+                  "pm.test('byCategory is array', () => pm.expect(body.data.byCategory).to.be.an('array'));",
+                  "pm.test('dailyActivity is array', () => pm.expect(body.data.dailyActivity).to.be.an('array'));",
+                  "pm.test('weeklyTrend is array', () => pm.expect(body.data.weeklyTrend).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get summary — all time (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary?period=all",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"],
+              "query": [
+                { "key": "period", "value": "all" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('period is all', () => pm.expect(pm.response.json().data.period).to.equal('all'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get summary — filter by type=WORK (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary?period=7d&type=WORK",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"],
+              "query": [
+                { "key": "period", "value": "7d" },
+                { "key": "type", "value": "WORK" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get summary — 401 missing JWT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Feature Flags",
+      "item": [
+        {
+          "name": "List feature flags — happy path (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/feature-flags",
+              "host": ["{{BASE_URL}}"],
+              "path": ["feature-flags"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('data is array', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('each flag has key and enabled', () => {",
+                  "  body.data.forEach(f => {",
+                  "    pm.expect(f).to.have.property('key');",
+                  "    pm.expect(f).to.have.property('enabled');",
+                  "    pm.expect(f).to.not.have.property('description');",
+                  "  });",
+                  "});",
+                  "pm.test('meta is empty object', () => pm.expect(body.meta).to.deep.equal({}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List feature flags — 401 missing JWT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/feature-flags",
+              "host": ["{{BASE_URL}}"],
+              "path": ["feature-flags"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List users — happy path (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?page=1&limit=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('data is array', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('meta has pagination fields', () => {",
+                  "  pm.expect(body.meta).to.have.all.keys('total', 'page', 'limit', 'totalPages');",
+                  "});",
+                  "pm.test('no sensitive fields in user items', () => {",
+                  "  body.data.forEach(u => {",
+                  "    pm.expect(u).to.not.have.property('passwordHash');",
+                  "    pm.expect(u).to.not.have.property('stripeCustomerId');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users — filter by role=ADMIN (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?role=ADMIN",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"],
+              "query": [{ "key": "role", "value": "ADMIN" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('all users have ADMIN role', () => {",
+                  "  body.data.forEach(u => pm.expect(u.role).to.equal('ADMIN'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users — 403 USER role token",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List users — 401 missing JWT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — enable (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/ai_weekly_summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "ai_weekly_summary"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('flag is enabled', () => pm.expect(body.data.enabled).to.be.true);",
+                  "pm.test('key matches', () => pm.expect(body.data.key).to.equal('ai_weekly_summary'));",
+                  "pm.test('updatedAt is present', () => pm.expect(body.data.updatedAt).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — disable (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/ai_weekly_summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "ai_weekly_summary"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('flag is disabled', () => pm.expect(pm.response.json().data.enabled).to.be.false);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — 404 nonexistent key",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/nonexistent_flag",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "nonexistent_flag"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle flag — 403 USER role token",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/feature-flags/ai_weekly_summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "feature-flags", "ai_weekly_summary"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

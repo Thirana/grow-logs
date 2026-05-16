@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { SubscriptionStatus, UserRole } from '@prisma/client';
 
 /**
  * Shape of req.user after JWT validation.
@@ -9,4 +9,5 @@ import { UserRole } from '@prisma/client';
 export interface AuthenticatedUser {
   userId: string;
   role: UserRole;
+  subscriptionStatus: SubscriptionStatus;
 }

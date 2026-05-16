@@ -161,12 +161,13 @@ describe('AuthService', () => {
       });
     });
 
-    it('signs the access token with sub and role claims', async () => {
+    it('signs the access token with sub, role, and subscriptionStatus claims', async () => {
       await service.login(LOGIN_DTO);
 
       expect(mockJwtService.sign).toHaveBeenCalledWith({
         sub: DB_USER.id,
         role: DB_USER.role,
+        subscriptionStatus: DB_USER.subscriptionStatus,
       });
     });
 

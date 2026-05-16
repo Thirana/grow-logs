@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { UserRole } from '@prisma/client';
+import { SubscriptionStatus, UserRole } from '@prisma/client';
 import { JwtStrategy } from './jwt.strategy.js';
 
 const mockConfigService = {
@@ -17,20 +17,30 @@ describe('JwtStrategy', () => {
   });
 
   describe('validate', () => {
-    it('maps sub and role to AuthenticatedUser shape', () => {
+    it('maps sub, role, and subscriptionStatus to AuthenticatedUser shape', () => {
       const result = strategy.validate({
         sub: 'user-uuid',
         role: UserRole.USER,
+        subscriptionStatus: SubscriptionStatus.FREE,
       });
-      expect(result).toEqual({ userId: 'user-uuid', role: UserRole.USER });
+      expect(result).toEqual({
+        userId: 'user-uuid',
+        role: UserRole.USER,
+        subscriptionStatus: SubscriptionStatus.FREE,
+      });
     });
 
     it('maps ADMIN role correctly', () => {
       const result = strategy.validate({
         sub: 'admin-uuid',
         role: UserRole.ADMIN,
+        subscriptionStatus: SubscriptionStatus.ACTIVE,
       });
-      expect(result).toEqual({ userId: 'admin-uuid', role: UserRole.ADMIN });
+      expect(result).toEqual({
+        userId: 'admin-uuid',
+        role: UserRole.ADMIN,
+        subscriptionStatus: SubscriptionStatus.ACTIVE,
+      });
     });
   });
 });

@@ -110,9 +110,13 @@ export class AuthService {
       );
     }
 
-    // Access token carries sub and role so JwtAuthGuard and RolesGuard
-    // can operate without a DB lookup on every request.
-    const accessToken = this.jwtService.sign({ sub: user.id, role: user.role });
+    // Access token carries sub, role, and subscriptionStatus so guards and
+    // entry limit checks can operate without a DB lookup on every request.
+    const accessToken = this.jwtService.sign({
+      sub: user.id,
+      role: user.role,
+      subscriptionStatus: user.subscriptionStatus,
+    });
 
     return {
       accessToken,
