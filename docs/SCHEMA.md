@@ -77,24 +77,26 @@ LEARNING   -- Learning related log entry
 
 ### categories
 
-| Column     | Type                     | Nullable | Default     | Notes                                                   |
-| ---------- | ------------------------ | -------- | ----------- | ------------------------------------------------------- |
-| id         | UUID                     | NO       | gen_random_uuid() | Primary key                                       |
-| user_id    | UUID                     | NO       |             | FK to users                                             |
-| name       | VARCHAR(100)             | NO       |             | Unique per user via composite constraint                |
-| color      | VARCHAR(7)               | NO       | '#69B598'   | Hex color from predefined 8-color palette; auto-assigned on create if not provided |
-| created_at | TIMESTAMP WITH TIME ZONE | NO       | now()       |                                                         |
-| updated_at | TIMESTAMP WITH TIME ZONE | NO       | now()       |                                                         |
+| Column       | Type                     | Nullable | Default           | Notes                                                                      |
+| ------------ | ------------------------ | -------- | ----------------- | -------------------------------------------------------------------------- |
+| id           | UUID                     | NO       | gen_random_uuid() | Primary key                                                                |
+| user_id      | UUID                     | NO       |                   | FK to users                                                                |
+| name         | VARCHAR(100)             | NO       |                   | Unique per user via composite constraint (active and completed)             |
+| color        | VARCHAR(7)               | NO       | '#69B598'         | Hex color from predefined 8-color palette; auto-assigned on create if not provided |
+| is_completed | BOOLEAN                  | NO       | false             | true = completed (frozen, no new entries); false = active                  |
+| created_at   | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                                                            |
+| updated_at   | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                                                            |
 
 **Primary Key:** id
 
 **Unique Constraints:**
 
-- (user_id, name) — same user cannot have two categories with the same name
+- (user_id, name) — same user cannot have two categories with the same name, regardless of completion state
 
 **Indexes:**
 
 - idx_categories_user_id (user_id)
+- idx_categories_user_id_active (user_id) WHERE is_completed = false — partial index for the dominant query (active categories only)
 
 **Foreign Keys:**
 
@@ -106,25 +108,27 @@ LEARNING   -- Learning related log entry
 
 ### subcategories
 
-| Column      | Type                     | Nullable | Default           | Notes                                           |
-| ----------- | ------------------------ | -------- | ----------------- | ----------------------------------------------- |
-| id          | UUID                     | NO       | gen_random_uuid() | Primary key                                     |
-| category_id | UUID                     | NO       |                   | FK to categories                                |
-| user_id     | UUID                     | NO       |                   | Denormalised for ownership checks without joins |
-| name        | VARCHAR(100)             | NO       |                   | Unique per category via composite constraint    |
-| created_at  | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                                 |
-| updated_at  | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                                 |
+| Column       | Type                     | Nullable | Default           | Notes                                                                     |
+| ------------ | ------------------------ | -------- | ----------------- | ------------------------------------------------------------------------- |
+| id           | UUID                     | NO       | gen_random_uuid() | Primary key                                                               |
+| category_id  | UUID                     | NO       |                   | FK to categories                                                          |
+| user_id      | UUID                     | NO       |                   | Denormalised for ownership checks without joins                           |
+| name         | VARCHAR(100)             | NO       |                   | Unique per category via composite constraint (active and completed)        |
+| is_completed | BOOLEAN                  | NO       | false             | true = completed (frozen); false = active. Independent of parent category |
+| created_at   | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                                                           |
+| updated_at   | TIMESTAMP WITH TIME ZONE | NO       | now()             |                                                                           |
 
 **Primary Key:** id
 
 **Unique Constraints:**
 
-- (category_id, name) — same category cannot have two subcategories with the same name
+- (category_id, name) — same category cannot have two subcategories with the same name, regardless of completion state
 
 **Indexes:**
 
 - idx_subcategories_category_id (category_id)
 - idx_subcategories_user_id (user_id)
+- idx_subcategories_category_id_active (category_id) WHERE is_completed = false — partial index for active subcategory lookups
 
 **Foreign Keys:**
 
@@ -327,11 +331,13 @@ model User {
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  userId    String
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  color       String   @default("#69B598") @db.VarChar(7)
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   subcategories Subcategory[]
@@ -343,12 +349,13 @@ model Category {
 }
 
 model Subcategory {
-  id         String   @id @default(uuid())
-  categoryId String
-  userId     String
-  name       String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(uuid())
+  categoryId  String
+  userId      String
+  name        String
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -18,7 +18,7 @@ Secondary users (for later versions): managers wanting team visibility, bootcamp
 ## MVP Scope
 
 - User registration and login
-- Onboarding flow to set up 3 to 5 main categories and their sub-categories
+- Onboarding flow to set up at least 1 category (subcategory optional) before the user can start logging
 - Daily log entry: markdown text, entry type (WORK or LEARNING), category, sub-category, productivity score (1 to 10, optional), and date
 - Basic dashboard showing recent entries and a simple category breakdown
 - Ability to edit and delete entries
@@ -72,24 +72,25 @@ Secondary users (for later versions): managers wanting team visibility, bootcamp
 
 ### Category Setup
 
-**As a user, I want to define my main learning categories during onboarding, so that my logs are organised from day one.**
+**As a user, I want to quickly set up one category during onboarding, so that I can start logging immediately without a lengthy setup.**
 
 - Onboarding screen is shown only once, immediately after first login
-- User can add between 3 and 5 main categories
+- User must create at least 1 category to complete onboarding
 - Each category requires a name
-- User cannot proceed past onboarding without adding at least 3 categories
+- Sub-categories are optional during onboarding — the user can skip them and add later from settings
 - User can edit or delete a category before completing onboarding
 - Category names must be unique per user
 - After completing onboarding, user lands on the dashboard
+- Additional categories and sub-categories are created from the settings page after onboarding, up to the limits of the user's plan
 
 **As a user, I want to add sub-categories under each main category, so that I can track topics with more granularity.**
 
 - Each main category can have one or more sub-categories
-- Sub-categories are optional during onboarding and can be added later from settings
+- Sub-categories are fully optional — at onboarding and throughout the product
 - Sub-category names must be unique within the same parent category
-- User can add, edit, or delete sub-categories at any point after onboarding via settings
-- If a sub-category has existing log entries attached to it, deleting it shows a warning and asks for confirmation
-- When deleting a sub-category that has existing entries, those entries retain the main category but lose the sub-category reference
+- User can add, edit, complete, or delete sub-categories at any point after onboarding via settings
+- If a sub-category has existing log entries attached to it, it can be marked as complete (entries are preserved) but cannot be hard deleted
+- When a sub-category is completed, entries that referenced it retain the main category and the sub-category tag (for history and analytics)
 
 ### Daily Logging
 

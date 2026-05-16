@@ -67,7 +67,8 @@ const byCategory = await prisma.entry.groupBy({
   _count: { id: true },
   _avg: { productivityScore: true },
 });
-// Fetch category names for all returned categoryIds, then group in memory
+// Fetch category metadata (name, color, isCompleted) for all returned categoryIds
+// Completed categories ARE included — analytics always covers the full history
 ```
 
 **Step 4 — Per-day activity series (`dailyActivity`):**
@@ -140,7 +141,7 @@ Streak walk rules:
     "longestStreak": 23,
     "byCategory": [
       {
-        "category": { "id": "uuid", "name": "Backend", "color": "#69B598" },
+        "category": { "id": "uuid", "name": "Backend", "color": "#69B598", "isCompleted": false },
         "entryCount": 14,
         "averageProductivityScore": 8.1,
         "byType": { "WORK": 6, "LEARNING": 8 }
@@ -184,7 +185,7 @@ Streak walk rules:
 
 **`dailyActivity` is period-scoped:** The `DailyChart` shows activity within the selected time window. Days with zero entries are omitted from the array — the frontend fills gaps visually.
 
-**`byCategory` includes `color` from the parent category:** The category chart and sidebar use `color` to render swatches. Fetching categories by ID in Step 8 means `color` is available at no extra query cost.
+**`byCategory` includes `color` and `isCompleted` from the parent category:** The category chart and sidebar use `color` to render swatches and `isCompleted` to render completed categories distinctly (e.g. greyed out). Fetching categories by ID in Step 3 means both fields are available at no extra query cost. Completed categories are always included in analytics — the summary covers the full historical record, not just active categories.
 
 **`groupBy` + in-memory join (not raw SQL):** Prisma's `groupBy` handles aggregations. Separate queries fetch category metadata. Two-query approach is slightly less efficient than raw SQL JOIN but stays in Prisma's type-safe API. MVP scale (hundreds to low thousands of entries) makes this a non-issue.
 

@@ -429,7 +429,13 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Returns all categories for the authenticated user, each including their subcategories.
+**Description:** Returns all categories for the authenticated user (active and completed), each including their subcategories.
+
+**Query parameters:**
+
+| Parameter   | Type    | Required | Default | Notes                                           |
+| ----------- | ------- | -------- | ------- | ----------------------------------------------- |
+| isCompleted | boolean | NO       | —       | `false` returns only active categories; omit for all |
 
 **Response 200:**
 
@@ -440,11 +446,13 @@ The `refresh_token` cookie is cleared on the response.
       "id": "uuid",
       "name": "Backend Development",
       "color": "#69B598",
+      "isCompleted": false,
       "createdAt": "2024-01-15T10:30:00Z",
       "subcategories": [
         {
           "id": "uuid",
           "name": "NestJS",
+          "isCompleted": false,
           "createdAt": "2024-01-15T10:30:00Z"
         }
       ]
@@ -462,7 +470,7 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Creates a new main category. Maximum 5 categories per user enforced here. If `color` is omitted the server auto-assigns from the predefined palette.
+**Description:** Creates a new main category. Free plan allows a maximum of 3 **active** categories (completed categories do not count toward this limit). If `color` is omitted the server auto-assigns from the predefined palette.
 
 **Request body:**
 
@@ -486,6 +494,7 @@ The `refresh_token` cookie is cleared on the response.
     "id": "uuid",
     "name": "Backend Development",
     "color": "#69B598",
+    "isCompleted": false,
     "createdAt": "2024-01-15T10:30:00Z",
     "subcategories": []
   },
@@ -495,11 +504,11 @@ The `refresh_token` cookie is cleared on the response.
 
 **Errors:**
 
-| Status | Scenario                                             |
-| ------ | ---------------------------------------------------- |
-| 400    | Validation failed                                    |
-| 409    | Category with this name already exists for this user |
-| 422    | User already has 5 categories                        |
+| Status | Scenario                                                                   |
+| ------ | -------------------------------------------------------------------------- |
+| 400    | Validation failed                                                          |
+| 409    | Category with this name already exists for this user (active or completed) |
+| 422    | Free plan: user already has 3 active categories                            |
 
 ---
 
@@ -507,14 +516,15 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Updates the name of an existing category.
+**Description:** Updates a category. Handles rename, recolor, completion, and reactivation in a single endpoint — send only the fields you want to change.
 
 **Request body:**
 
 ```json
 {
   "name": "Backend Engineering",
-  "color": "#8285BA"
+  "color": "#8285BA",
+  "isCompleted": true
 }
 ```
 
@@ -522,6 +532,12 @@ The `refresh_token` cookie is cleared on the response.
 
 - name: string, 1 to 100 characters, optional
 - color: one of the 8 predefined palette hex values, optional
+- isCompleted: boolean, optional — `true` to complete, `false` to reactivate
+
+**Behaviour by field combination:**
+- `name` or `color` only: rename/recolor — blocked if category is completed
+- `isCompleted: true`: marks category complete — idempotent (no error if already complete)
+- `isCompleted: false`: reactivates category — blocked if user is at the active category limit
 
 **Response 200:**
 
@@ -531,6 +547,7 @@ The `refresh_token` cookie is cleared on the response.
     "id": "uuid",
     "name": "Backend Engineering",
     "color": "#8285BA",
+    "isCompleted": false,
     "updatedAt": "2024-01-15T10:30:00Z"
   },
   "meta": {}
@@ -539,11 +556,13 @@ The `refresh_token` cookie is cleared on the response.
 
 **Errors:**
 
-| Status | Scenario                                                     |
-| ------ | ------------------------------------------------------------ |
-| 400    | Validation failed                                            |
-| 404    | Category not found or does not belong to user                |
-| 409    | Another category with this name already exists for this user |
+| Status | Scenario                                                                     |
+| ------ | ---------------------------------------------------------------------------- |
+| 400    | Validation failed                                                            |
+| 404    | Category not found or does not belong to user                                |
+| 409    | Another category with this name already exists for this user                 |
+| 422    | Renaming or recoloring a completed category                                  |
+| 422    | Reactivating when free plan is already at 3 active categories                |
 
 ---
 
@@ -551,16 +570,16 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Deletes a category and all its subcategories. Cannot delete if the category has entries attached.
+**Description:** Permanently deletes a category and all its subcategories. Only allowed when the category has zero entries. If the category has entries, mark it as complete via `PATCH /categories/:id` instead — completion preserves historical data and analytics.
 
 **Response 204:** No content
 
 **Errors:**
 
-| Status | Scenario                                      |
-| ------ | --------------------------------------------- |
-| 404    | Category not found or does not belong to user |
-| 422    | Category has entries attached, cannot delete  |
+| Status | Scenario                                                                      |
+| ------ | ----------------------------------------------------------------------------- |
+| 404    | Category not found or does not belong to user                                 |
+| 422    | Category has entries attached — hard delete blocked, use completion instead   |
 
 ---
 
@@ -568,7 +587,7 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Creates a new subcategory under the specified category.
+**Description:** Creates a new subcategory under the specified category. Parent category must be active. Free plan allows a maximum of 5 **active** subcategories per category.
 
 **Request body:**
 
@@ -586,6 +605,7 @@ The `refresh_token` cookie is cleared on the response.
     "id": "uuid",
     "categoryId": "uuid",
     "name": "NestJS",
+    "isCompleted": false,
     "createdAt": "2024-01-15T10:30:00Z"
   },
   "meta": {}
@@ -594,11 +614,13 @@ The `refresh_token` cookie is cleared on the response.
 
 **Errors:**
 
-| Status | Scenario                                                      |
-| ------ | ------------------------------------------------------------- |
-| 400    | Validation failed                                             |
-| 404    | Parent category not found or does not belong to user          |
-| 409    | Subcategory with this name already exists under this category |
+| Status | Scenario                                                                   |
+| ------ | -------------------------------------------------------------------------- |
+| 400    | Validation failed                                                          |
+| 404    | Parent category not found or does not belong to user                       |
+| 409    | Subcategory with this name already exists under this category              |
+| 422    | Parent category is completed                                               |
+| 422    | Free plan: category already has 5 active subcategories                     |
 
 ---
 
@@ -606,15 +628,26 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Updates the name of an existing subcategory.
+**Description:** Updates a subcategory — rename, complete, or reactivate.
 
 **Request body:**
 
 ```json
 {
-  "name": "NestJS Advanced"
+  "name": "NestJS Advanced",
+  "isCompleted": true
 }
 ```
+
+**Validation:**
+
+- name: string, 1 to 100 characters, optional
+- isCompleted: boolean, optional — `true` to complete, `false` to reactivate
+
+**Behaviour:**
+- `name` only: rename — blocked if subcategory is completed
+- `isCompleted: true`: marks subcategory complete — idempotent
+- `isCompleted: false`: reactivates subcategory — blocked if parent category is completed or free plan is at 5 active subcategories for this category
 
 **Response 200:**
 
@@ -624,6 +657,7 @@ The `refresh_token` cookie is cleared on the response.
     "id": "uuid",
     "categoryId": "uuid",
     "name": "NestJS Advanced",
+    "isCompleted": false,
     "updatedAt": "2024-01-15T10:30:00Z"
   },
   "meta": {}
@@ -637,6 +671,9 @@ The `refresh_token` cookie is cleared on the response.
 | 400    | Validation failed                                                     |
 | 404    | Category or subcategory not found or does not belong to user          |
 | 409    | Another subcategory with this name already exists under this category |
+| 422    | Renaming a completed subcategory                                      |
+| 422    | Reactivating when parent category is completed                        |
+| 422    | Reactivating when free plan is already at 5 active subcategories      |
 
 ---
 
@@ -644,15 +681,16 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Deletes a subcategory. Entries that referenced it retain their category but have subcategory_id set to null.
+**Description:** Permanently deletes a subcategory. Only allowed when the subcategory has zero entries. If the subcategory has entries, mark it as complete via `PATCH /categories/:id/subcategories/:subId` instead — completion preserves the subcategory tag on historical entries for analytics.
 
 **Response 204:** No content
 
 **Errors:**
 
-| Status | Scenario                                                     |
-| ------ | ------------------------------------------------------------ |
-| 404    | Category or subcategory not found or does not belong to user |
+| Status | Scenario                                                                         |
+| ------ | -------------------------------------------------------------------------------- |
+| 404    | Category or subcategory not found or does not belong to user                     |
+| 422    | Subcategory has entries attached — hard delete blocked, use completion instead   |
 
 ---
 
@@ -733,10 +771,10 @@ The `refresh_token` cookie is cleared on the response.
 
 - type: WORK or LEARNING, required
 - text: string, minimum 10 characters, maximum 1000 characters, required
-- categoryId: valid UUID, must belong to authenticated user, required
-- subcategoryId: valid UUID, must belong to the specified category, optional
+- categoryId: valid UUID, must belong to authenticated user, must be active (not completed), required
+- subcategoryId: valid UUID, must belong to the specified category, must be active (not completed), optional
 - productivityScore: integer between 1 and 10, optional
-- entryDate: YYYY-MM-DD format, defaults to today if not provided, optional
+- entryDate: YYYY-MM-DD format, must not be a future date, defaults to today (server UTC) if not provided, optional
 
 **Response 201:**
 
@@ -768,6 +806,10 @@ The `refresh_token` cookie is cleared on the response.
 | ------ | ---------------------------------------------------------------- |
 | 400    | Validation failed                                                |
 | 404    | categoryId or subcategoryId not found or does not belong to user |
+| 422    | categoryId refers to a completed category                        |
+| 422    | subcategoryId refers to a completed subcategory                  |
+| 422    | entryDate is in the future                                       |
+| 422    | Free plan: daily entry limit of 10 reached for this date         |
 
 ---
 
@@ -933,11 +975,14 @@ The `refresh_token` cookie is cleared on the response.
 
 **Errors:**
 
-| Status | Scenario                                                                 |
-| ------ | ------------------------------------------------------------------------ |
-| 400    | Validation failed                                                        |
-| 404    | Entry not found or does not belong to user                               |
-| 404    | Updated categoryId or subcategoryId not found or does not belong to user |
+| Status | Scenario                                                                  |
+| ------ | ------------------------------------------------------------------------- |
+| 400    | Validation failed                                                         |
+| 404    | Entry not found or does not belong to user                                |
+| 404    | Updated categoryId or subcategoryId not found or does not belong to user  |
+| 422    | New categoryId refers to a completed category                             |
+| 422    | New subcategoryId refers to a completed subcategory                       |
+| 422    | entryDate is in the future                                                |
 
 ---
 
@@ -963,7 +1008,7 @@ The `refresh_token` cookie is cleared on the response.
 
 **Access:** PROTECTED
 
-**Description:** Marks onboarding as complete. Called after the user finishes category setup. Category creation during onboarding uses the standard categories endpoints.
+**Description:** Marks onboarding as complete. Called after the user creates their first category. Category creation during onboarding uses the standard categories endpoints. Requires at least 1 category to exist (active or completed).
 
 **Request body:** Empty object {}
 
@@ -981,10 +1026,10 @@ The `refresh_token` cookie is cleared on the response.
 
 **Errors:**
 
-| Status | Scenario                         |
-| ------ | -------------------------------- |
-| 400    | User has fewer than 3 categories |
-| 409    | Onboarding already completed     |
+| Status | Scenario                        |
+| ------ | ------------------------------- |
+| 400    | User has no categories yet      |
+| 409    | Onboarding already completed    |
 
 ---
 

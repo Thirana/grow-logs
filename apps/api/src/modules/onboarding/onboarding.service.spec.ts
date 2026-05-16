@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { OnboardingService } from './onboarding.service.js';
 
@@ -29,8 +29,8 @@ describe('OnboardingService', () => {
   });
 
   describe('complete', () => {
-    it('sets onboardingCompleted to true and returns the success response', async () => {
-      mockPrisma.category.count.mockResolvedValue(3);
+    it('completes onboarding with exactly 1 category (minimum)', async () => {
+      mockPrisma.category.count.mockResolvedValue(1);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({
         onboardingCompleted: false,
       });
@@ -51,8 +51,8 @@ describe('OnboardingService', () => {
       });
     });
 
-    it('also completes when the user has more than 3 categories', async () => {
-      mockPrisma.category.count.mockResolvedValue(5);
+    it('completes onboarding when the user has multiple categories', async () => {
+      mockPrisma.category.count.mockResolvedValue(3);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({
         onboardingCompleted: false,
       });
@@ -63,31 +63,20 @@ describe('OnboardingService', () => {
       expect(result.onboardingCompleted).toBe(true);
     });
 
-    it('throws BadRequestException when fewer than 3 categories exist', async () => {
-      mockPrisma.category.count.mockResolvedValue(2);
-      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({
-        onboardingCompleted: false,
-      });
-
-      await expect(service.complete('user-uuid')).rejects.toThrow(
-        BadRequestException,
-      );
-      expect(mockPrisma.user.update).not.toHaveBeenCalled();
-    });
-
-    it('throws BadRequestException with the exact message when under the limit', async () => {
+    it('throws BadRequestException with the correct message when no categories exist', async () => {
       mockPrisma.category.count.mockResolvedValue(0);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({
         onboardingCompleted: false,
       });
 
       await expect(service.complete('user-uuid')).rejects.toThrow(
-        'You need at least 3 categories to complete onboarding',
+        'You need at least 1 category to complete onboarding',
       );
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
     });
 
     it('throws ConflictException when onboarding is already completed', async () => {
-      mockPrisma.category.count.mockResolvedValue(4);
+      mockPrisma.category.count.mockResolvedValue(1);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({
         onboardingCompleted: true,
       });

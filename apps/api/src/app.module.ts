@@ -16,6 +16,7 @@ import { HealthModule } from './modules/health/health.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { OnboardingModule } from './modules/onboarding/onboarding.module.js';
+import { CategoriesModule } from './modules/categories/categories.module.js';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { OnboardingModule } from './modules/onboarding/onboarding.module.js';
     AuthModule,
     UsersModule,
     OnboardingModule,
+    CategoriesModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
