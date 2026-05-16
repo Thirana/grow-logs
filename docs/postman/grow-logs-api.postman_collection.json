@@ -2697,6 +2697,186 @@
               }
             }
           ]
+        },
+        {
+          "name": "Get summary — happy path 30d (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary?period=30d",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"],
+              "query": [
+                { "key": "period", "value": "30d" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('has required summary fields', () => {",
+                  "  pm.expect(body.data).to.have.all.keys('period', 'totalEntries', 'totalByType', 'averageProductivityScore', 'thisWeekCount', 'lastWeekCount', 'currentStreak', 'longestStreak', 'byCategory', 'dailyActivity', 'weeklyTrend');",
+                  "});",
+                  "pm.test('period matches query', () => pm.expect(body.data.period).to.equal('30d'));",
+                  "pm.test('byCategory is array', () => pm.expect(body.data.byCategory).to.be.an('array'));",
+                  "pm.test('dailyActivity is array', () => pm.expect(body.data.dailyActivity).to.be.an('array'));",
+                  "pm.test('weeklyTrend is array', () => pm.expect(body.data.weeklyTrend).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get summary — all time (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary?period=all",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"],
+              "query": [
+                { "key": "period", "value": "all" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('period is all', () => pm.expect(pm.response.json().data.period).to.equal('all'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get summary — filter by type=WORK (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary?period=7d&type=WORK",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"],
+              "query": [
+                { "key": "period", "value": "7d" },
+                { "key": "type", "value": "WORK" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get summary — 401 missing JWT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/entries/summary",
+              "host": ["{{BASE_URL}}"],
+              "path": ["entries", "summary"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Feature Flags",
+      "item": [
+        {
+          "name": "List feature flags — happy path (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/feature-flags",
+              "host": ["{{BASE_URL}}"],
+              "path": ["feature-flags"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('data is array', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('each flag has key and enabled', () => {",
+                  "  body.data.forEach(f => {",
+                  "    pm.expect(f).to.have.property('key');",
+                  "    pm.expect(f).to.have.property('enabled');",
+                  "    pm.expect(f).to.not.have.property('description');",
+                  "  });",
+                  "});",
+                  "pm.test('meta is empty object', () => pm.expect(body.meta).to.deep.equal({}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List feature flags — 401 missing JWT",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/feature-flags",
+              "host": ["{{BASE_URL}}"],
+              "path": ["feature-flags"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

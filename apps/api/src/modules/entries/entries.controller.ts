@@ -28,15 +28,21 @@ import {
   createEntrySchema,
   updateEntrySchema,
   entryFiltersSchema,
+  summaryQuerySchema,
   type CreateEntryDto,
   type UpdateEntryDto,
   type EntryFiltersDto,
+  type SummaryQueryDto,
 } from '@grow-logs/schemas';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../../common/types/authenticated-user.type.js';
 import { ZodValidationPipe } from '../../common/pipes/index.js';
-import { EntriesService, type EntryResponse } from './entries.service.js';
+import {
+  EntriesService,
+  type EntryResponse,
+  type SummaryResponse,
+} from './entries.service.js';
 
 type PaginationMeta = {
   total: number;
@@ -144,6 +150,21 @@ export class EntriesController {
       dto,
     );
     return { data: entry, meta: {} };
+  }
+
+  @Get('summary')
+  @ApiOperation({
+    summary:
+      'Dashboard summary: totals, streaks, category breakdown, daily activity, weekly trend',
+  })
+  @ApiOkResponse({ description: 'Summary returned' })
+  @ApiUnauthorizedResponse({ description: 'JWT missing or invalid' })
+  async getSummary(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query(new ZodValidationPipe(summaryQuerySchema)) query: SummaryQueryDto,
+  ): Promise<{ data: SummaryResponse; meta: object }> {
+    const summary = await this.entriesService.getSummary(user.userId, query);
+    return { data: summary, meta: {} };
   }
 
   @Get(':id')

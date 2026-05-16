@@ -15,9 +15,12 @@ const mockPrisma = {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    aggregate: jest.fn(),
+    groupBy: jest.fn(),
   },
   category: {
     findUnique: jest.fn(),
+    findMany: jest.fn(),
   },
   subcategory: {
     findUnique: jest.fn(),
@@ -67,7 +70,10 @@ describe('EntriesService', () => {
     }).compile();
 
     service = module.get(EntriesService);
-    jest.clearAllMocks();
+    // resetAllMocks (not clearAllMocks) is required here because getSummary uses
+    // mockResolvedValueOnce chains — clearAllMocks does not flush those queues,
+    // so stale values from a previous test can bleed into the next one.
+    jest.resetAllMocks();
   });
 
   // ─── findAll ─────────────────────────────────────────────────────────────────
@@ -465,6 +471,323 @@ describe('EntriesService', () => {
       await expect(service.delete('user-1', 'entry-1')).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  // ─── getSummary ───────────────────────────────────────────────────────────────
+
+  describe('getSummary', () => {
+    // Helper: set up all 9 parallel DB mocks in the order Promise.all calls them.
+    function setupSummaryMocks({
+      aggregate = { _count: { id: 0 }, _avg: { productivityScore: null } },
+      typeGrouped = [],
+      byCategoryType = [],
+      byCategoryAgg = [],
+      byDayRaw = [],
+      trendEntries = [],
+      thisWeekCount = 0,
+      lastWeekCount = 0,
+      distinctDates = [],
+      categories = [],
+    }: {
+      aggregate?: {
+        _count: { id: number };
+        _avg: { productivityScore: number | null };
+      };
+      typeGrouped?: { type: string; _count: { id: number } }[];
+      byCategoryType?: {
+        categoryId: string;
+        type: string;
+        _count: { id: number };
+      }[];
+      byCategoryAgg?: {
+        categoryId: string;
+        _count: { id: number };
+        _avg: { productivityScore: number | null };
+      }[];
+      byDayRaw?: { entryDate: Date; type: string; _count: { id: number } }[];
+      trendEntries?: { entryDate: Date; productivityScore: number | null }[];
+      thisWeekCount?: number;
+      lastWeekCount?: number;
+      distinctDates?: { entryDate: Date }[];
+      categories?: {
+        id: string;
+        name: string;
+        color: string;
+        isCompleted: boolean;
+      }[];
+    } = {}) {
+      mockPrisma.entry.aggregate.mockResolvedValueOnce(aggregate);
+      mockPrisma.entry.groupBy
+        .mockResolvedValueOnce(typeGrouped)
+        .mockResolvedValueOnce(byCategoryType)
+        .mockResolvedValueOnce(byCategoryAgg)
+        .mockResolvedValueOnce(byDayRaw);
+      mockPrisma.entry.findMany
+        .mockResolvedValueOnce(trendEntries)
+        .mockResolvedValueOnce(distinctDates);
+      mockPrisma.entry.count
+        .mockResolvedValueOnce(thisWeekCount)
+        .mockResolvedValueOnce(lastWeekCount);
+      mockPrisma.category.findMany.mockResolvedValueOnce(categories);
+    }
+
+    it('returns all zeroes and empty arrays when there are no entries', async () => {
+      setupSummaryMocks();
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.totalEntries).toBe(0);
+      expect(result.totalByType).toEqual({ WORK: 0, LEARNING: 0 });
+      expect(result.averageProductivityScore).toBeNull();
+      expect(result.byCategory).toHaveLength(0);
+      expect(result.dailyActivity).toHaveLength(0);
+      expect(result.weeklyTrend).toHaveLength(8);
+      expect(result.currentStreak).toBe(0);
+      expect(result.longestStreak).toBe(0);
+    });
+
+    it('returns correct totalEntries, totalByType, and averageProductivityScore', async () => {
+      setupSummaryMocks({
+        aggregate: { _count: { id: 10 }, _avg: { productivityScore: 7.45 } },
+        typeGrouped: [
+          { type: 'WORK', _count: { id: 6 } },
+          { type: 'LEARNING', _count: { id: 4 } },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.totalEntries).toBe(10);
+      expect(result.totalByType).toEqual({ WORK: 6, LEARNING: 4 });
+      expect(result.averageProductivityScore).toBe(7.5); // rounded to 1dp
+    });
+
+    it('returns averageProductivityScore as null when no entries have scores', async () => {
+      setupSummaryMocks({
+        aggregate: { _count: { id: 3 }, _avg: { productivityScore: null } },
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.averageProductivityScore).toBeNull();
+    });
+
+    it('assembles byCategory with correct entryCount, byType, and avgScore', async () => {
+      setupSummaryMocks({
+        byCategoryType: [
+          { categoryId: 'cat-1', type: 'WORK', _count: { id: 6 } },
+          { categoryId: 'cat-1', type: 'LEARNING', _count: { id: 8 } },
+        ],
+        byCategoryAgg: [
+          {
+            categoryId: 'cat-1',
+            _count: { id: 14 },
+            _avg: { productivityScore: 8.1 },
+          },
+        ],
+        categories: [
+          {
+            id: 'cat-1',
+            name: 'Backend',
+            color: '#69B598',
+            isCompleted: false,
+          },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.byCategory).toHaveLength(1);
+      expect(result.byCategory[0].category.name).toBe('Backend');
+      expect(result.byCategory[0].entryCount).toBe(14);
+      expect(result.byCategory[0].averageProductivityScore).toBe(8.1);
+      expect(result.byCategory[0].byType).toEqual({ WORK: 6, LEARNING: 8 });
+    });
+
+    it('sorts byCategory by entryCount descending', async () => {
+      setupSummaryMocks({
+        byCategoryType: [
+          { categoryId: 'cat-1', type: 'WORK', _count: { id: 3 } },
+          { categoryId: 'cat-2', type: 'WORK', _count: { id: 10 } },
+        ],
+        byCategoryAgg: [
+          {
+            categoryId: 'cat-1',
+            _count: { id: 3 },
+            _avg: { productivityScore: null },
+          },
+          {
+            categoryId: 'cat-2',
+            _count: { id: 10 },
+            _avg: { productivityScore: null },
+          },
+        ],
+        categories: [
+          { id: 'cat-1', name: 'Algo', color: '#69B598', isCompleted: false },
+          {
+            id: 'cat-2',
+            name: 'Backend',
+            color: '#8285BA',
+            isCompleted: false,
+          },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.byCategory[0].category.name).toBe('Backend');
+      expect(result.byCategory[1].category.name).toBe('Algo');
+    });
+
+    it('pivots daily activity entries by date, merging WORK and LEARNING', async () => {
+      const date = new Date('2024-01-15T00:00:00.000Z');
+      setupSummaryMocks({
+        byDayRaw: [
+          { entryDate: date, type: 'WORK', _count: { id: 2 } },
+          { entryDate: date, type: 'LEARNING', _count: { id: 3 } },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.dailyActivity).toHaveLength(1);
+      expect(result.dailyActivity[0]).toEqual({
+        date: '2024-01-15',
+        workCount: 2,
+        learnCount: 3,
+      });
+    });
+
+    it('always returns exactly 8 weeklyTrend entries', async () => {
+      setupSummaryMocks();
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.weeklyTrend).toHaveLength(8);
+    });
+
+    it('returns null avgScore for weeks with no scored entries', async () => {
+      setupSummaryMocks({ trendEntries: [] });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.weeklyTrend.every((w) => w.avgScore === null)).toBe(true);
+    });
+
+    it('computes avgScore for weeks that have scored entries', async () => {
+      const { startOfISOWeek: soiw } =
+        jest.requireActual<typeof import('date-fns')>('date-fns');
+      const weekStart = soiw(new Date());
+      setupSummaryMocks({
+        trendEntries: [
+          { entryDate: weekStart, productivityScore: 8 },
+          { entryDate: weekStart, productivityScore: 6 },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      const currentWeek = result.weeklyTrend[7]; // last = this week
+      expect(currentWeek.avgScore).toBe(7); // (8+6)/2
+    });
+
+    it('returns period in the response', async () => {
+      setupSummaryMocks();
+
+      const result7d = await service.getSummary('user-1', { period: '7d' });
+      setupSummaryMocks();
+      const resultAll = await service.getSummary('user-1', { period: 'all' });
+
+      expect(result7d.period).toBe('7d');
+      expect(resultAll.period).toBe('all');
+    });
+
+    it('returns thisWeekCount and lastWeekCount from the DB queries', async () => {
+      setupSummaryMocks({ thisWeekCount: 5, lastWeekCount: 7 });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.thisWeekCount).toBe(5);
+      expect(result.lastWeekCount).toBe(7);
+    });
+
+    // ── Streak tests ──────────────────────────────────────────────────────────
+
+    it('currentStreak is 0 when there are no entries', async () => {
+      setupSummaryMocks({ distinctDates: [] });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.currentStreak).toBe(0);
+      expect(result.longestStreak).toBe(0);
+    });
+
+    it('currentStreak counts consecutive days ending today', async () => {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setUTCDate(today.getUTCDate() - 1);
+      const dayBefore = new Date(today);
+      dayBefore.setUTCDate(today.getUTCDate() - 2);
+
+      setupSummaryMocks({
+        distinctDates: [
+          { entryDate: today },
+          { entryDate: yesterday },
+          { entryDate: dayBefore },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.currentStreak).toBe(3);
+    });
+
+    it('currentStreak applies grace rule — streak is live if last entry was yesterday', async () => {
+      const yesterday = new Date();
+      yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+      const dayBefore = new Date(yesterday);
+      dayBefore.setUTCDate(yesterday.getUTCDate() - 1);
+
+      setupSummaryMocks({
+        distinctDates: [{ entryDate: yesterday }, { entryDate: dayBefore }],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.currentStreak).toBe(2);
+    });
+
+    it('currentStreak is 0 when last entry was two or more days ago', async () => {
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setUTCDate(twoDaysAgo.getUTCDate() - 2);
+
+      setupSummaryMocks({ distinctDates: [{ entryDate: twoDaysAgo }] });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.currentStreak).toBe(0);
+    });
+
+    it('longestStreak correctly identifies the all-time longest run', async () => {
+      // Gap between the two runs breaks the longer potential streak
+      // Run 1: Jan 1, 2, 3 = 3 days
+      // Gap: Jan 4 missing
+      // Run 2: Jan 5, 6 = 2 days
+      // Sorted desc: Jan 6, 5, 3, 2, 1
+      setupSummaryMocks({
+        distinctDates: [
+          { entryDate: new Date('2024-01-06T00:00:00.000Z') },
+          { entryDate: new Date('2024-01-05T00:00:00.000Z') },
+          { entryDate: new Date('2024-01-03T00:00:00.000Z') },
+          { entryDate: new Date('2024-01-02T00:00:00.000Z') },
+          { entryDate: new Date('2024-01-01T00:00:00.000Z') },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.longestStreak).toBe(3);
     });
   });
 });

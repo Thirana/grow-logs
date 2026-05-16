@@ -24,7 +24,13 @@ export const entryFiltersSchema = z.object({
   to: dateStringSchema.optional(),
 });
 
+export const summaryQuerySchema = z.object({
+  period: z.enum(['7d', '30d', 'all']).default('30d'),
+  type: entryTypeSchema.optional(),
+});
+
 export type EntryTypeDto = z.infer<typeof entryTypeSchema>;
 export type CreateEntryDto = z.infer<typeof createEntrySchema>;
 export type UpdateEntryDto = z.infer<typeof updateEntrySchema>;
 export type EntryFiltersDto = z.infer<typeof entryFiltersSchema>;
+export type SummaryQueryDto = z.infer<typeof summaryQuerySchema>;

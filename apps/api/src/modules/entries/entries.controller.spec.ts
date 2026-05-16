@@ -8,6 +8,7 @@ import type { EntryResponse } from './entries.service.js';
 const mockService = {
   findAll: jest.fn(),
   create: jest.fn(),
+  getSummary: jest.fn(),
   findOne: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
@@ -95,6 +96,32 @@ describe('EntriesController', () => {
         dto,
       );
       expect(result).toEqual({ data: entryResponse, meta: {} });
+    });
+  });
+
+  describe('getSummary', () => {
+    it('delegates to service and wraps in data envelope', async () => {
+      const summaryData = {
+        period: '30d' as const,
+        totalEntries: 5,
+        totalByType: { WORK: 3, LEARNING: 2 },
+        averageProductivityScore: 7.5,
+        thisWeekCount: 2,
+        lastWeekCount: 3,
+        currentStreak: 4,
+        longestStreak: 10,
+        byCategory: [],
+        dailyActivity: [],
+        weeklyTrend: [],
+      };
+      mockService.getSummary.mockResolvedValue(summaryData);
+
+      const result = await controller.getSummary(user, { period: '30d' });
+
+      expect(mockService.getSummary).toHaveBeenCalledWith('user-1', {
+        period: '30d',
+      });
+      expect(result).toEqual({ data: summaryData, meta: {} });
     });
   });
 
