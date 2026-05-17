@@ -14,17 +14,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Public auth endpoints must not trigger a token refresh on 401 — the error
+// is intentional (wrong credentials, unverified email) and must reach the caller.
+const PUBLIC_AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'];
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const isPublicAuth = PUBLIC_AUTH_PATHS.some((p) => originalRequest.url?.includes(p));
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !isPublicAuth) {
       originalRequest._retry = true;
 
       try {
         await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/refresh`, {}, { withCredentials: true });
-
         return api(originalRequest);
       } catch {
         clearAccessToken();

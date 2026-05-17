@@ -4,9 +4,10 @@ import { getAccessToken, clearAccessToken } from '@/lib/api';
 const mockUser = {
   id: 'user-uuid',
   email: 'user@example.com',
-  name: 'Test User',
   role: 'USER' as const,
-  isVerified: true,
+  isEmailVerified: true,
+  onboardingCompleted: false,
+  subscriptionStatus: 'FREE' as const,
 };
 
 beforeEach(() => {

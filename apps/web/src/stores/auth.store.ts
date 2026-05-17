@@ -4,9 +4,10 @@ import { clearAccessToken, setAccessToken } from '@/lib/api';
 interface AuthUser {
   id: string;
   email: string;
-  name: string;
   role: 'USER' | 'ADMIN';
-  isVerified: boolean;
+  isEmailVerified: boolean;
+  onboardingCompleted: boolean;
+  subscriptionStatus: 'FREE' | 'ACTIVE' | 'CANCELLED' | 'PAST_DUE';
 }
 
 interface AuthState {
