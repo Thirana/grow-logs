@@ -21,7 +21,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', href: '/dashboard', Icon: IconChart },
   { label: 'All entries', href: '/entries', Icon: IconAll },
   { label: 'Categories', href: '/categories', Icon: IconFolder },
-];
+] as const;
 
 export function Sidebar({ categories }: SidebarProps) {
   const pathname = usePathname();

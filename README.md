@@ -75,7 +75,9 @@ A Postman collection covering all implemented endpoints lives in `docs/postman/`
 
 ## Status
 
-> **Backend MVP feature complete.** All 22 API endpoints implemented — 24 / 26 steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred and will be completed last.
+> **Backend MVP feature complete.** All 22 API endpoints implemented — 24 / 26 backend steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred.
+>
+> **Frontend in progress.** Step F01 complete — 1 / 14 frontend steps complete. Auth layout, register form, and check-email page are implemented.
 
 ---
 
@@ -143,3 +145,18 @@ npx prisma db seed              # Seed feature flags (idempotent — safe to re-
 ```
 
 Copy `apps/api/.env.example` to `apps/api/.env` and fill in values before starting the server.
+
+### Frontend (`apps/web`)
+
+Run these from `apps/web`:
+
+```bash
+npm run dev          # Next.js dev server — always http://localhost:3001 (API is on 3000)
+npm run build        # Production build (requires NEXT_PUBLIC_API_URL)
+npm run test         # Vitest unit tests (watch mode)
+npm run test:ci      # Vitest with coverage (used in CI)
+npm run lint         # ESLint
+npm run typecheck    # tsc --noEmit
+```
+
+Copy `apps/web/.env.example` to `apps/web/.env.local` and set `NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1`.

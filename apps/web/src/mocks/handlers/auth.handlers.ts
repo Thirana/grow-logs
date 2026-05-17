@@ -5,11 +5,7 @@ export const authHandlers = [
     return HttpResponse.json(
       {
         data: {
-          id: 'mock-user-id',
-          email: 'user@example.com',
-          name: 'Test User',
-          role: 'USER',
-          isVerified: false,
+          message: 'Registration successful. Please check your email to verify your account.',
         },
         meta: {},
       },

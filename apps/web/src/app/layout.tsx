@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Geist_Mono } from 'next/font/google';
+import { Toaster } from 'sonner';
 import './globals.css';
 import { MswProvider } from '@/providers/msw-provider';
 import { QueryProvider } from '@/providers/query-provider';
@@ -39,6 +40,7 @@ export default function RootLayout({
         <MswProvider>
           <QueryProvider>{children}</QueryProvider>
         </MswProvider>
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );
