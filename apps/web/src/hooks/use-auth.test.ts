@@ -5,7 +5,13 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import { createTestWrapper } from '@/test/utils';
-import { useRegister, useLogin, useLogout } from './use-auth';
+import {
+  useRegister,
+  useLogin,
+  useLogout,
+  useVerifyEmail,
+  useResendVerification,
+} from './use-auth';
 import { useAuthStore } from '@/stores/auth.store';
 
 const mockPush = vi.fn();
@@ -107,6 +113,68 @@ describe('useLogin', () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error?.response?.status).toBe(401);
+  });
+});
+
+describe('useVerifyEmail', () => {
+  it('posts the token and resolves with the API response on 200', async () => {
+    server.use(
+      http.post('*/auth/verify-email', () =>
+        HttpResponse.json({ data: { message: 'Email verified.' }, meta: {} }, { status: 200 }),
+      ),
+    );
+
+    const { result } = renderHook(() => useVerifyEmail('valid-token'), {
+      wrapper: createTestWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?.data.message).toBe('Email verified.');
+  });
+
+  it('does not fire when the token is empty', () => {
+    const { result } = renderHook(() => useVerifyEmail(''), { wrapper: createTestWrapper() });
+
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.isFetching).toBe(false);
+  });
+
+  it('rejects on 401 and does not retry', async () => {
+    let callCount = 0;
+    server.use(
+      http.post('*/auth/verify-email', () => {
+        callCount++;
+        return HttpResponse.json({ message: 'Token expired.' }, { status: 401 });
+      }),
+    );
+
+    const { result } = renderHook(() => useVerifyEmail('expired-token'), {
+      wrapper: createTestWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(callCount).toBe(1);
+  });
+});
+
+describe('useResendVerification', () => {
+  it('posts the email address and resolves on 200', async () => {
+    server.use(
+      http.post('*/auth/resend-verification', () =>
+        HttpResponse.json({ data: { message: 'Email sent.' }, meta: {} }, { status: 200 }),
+      ),
+    );
+
+    const { result } = renderHook(() => useResendVerification(), {
+      wrapper: createTestWrapper(),
+    });
+
+    await act(async () => {
+      result.current.mutate({ email: 'user@example.com' });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?.data.message).toBe('Email sent.');
   });
 });
 
