@@ -10,6 +10,7 @@ type Filter = 'all' | 'work' | 'learning';
 interface RecentEntriesProps {
   entries: Entry[];
   onAddEntry?: () => void;
+  onEdit?: (entry: Entry) => void;
 }
 
 const FILTER_LABELS: { key: Filter; label: string }[] = [
@@ -18,7 +19,7 @@ const FILTER_LABELS: { key: Filter; label: string }[] = [
   { key: 'learning', label: 'Learning' },
 ];
 
-export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps): JSX.Element {
+export function RecentEntries({ entries, onAddEntry, onEdit }: RecentEntriesProps): JSX.Element {
   const [filter, setFilter] = useState<Filter>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -113,6 +114,7 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps): JSX.
             isExpanded={expandedId === entry.id}
             onToggleExpand={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
             isLast={i === visible.length - 1}
+            onEdit={onEdit}
           />
         ))
       )}

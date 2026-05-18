@@ -426,6 +426,25 @@ export function IconEyeOff({ size = 16, className }: IconProps) {
   );
 }
 
+export function IconTrash({ size = 14, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={cn('shrink-0', className)}
+    >
+      <path d="M2 4h10M5 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1M12 4l-.8 7a1 1 0 0 1-1 .9H3.8a1 1 0 0 1-1-.9L2 4" />
+    </svg>
+  );
+}
+
 export function IconEmptyList({ size = 36, className }: IconProps) {
   return (
     <svg

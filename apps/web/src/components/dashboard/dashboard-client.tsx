@@ -1,6 +1,10 @@
 'use client';
 
+// Dashboard orchestrator — fetches summary + entries, owns period state and sheet/dialog state.
+// Used by: app/(dashboard)/dashboard/page.tsx
 import { type JSX, useState } from 'react';
+import type { Entry } from '@grow-logs/types';
+
 import { TopBar } from './top-bar';
 import { StatsRow } from './stats-row';
 import { StatsRowSkeleton } from './stats-row-skeleton';
@@ -8,7 +12,7 @@ import { ActivityCard } from './activity-card';
 import { RecentEntries } from './recent-entries';
 import { RecentEntriesSkeleton } from './recent-entries-skeleton';
 import { ProductivityTrend } from './productivity-trend';
-import { AddEntrySheet } from './add-entry-sheet';
+import { EntrySheet } from './entry-sheet';
 import { useEntriesSummary, useEntries } from '@/hooks/use-entries';
 
 type Period = '7d' | '30d' | 'all';
@@ -33,7 +37,15 @@ function StatsRowError({ onRetry }: StatsRowErrorProps): JSX.Element {
 
 export function DashboardClient(): JSX.Element {
   const [period, setPeriod] = useState<Period>('30d');
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+
+  const sheetOpen = isCreating || selectedEntry !== null;
+
+  function handleSheetClose() {
+    setIsCreating(false);
+    setSelectedEntry(null);
+  }
 
   const {
     data: summary,
@@ -56,7 +68,7 @@ export function DashboardClient(): JSX.Element {
 
   return (
     <>
-      <TopBar period={period} onPeriodChange={setPeriod} onAddEntry={() => setSheetOpen(true)} />
+      <TopBar period={period} onPeriodChange={setPeriod} onAddEntry={() => setIsCreating(true)} />
 
       <div className="flex-1 px-8 py-6 pb-16">
         {summaryLoading ? (
@@ -87,7 +99,8 @@ export function DashboardClient(): JSX.Element {
         ) : (
           <RecentEntries
             entries={entriesResult?.data ?? []}
-            onAddEntry={() => setSheetOpen(true)}
+            onAddEntry={() => setIsCreating(true)}
+            onEdit={(entry) => setSelectedEntry(entry)}
           />
         )}
 
@@ -98,7 +111,7 @@ export function DashboardClient(): JSX.Element {
         </div>
       </div>
 
-      <AddEntrySheet open={sheetOpen} onClose={() => setSheetOpen(false)} />
+      <EntrySheet open={sheetOpen} onClose={handleSheetClose} entry={selectedEntry ?? undefined} />
     </>
   );
 }

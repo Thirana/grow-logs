@@ -77,7 +77,7 @@ A Postman collection covering all implemented endpoints lives in `docs/postman/`
 
 > **Backend MVP feature complete.** All 22 API endpoints implemented — 24 / 26 backend steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred.
 >
-> **Frontend in progress.** Step F07 complete — 7 / 14 frontend steps complete. Full auth flow, route protection, onboarding wizard, dashboard stats, and entries list/charts are all wired to live API data. `data/dashboard-mock.ts` deleted.
+> **Frontend in progress.** Step F09 complete — 9 / 14 frontend steps complete. Full auth flow, route protection, onboarding wizard, dashboard stats, entries list/charts, create entry, and edit/delete entry are all wired to live API data.
 
 ---
 
