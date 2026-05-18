@@ -367,6 +367,65 @@ export function IconSettings({ size = 18, className }: IconProps) {
   );
 }
 
+export function IconMail({ size = 20, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={cn('shrink-0', className)}
+    >
+      <rect x="2" y="4" width="16" height="13" rx="2" />
+      <path d="m2 7 8 6 8-6" />
+    </svg>
+  );
+}
+
+export function IconEye({ size = 16, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={cn('shrink-0', className)}
+    >
+      <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5Z" />
+      <circle cx="8" cy="8" r="2" />
+    </svg>
+  );
+}
+
+export function IconEyeOff({ size = 16, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={cn('shrink-0', className)}
+    >
+      <path d="M2 2l12 12M6.5 6.56A2 2 0 0 0 9.44 9.5M5.27 5.27C3.3 6.28 2 8 2 8s2.5 5 6 5a6.4 6.4 0 0 0 2.73-.6M8 3c3.5 0 6 5 6 5a9.9 9.9 0 0 1-1.27 1.73" />
+    </svg>
+  );
+}
+
 export function IconEmptyList({ size = 36, className }: IconProps) {
   return (
     <svg

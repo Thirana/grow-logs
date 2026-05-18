@@ -4,9 +4,10 @@ import { getAccessToken, clearAccessToken } from '@/lib/api';
 const mockUser = {
   id: 'user-uuid',
   email: 'user@example.com',
-  name: 'Test User',
   role: 'USER' as const,
-  isVerified: true,
+  isEmailVerified: true,
+  onboardingCompleted: false,
+  subscriptionStatus: 'FREE' as const,
 };
 
 beforeEach(() => {
@@ -54,6 +55,18 @@ describe('useAuthStore', () => {
       const { user, isAuthenticated } = useAuthStore.getState();
       expect(user?.email).toBe('updated@example.com');
       expect(isAuthenticated).toBe(true);
+    });
+  });
+
+  describe('restoreSession', () => {
+    it('sets the user and marks as authenticated without touching the token', () => {
+      useAuthStore.getState().restoreSession(mockUser);
+
+      const { user, isAuthenticated } = useAuthStore.getState();
+      expect(user).toEqual(mockUser);
+      expect(isAuthenticated).toBe(true);
+      // Token is managed separately by lib/api.ts — restoreSession does not touch it
+      expect(getAccessToken()).toBeNull();
     });
   });
 });

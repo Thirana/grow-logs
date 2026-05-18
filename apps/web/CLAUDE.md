@@ -14,6 +14,25 @@ The same bar applies as the backend: every decision should meet "would a senior 
 - No happy-path-only implementations — every async operation has loading, error, and empty states
 - No premature abstractions — extract a component when the rule says to, not speculatively
 
+### UI Quality Standard — Match the Landing Page
+
+**Every UI screen must match the visual quality of the landing page.** This is a non-negotiable bar, not a stretch goal.
+
+The landing page establishes the design language for the entire product. All subsequent screens (auth, onboarding, dashboard, settings) must feel like they belong to the same product.
+
+**What this means in practice:**
+
+- **Depth and layering** — use `bg-gl-surface` cards with `border-gl-border` and `shadow-gl` to lift elements off the page background. Inputs inside cards use `bg-gl-bg` so they appear recessed. Never place a form on a flat dark background with no visual container.
+- **Ambient decoration** — add subtle radial gradient glows (`rgba(46,184,160,0.04–0.09)`) on feature panels and key backgrounds. Never leave large dark areas completely empty.
+- **Typography** — headlines use `font-bold tracking-[-0.02em]` or tighter. Gradient text (`bg-gradient-to-r from-[#2EB8A0] to-[#7DDFD0] bg-clip-text text-transparent`) for primary taglines. Never use plain unstyled headings.
+- **Colour tokens** — always use the GL token system (`text-gl-text`, `text-gl-text-muted`, `bg-gl-surface`, `border-gl-border`, etc.). Never hardcode hex values outside of decoration gradients.
+- **Trust signals** — auth and onboarding pages include a trust badge pill (matching the landing page announcement pill style: `border-gl-border bg-gl-surface rounded-full` with a coloured label chip inside).
+- **Product previews** — brand/side panels use a static mini version of a real product widget (entry card, stat widget, etc.) to reinforce what the product does. Never use abstract illustrations or placeholder text.
+- **Buttons** — primary CTAs use `bg-gl-primary text-gl-primary-ink hover:bg-gl-primary-hover` with `font-semibold`. Secondary actions use muted text with `hover:underline`. Never use generic grey buttons for primary actions.
+- **Spacing and proportion** — layouts use the same spacing scale as the landing page. Panels with a fixed side column use `lg:w-[440px] xl:w-[500px]`. Form cards use `p-6` or `p-7` with `rounded-2xl`.
+
+**Reference implementation:** `app/(auth)/layout.tsx` and `components/auth/register-form.tsx` are the established pattern for auth screens. New screens should match this quality level.
+
 ---
 
 ## Folder Structure

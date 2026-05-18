@@ -11,9 +11,28 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "apps/web/**/*.{ts,tsx,mts}": [
+      "eslint --fix --config apps/web/eslint.config.mjs",
+      "prettier --write"
+    ],
+    "apps/web/**/*.{json,css,md}": [
+      "prettier --write"
+    ],
+    "apps/api/**/*.ts": [
+      "eslint --fix --config apps/api/eslint.config.mjs",
+      "prettier --write"
+    ],
+    "packages/**/*.ts": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
     "turbo": "^2.3.3"
   },
   "packageManager": "npm@11.13.0",

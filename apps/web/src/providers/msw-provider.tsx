@@ -15,7 +15,7 @@ export function MswProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(process.env.NODE_ENV !== 'development');
 
   useEffect(() => {
-    enableMocking().then(() => setReady(true));
+    void enableMocking().then(() => setReady(true));
   }, []);
 
   if (!ready) return null;
