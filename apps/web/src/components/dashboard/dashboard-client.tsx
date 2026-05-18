@@ -2,10 +2,10 @@
 
 // Dashboard orchestrator — fetches summary + entries, owns period state and sheet/dialog state.
 // Used by: app/(dashboard)/dashboard/page.tsx
-import { type JSX, useState } from 'react';
+import { type JSX, useMemo, useState } from 'react';
 import type { Entry } from '@grow-logs/types';
 
-import { TopBar } from './top-bar';
+import { TopBar, type TodayCategory } from './top-bar';
 import { StatsRow } from './stats-row';
 import { StatsRowSkeleton } from './stats-row-skeleton';
 import { ActivityCard } from './activity-card';
@@ -14,8 +14,36 @@ import { RecentEntriesSkeleton } from './recent-entries-skeleton';
 import { ProductivityTrend } from './productivity-trend';
 import { EntrySheet } from './entry-sheet';
 import { useEntriesSummary, useEntries } from '@/hooks/use-entries';
+import { useUiStore } from '@/stores/ui.store';
 
-type Period = '7d' | '30d' | 'all';
+type Period = '7d' | '30d' | 'week' | 'month';
+
+// YYYY-MM-DD in local time — avoids UTC midnight shifting the date.
+function localDateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function formatTodayDate(): string {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  }).format(new Date());
+}
+
+// Days elapsed in the selected period (past days only, so consistency % is meaningful).
+function daysElapsed(period: Period): number {
+  const today = new Date();
+  if (period === '7d') return 7;
+  if (period === '30d') return 30;
+  if (period === 'week') {
+    // Mon–Sun week: Mon=1 → 1 elapsed, Sun=0 → 7 elapsed
+    const dow = today.getDay();
+    return dow === 0 ? 7 : dow;
+  }
+  // month: day of month (1–31)
+  return today.getDate();
+}
 
 interface StatsRowErrorProps {
   onRetry: () => void;
@@ -37,13 +65,13 @@ function StatsRowError({ onRetry }: StatsRowErrorProps): JSX.Element {
 
 export function DashboardClient(): JSX.Element {
   const [period, setPeriod] = useState<Period>('30d');
-  const [isCreating, setIsCreating] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
 
-  const sheetOpen = isCreating || selectedEntry !== null;
+  const { isCreatingEntry, openCreateEntry, closeCreateEntry } = useUiStore();
+  const sheetOpen = isCreatingEntry || selectedEntry !== null;
 
   function handleSheetClose() {
-    setIsCreating(false);
+    closeCreateEntry();
     setSelectedEntry(null);
   }
 
@@ -59,6 +87,21 @@ export function DashboardClient(): JSX.Element {
     limit: 10,
   });
 
+  // Derive today's categories from the recent entries list.
+  const todayIso = localDateStr(new Date());
+  const todayCategories = useMemo<TodayCategory[]>(() => {
+    const entries = entriesResult?.data ?? [];
+    const seen = new Set<string>();
+    const result: TodayCategory[] = [];
+    for (const e of entries) {
+      if (e.entryDate.slice(0, 10) === todayIso && !seen.has(e.categoryId)) {
+        seen.add(e.categoryId);
+        result.push({ name: e.category.name, swatchColor: e.category.color });
+      }
+    }
+    return result;
+  }, [entriesResult, todayIso]);
+
   const workPct =
     summary && summary.totalEntries > 0
       ? Math.round((summary.totalByType.WORK / summary.totalEntries) * 100)
@@ -66,9 +109,20 @@ export function DashboardClient(): JSX.Element {
   const learnPct = summary ? 100 - workPct : 0;
   const trendData = summary?.weeklyTrend.map((w) => w.avgScore) ?? [];
 
+  // Days active: unique days with at least one entry in the selected period.
+  const daysActive = summary?.dailyActivity.length ?? 0;
+  const totalDaysInPeriod = daysElapsed(period);
+
   return (
     <>
-      <TopBar period={period} onPeriodChange={setPeriod} onAddEntry={() => setIsCreating(true)} />
+      <TopBar
+        period={period}
+        onPeriodChange={setPeriod}
+        onAddEntry={openCreateEntry}
+        streakDays={summary?.currentStreak ?? 0}
+        todayDate={formatTodayDate()}
+        todayCategories={todayCategories}
+      />
 
       <div className="flex-1 px-8 py-6 pb-16">
         {summaryLoading ? (
@@ -83,8 +137,8 @@ export function DashboardClient(): JSX.Element {
             workPct={workPct}
             learnPct={learnPct}
             avgProductivity={summary.averageProductivityScore}
-            currentStreak={summary.currentStreak}
-            longestStreak={summary.longestStreak}
+            daysActive={daysActive}
+            totalDaysInPeriod={totalDaysInPeriod}
             period={period}
           />
         ) : null}
@@ -92,6 +146,7 @@ export function DashboardClient(): JSX.Element {
         <ActivityCard
           dailyActivity={summary?.dailyActivity ?? []}
           byCategory={summary?.byCategory ?? []}
+          period={period}
         />
 
         {entriesLoading ? (
@@ -99,7 +154,7 @@ export function DashboardClient(): JSX.Element {
         ) : (
           <RecentEntries
             entries={entriesResult?.data ?? []}
-            onAddEntry={() => setIsCreating(true)}
+            onAddEntry={openCreateEntry}
             onEdit={(entry) => setSelectedEntry(entry)}
           />
         )}

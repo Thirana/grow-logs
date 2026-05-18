@@ -37,16 +37,20 @@
   /* Entry type colours — warm ochre for work, periwinkle for learning */
   --gl-work-bg: #28200c;
   --gl-work-fg: #c4a05e;
+  --gl-work-ink: #1a1200;
   --gl-learn-bg: #161628;
   --gl-learn-fg: #8285ba;
+  --gl-learn-ink: #0d0c1e;
 
   /* Semantic states — matte equivalents */
   --gl-success: #69b598;
   --gl-success-soft: #0d2419;
   --gl-warning: #c4a05e;
   --gl-warning-soft: #231a07;
+  --gl-warning-ink: #1a1200;
   --gl-danger: #b87060;
   --gl-danger-soft: #261009;
+  --gl-danger-ink: #1c0907;
 
   /* Category swatches — matte 6-hue palette */
   --gl-swatch-1: #69b598;
@@ -206,16 +210,20 @@
   /* Entry type tokens */
   --color-gl-work: var(--gl-work-fg);
   --color-gl-work-bg: var(--gl-work-bg);
+  --color-gl-work-ink: var(--gl-work-ink);
   --color-gl-learn: var(--gl-learn-fg);
   --color-gl-learn-bg: var(--gl-learn-bg);
+  --color-gl-learn-ink: var(--gl-learn-ink);
 
   /* State tokens */
   --color-gl-success: var(--gl-success);
   --color-gl-success-soft: var(--gl-success-soft);
   --color-gl-warning: var(--gl-warning);
   --color-gl-warning-soft: var(--gl-warning-soft);
+  --color-gl-warning-ink: var(--gl-warning-ink);
   --color-gl-danger: var(--gl-danger);
   --color-gl-danger-soft: var(--gl-danger-soft);
+  --color-gl-danger-ink: var(--gl-danger-ink);
 
   /* Category swatch tokens */
   --color-gl-swatch-1: var(--gl-swatch-1);

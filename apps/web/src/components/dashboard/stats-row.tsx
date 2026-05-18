@@ -9,9 +9,9 @@ interface StatsRowProps {
   workPct: number;
   learnPct: number;
   avgProductivity: number | null;
-  currentStreak: number;
-  longestStreak: number;
-  period: '7d' | '30d' | 'all';
+  daysActive: number;
+  totalDaysInPeriod: number;
+  period: '7d' | '30d' | 'week' | 'month';
 }
 
 export function StatsRow({
@@ -21,8 +21,8 @@ export function StatsRow({
   workPct,
   learnPct,
   avgProductivity,
-  currentStreak,
-  longestStreak,
+  daysActive,
+  totalDaysInPeriod,
   period,
 }: StatsRowProps): JSX.Element {
   const weekDiff = thisWeekCount - lastWeekCount;
@@ -33,14 +33,19 @@ export function StatsRow({
       : `${Math.abs(weekDiff)} ${weekDiff > 0 ? 'more' : 'fewer'} than last week`;
 
   const splitLabel =
-    period === '7d'
-      ? "This week's split"
-      : period === '30d'
-        ? "This month's split"
-        : 'All-time split';
+    period === '7d' || period === 'week' ? "This week's split" : "This month's split";
 
   const totalSub =
-    period === '7d' ? 'past 7 days' : period === '30d' ? 'past 30 days' : 'since you started';
+    period === '7d'
+      ? 'past 7 days'
+      : period === '30d'
+        ? 'past 30 days'
+        : period === 'week'
+          ? 'this week'
+          : 'this month';
+
+  const consistencyPct =
+    totalDaysInPeriod > 0 ? Math.round((daysActive / totalDaysInPeriod) * 100) : 0;
 
   return (
     <div className="mb-4 grid grid-cols-2 gap-3.5 lg:grid-cols-5">
@@ -63,10 +68,9 @@ export function StatsRow({
         sub="across scored entries"
       />
       <StatCard
-        label="Current streak"
-        value={currentStreak}
-        sub={`Personal best: ${longestStreak} days`}
-        subTone="sage"
+        label="Days active"
+        value={daysActive}
+        sub={`${consistencyPct}% of ${totalDaysInPeriod} days`}
       />
     </div>
   );

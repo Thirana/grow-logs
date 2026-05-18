@@ -35,14 +35,14 @@ export function RecentEntries({ entries, onAddEntry, onEdit }: RecentEntriesProp
           <h2 className="text-gl-text text-[16px] leading-snug font-bold tracking-[-0.015em]">
             Recent entries
           </h2>
-          <div className="border-gl-border bg-gl-bg-subtle flex gap-0.5 rounded-lg border p-[3px]">
+          <div className="border-gl-border bg-gl-bg-subtle flex gap-1 rounded-[9px] border p-1">
             {FILTER_LABELS.map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`rounded-[6px] px-2.5 py-1 text-[11.5px] font-medium transition-colors duration-[120ms] ${
+                className={`rounded-[7px] px-2.5 py-[5px] text-[11.5px] font-medium transition-colors duration-[120ms] ${
                   filter === key
-                    ? 'bg-gl-primary-soft text-gl-primary font-semibold'
+                    ? 'bg-gl-primary text-gl-primary-ink font-semibold'
                     : 'text-gl-text-muted hover:text-gl-text'
                 }`}
               >
@@ -58,14 +58,14 @@ export function RecentEntries({ entries, onAddEntry, onEdit }: RecentEntriesProp
             Recent entries
           </h2>
           <div className="flex items-center gap-3">
-            <div className="border-gl-border bg-gl-bg-subtle flex gap-0.5 rounded-lg border p-[3px]">
+            <div className="border-gl-border bg-gl-bg-subtle flex gap-1 rounded-[9px] border p-1">
               {FILTER_LABELS.map(({ key, label }) => (
                 <button
                   key={key}
                   onClick={() => setFilter(key)}
-                  className={`rounded-[7px] px-3 py-1.5 text-[12.5px] font-medium transition-colors duration-[120ms] ${
+                  className={`rounded-[7px] px-3 py-[7px] text-[12.5px] font-medium transition-colors duration-[120ms] ${
                     filter === key
-                      ? 'bg-gl-primary-soft text-gl-primary font-semibold'
+                      ? 'bg-gl-primary text-gl-primary-ink font-semibold'
                       : 'text-gl-text-muted hover:text-gl-text'
                   }`}
                 >

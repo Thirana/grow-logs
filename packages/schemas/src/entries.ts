@@ -28,7 +28,7 @@ export const entryFiltersSchema = z.object({
 });
 
 export const summaryQuerySchema = z.object({
-  period: z.enum(["7d", "30d", "all"]).default("30d"),
+  period: z.enum(["7d", "30d", "week", "month"]).default("30d"),
   type: entryTypeSchema.optional(),
 });
 

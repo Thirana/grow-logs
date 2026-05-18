@@ -694,13 +694,42 @@ describe('EntriesService', () => {
 
     it('returns period in the response', async () => {
       setupSummaryMocks();
-
       const result7d = await service.getSummary('user-1', { period: '7d' });
       setupSummaryMocks();
-      const resultAll = await service.getSummary('user-1', { period: 'all' });
+      const resultWeek = await service.getSummary('user-1', { period: 'week' });
 
       expect(result7d.period).toBe('7d');
-      expect(resultAll.period).toBe('all');
+      expect(resultWeek.period).toBe('week');
+    });
+
+    it('applies start of current ISO week as entryDate filter for "week" period', async () => {
+      const { startOfISOWeek: soiw } =
+        jest.requireActual<typeof import('date-fns')>('date-fns');
+      setupSummaryMocks();
+
+      await service.getSummary('user-1', { period: 'week' });
+
+      type AggCall = [{ where: { entryDate?: { gte: Date } } }];
+      const gte = (mockPrisma.entry.aggregate.mock.calls as AggCall[])[0][0]
+        .where.entryDate?.gte;
+      expect(gte?.toISOString().slice(0, 10)).toBe(
+        soiw(new Date()).toISOString().slice(0, 10),
+      );
+    });
+
+    it('applies start of current month as entryDate filter for "month" period', async () => {
+      const { startOfMonth: som } =
+        jest.requireActual<typeof import('date-fns')>('date-fns');
+      setupSummaryMocks();
+
+      await service.getSummary('user-1', { period: 'month' });
+
+      type AggCall = [{ where: { entryDate?: { gte: Date } } }];
+      const gte = (mockPrisma.entry.aggregate.mock.calls as AggCall[])[0][0]
+        .where.entryDate?.gte;
+      expect(gte?.toISOString().slice(0, 10)).toBe(
+        som(new Date()).toISOString().slice(0, 10),
+      );
     });
 
     it('returns thisWeekCount and lastWeekCount from the DB queries', async () => {

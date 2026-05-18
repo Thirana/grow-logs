@@ -8,10 +8,10 @@ interface ScorePillProps {
 export function ScorePill({ score, className }: ScorePillProps) {
   const colorClass =
     score >= 8
-      ? 'bg-gl-primary-soft text-gl-primary'
+      ? 'bg-gl-primary text-gl-primary-ink'
       : score >= 5
-        ? 'bg-gl-warning-soft text-gl-warning'
-        : 'bg-gl-danger-soft text-gl-danger';
+        ? 'bg-gl-warning text-gl-warning-ink'
+        : 'bg-gl-danger text-gl-danger-ink';
 
   return (
     <span
@@ -21,7 +21,7 @@ export function ScorePill({ score, className }: ScorePillProps) {
         className,
       )}
     >
-      <span className="font-normal text-current/60">score</span>
+      <span className="font-normal opacity-60">score</span>
       {score} / 10
     </span>
   );

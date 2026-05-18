@@ -15,7 +15,7 @@ describe('TypeBadge', () => {
 
     it('applies work color classes for WORK', () => {
       const { container } = render(<TypeBadge type="WORK" />);
-      expect(container.firstChild).toHaveClass('bg-gl-work-bg', 'text-gl-work');
+      expect(container.firstChild).toHaveClass('bg-gl-work', 'text-gl-work-ink');
     });
   });
 
@@ -32,7 +32,7 @@ describe('TypeBadge', () => {
 
     it('applies learn color classes for LEARNING', () => {
       const { container } = render(<TypeBadge type="LEARNING" />);
-      expect(container.firstChild).toHaveClass('bg-gl-learn-bg', 'text-gl-learn');
+      expect(container.firstChild).toHaveClass('bg-gl-learn', 'text-gl-learn-ink');
     });
   });
 
@@ -41,9 +41,8 @@ describe('TypeBadge', () => {
     expect(container.firstChild).toHaveClass('my-class');
   });
 
-  it('renders the dot indicator', () => {
+  it('renders the label text without a dot indicator', () => {
     const { container } = render(<TypeBadge type="WORK" />);
-    const dot = container.querySelector('[aria-hidden="true"]');
-    expect(dot).toBeInTheDocument();
+    expect(container.querySelector('[aria-hidden="true"]')).not.toBeInTheDocument();
   });
 });

@@ -54,63 +54,73 @@ const PREVIEW_BY_CATEGORY: CategorySummaryItem[] = [
 const PREVIEW_ENTRIES: Entry[] = [
   {
     id: '1',
+    userId: 'preview',
     type: 'WORK',
     text: 'Refactored auth into a single guard. Pulled the refresh-token rotation out of the login handler and the test surface dropped by half.',
-    score: 8,
+    productivityScore: 8,
     entryDate: '2025-05-14',
     categoryId: '1',
-    categoryName: 'Backend',
     subcategoryId: 'a',
-    subcategoryName: 'NestJS',
+    category: { id: '1', name: 'Backend', color: '#69B598' },
+    subcategory: { id: 'a', name: 'NestJS' },
     createdAt: '2025-05-14T10:00:00Z',
+    updatedAt: '2025-05-14T10:00:00Z',
   },
   {
     id: '2',
+    userId: 'preview',
     type: 'LEARNING',
     text: 'Chapter 4: Designing Data-Intensive Applications. Replication patterns; conflict resolution figure finally clicked.',
-    score: 7,
+    productivityScore: 7,
     entryDate: '2025-05-14',
     categoryId: '3',
-    categoryName: 'Reading',
     subcategoryId: 'b',
-    subcategoryName: 'DDIA',
+    category: { id: '3', name: 'Reading', color: '#B87DA2' },
+    subcategory: { id: 'b', name: 'DDIA' },
     createdAt: '2025-05-14T14:00:00Z',
+    updatedAt: '2025-05-14T14:00:00Z',
   },
   {
     id: '3',
+    userId: 'preview',
     type: 'WORK',
     text: 'Shipped the import-from-CSV flow. Row-level errors inline. Cut onboarding friction for the three people who tried it.',
-    score: 9,
+    productivityScore: 9,
     entryDate: '2025-05-13',
     categoryId: '4',
-    categoryName: 'Side Project',
     subcategoryId: 'c',
-    subcategoryName: 'Grow Logs',
+    category: { id: '4', name: 'Side Project', color: '#C4A05E' },
+    subcategory: { id: 'c', name: 'Grow Logs' },
     createdAt: '2025-05-13T11:00:00Z',
+    updatedAt: '2025-05-13T11:00:00Z',
   },
   {
     id: '4',
+    userId: 'preview',
     type: 'LEARNING',
     text: 'Read up on cache stampedes: request coalescing, lock-and-refresh, probabilistic early expiration. Trade-offs make sense now.',
-    score: 6,
+    productivityScore: 6,
     entryDate: '2025-05-13',
     categoryId: '2',
-    categoryName: 'System Design',
     subcategoryId: 'd',
-    subcategoryName: 'Caching',
+    category: { id: '2', name: 'System Design', color: '#8285BA' },
+    subcategory: { id: 'd', name: 'Caching' },
     createdAt: '2025-05-13T16:00:00Z',
+    updatedAt: '2025-05-13T16:00:00Z',
   },
   {
     id: '5',
+    userId: 'preview',
     type: 'WORK',
     text: 'Replaced two redundant indexes after running the unused-index report. Saved ~140 MB. Tiny but satisfying.',
-    score: 7,
+    productivityScore: 7,
     entryDate: '2025-05-12',
     categoryId: '1',
-    categoryName: 'Backend',
     subcategoryId: 'e',
-    subcategoryName: 'Postgres',
+    category: { id: '1', name: 'Backend', color: '#69B598' },
+    subcategory: { id: 'e', name: 'Postgres' },
     createdAt: '2025-05-12T09:00:00Z',
+    updatedAt: '2025-05-12T09:00:00Z',
   },
 ];
 
@@ -166,11 +176,15 @@ export function LivePreview() {
               workPct={62}
               learnPct={38}
               avgProductivity={7.4}
-              currentStreak={9}
-              longestStreak={23}
+              daysActive={18}
+              totalDaysInPeriod={30}
               period="30d"
             />
-            <ActivityCard dailyActivity={PREVIEW_DAILY} byCategory={PREVIEW_BY_CATEGORY} />
+            <ActivityCard
+              dailyActivity={PREVIEW_DAILY}
+              byCategory={PREVIEW_BY_CATEGORY}
+              period="30d"
+            />
             <RecentEntries entries={PREVIEW_ENTRIES} />
           </div>
 

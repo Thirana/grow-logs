@@ -4,18 +4,12 @@ import { type JSX } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/common/logo';
-import {
-  IconCalendar,
-  IconChart,
-  IconAll,
-  IconFolder,
-  IconSettings,
-} from '@/components/common/icons';
+import { IconPlus, IconChart, IconAll, IconFolder, IconSettings } from '@/components/common/icons';
 import { useCategories } from '@/hooks/use-categories';
 import { useAuthStore } from '@/stores/auth.store';
+import { useUiStore } from '@/stores/ui.store';
 
 const NAV_ITEMS = [
-  { label: 'Today', href: '/today', Icon: IconCalendar },
   { label: 'Dashboard', href: '/dashboard', Icon: IconChart },
   { label: 'All entries', href: '/entries', Icon: IconAll },
   { label: 'Categories', href: '/categories', Icon: IconFolder },
@@ -31,6 +25,7 @@ export function Sidebar(): JSX.Element {
   const pathname = usePathname();
   const { data: categories, isLoading: catsLoading } = useCategories();
   const user = useAuthStore((s) => s.user);
+  const openCreateEntry = useUiStore((s) => s.openCreateEntry);
 
   return (
     <aside className="no-scrollbar border-gl-border bg-gl-bg-subtle sticky top-0 flex h-screen w-[240px] shrink-0 flex-col border-r px-4 py-[22px]">
@@ -43,6 +38,13 @@ export function Sidebar(): JSX.Element {
         <span className="text-gl-text text-[15px] font-bold tracking-[-0.015em]">Grow Logs</span>
       </Link>
 
+      <button
+        onClick={openCreateEntry}
+        className="border-gl-primary text-gl-primary hover:bg-gl-primary-soft mb-4 flex w-full items-center justify-center gap-2 rounded-[9px] border py-2.5 text-[13.5px] font-semibold transition-colors duration-[120ms]"
+      >
+        <IconPlus size={13} /> Add entry
+      </button>
+
       <nav aria-label="Primary navigation">
         <ul className="flex flex-col gap-0.5" role="list">
           {NAV_ITEMS.map(({ label, href, Icon }) => {
@@ -51,10 +53,10 @@ export function Sidebar(): JSX.Element {
               <li key={href}>
                 <Link
                   href={href}
-                  className={`flex items-center gap-2.5 rounded-lg border px-2.5 py-2 text-[13.5px] font-medium transition-colors duration-[120ms] ${
+                  className={`flex items-center gap-2.5 rounded-[7px] px-2.5 py-2 text-[13.5px] font-medium transition-colors duration-[120ms] ${
                     active
-                      ? 'border-gl-border bg-gl-surface text-gl-text font-semibold'
-                      : 'text-gl-text-muted hover:text-gl-text border-transparent'
+                      ? 'bg-gl-primary text-gl-primary-ink font-semibold'
+                      : 'text-gl-text-muted hover:text-gl-text'
                   }`}
                   aria-current={active ? 'page' : undefined}
                 >

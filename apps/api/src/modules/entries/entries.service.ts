@@ -8,6 +8,7 @@ import {
   subDays,
   subWeeks,
   startOfISOWeek,
+  startOfMonth,
   getISOWeek,
   getISOWeekYear,
 } from 'date-fns';
@@ -52,7 +53,7 @@ export type CategorySummaryItem = {
 };
 
 export type SummaryResponse = {
-  period: '7d' | '30d' | 'all';
+  period: '7d' | '30d' | 'week' | 'month';
   totalEntries: number;
   totalByType: { WORK: number; LEARNING: number };
   averageProductivityScore: number | null;
@@ -276,7 +277,9 @@ export class EntriesService {
       effectiveCategoryId = dto.categoryId;
     }
 
-    if (dto.subcategoryId !== undefined) {
+    if (dto.subcategoryId === null) {
+      updateData.subcategoryId = null;
+    } else if (dto.subcategoryId !== undefined) {
       const sub = await this.prisma.subcategory.findUnique({
         where: { id: dto.subcategoryId },
         select: { id: true, categoryId: true, isCompleted: true },
@@ -314,14 +317,20 @@ export class EntriesService {
     query: SummaryQueryDto,
   ): Promise<SummaryResponse> {
     const now = new Date();
-    const periodDays =
-      query.period === '7d' ? 7 : query.period === '30d' ? 30 : null;
+    const periodStart: Date | null =
+      query.period === '7d'
+        ? subDays(now, 7)
+        : query.period === '30d'
+          ? subDays(now, 30)
+          : query.period === 'week'
+            ? startOfISOWeek(now)
+            : query.period === 'month'
+              ? startOfMonth(now)
+              : null;
 
     const baseWhere = {
       userId,
-      ...(periodDays !== null
-        ? { entryDate: { gte: subDays(now, periodDays) } }
-        : {}),
+      ...(periodStart !== null ? { entryDate: { gte: periodStart } } : {}),
       ...(query.type ? { type: query.type } : {}),
     };
 

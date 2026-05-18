@@ -7,7 +7,6 @@ import { TypeBadge } from '@/components/common/type-badge';
 import { ScorePill } from '@/components/common/score-pill';
 import { IconDots, IconPen, IconTrash } from '@/components/common/icons';
 import { DeleteEntryDialog } from './delete-entry-dialog';
-import { getCategorySwatchVar } from '@/lib/utils';
 import type { Entry } from '@grow-logs/types';
 
 interface EntryRowProps {
@@ -19,7 +18,7 @@ interface EntryRowProps {
 }
 
 function formatEntryDate(isoDate: string): { day: string; month: string } {
-  const d = new Date(`${isoDate}T00:00:00`);
+  const d = new Date(`${isoDate.slice(0, 10)}T00:00:00`);
   return {
     day: String(d.getDate()),
     month: d.toLocaleString('en-US', { month: 'short' }),
@@ -93,7 +92,7 @@ function EntryMenu({ onEdit, onDeleteClick }: EntryMenuProps) {
 export function EntryRow({ entry, isExpanded, onToggleExpand, isLast, onEdit }: EntryRowProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const borderClass = isLast ? '' : 'border-b border-gl-border';
-  const swatch = getCategorySwatchVar(entry.categoryId);
+  const swatch = entry.category.color;
   const { day, month } = formatEntryDate(entry.entryDate);
 
   const menu = (
@@ -110,7 +109,7 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast, onEdit }: 
           <div className="flex items-center justify-between gap-2">
             <TypeBadge type={entry.type} />
             <div className="flex items-center gap-2">
-              {entry.score != null && <ScorePill score={entry.score} />}
+              {entry.productivityScore != null && <ScorePill score={entry.productivityScore} />}
               {menu}
             </div>
           </div>
@@ -122,13 +121,13 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast, onEdit }: 
               aria-hidden="true"
             />
             <span className="text-gl-text text-[13px] leading-none font-semibold">
-              {entry.categoryName}
+              {entry.category.name}
             </span>
-            {entry.subcategoryName && (
+            {entry.subcategory?.name && (
               <>
                 <span className="text-gl-text-faint text-[11px] leading-none">/</span>
                 <span className="text-gl-text-muted truncate text-[12px] leading-none">
-                  {entry.subcategoryName}
+                  {entry.subcategory?.name}
                 </span>
               </>
             )}
@@ -169,13 +168,13 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast, onEdit }: 
                 aria-hidden="true"
               />
               <span className="text-gl-text text-[13px] leading-none font-semibold">
-                {entry.categoryName}
+                {entry.category.name}
               </span>
-              {entry.subcategoryName && (
+              {entry.subcategory?.name && (
                 <>
                   <span className="text-gl-text-faint text-[11px] leading-none">/</span>
                   <span className="text-gl-text-muted truncate text-[12px] leading-none">
-                    {entry.subcategoryName}
+                    {entry.subcategory?.name}
                   </span>
                 </>
               )}
@@ -189,7 +188,9 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast, onEdit }: 
             </p>
           </div>
 
-          <div className="shrink-0">{entry.score != null && <ScorePill score={entry.score} />}</div>
+          <div className="shrink-0">
+            {entry.productivityScore != null && <ScorePill score={entry.productivityScore} />}
+          </div>
 
           {menu}
         </div>

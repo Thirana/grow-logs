@@ -10,32 +10,32 @@ describe('ScorePill', () => {
 
   it('applies primary (green) classes for score >= 8', () => {
     const { container } = render(<ScorePill score={8} />);
-    expect(container.firstChild).toHaveClass('bg-gl-primary-soft', 'text-gl-primary');
+    expect(container.firstChild).toHaveClass('bg-gl-primary', 'text-gl-primary-ink');
   });
 
   it('applies primary (green) classes for score of 10', () => {
     const { container } = render(<ScorePill score={10} />);
-    expect(container.firstChild).toHaveClass('bg-gl-primary-soft');
+    expect(container.firstChild).toHaveClass('bg-gl-primary', 'text-gl-primary-ink');
   });
 
   it('applies warning (yellow) classes for score >= 5 and < 8', () => {
     const { container } = render(<ScorePill score={5} />);
-    expect(container.firstChild).toHaveClass('bg-gl-warning-soft', 'text-gl-warning');
+    expect(container.firstChild).toHaveClass('bg-gl-warning', 'text-gl-warning-ink');
   });
 
   it('applies warning classes for score of 7', () => {
     const { container } = render(<ScorePill score={7} />);
-    expect(container.firstChild).toHaveClass('bg-gl-warning-soft');
+    expect(container.firstChild).toHaveClass('bg-gl-warning', 'text-gl-warning-ink');
   });
 
   it('applies danger (red) classes for score < 5', () => {
     const { container } = render(<ScorePill score={4} />);
-    expect(container.firstChild).toHaveClass('bg-gl-danger-soft', 'text-gl-danger');
+    expect(container.firstChild).toHaveClass('bg-gl-danger', 'text-gl-danger-ink');
   });
 
   it('applies danger classes for score of 1', () => {
     const { container } = render(<ScorePill score={1} />);
-    expect(container.firstChild).toHaveClass('bg-gl-danger-soft');
+    expect(container.firstChild).toHaveClass('bg-gl-danger', 'text-gl-danger-ink');
   });
 
   it('forwards the className prop', () => {

@@ -44,15 +44,17 @@ export interface CategorySummaryItem {
 
 export interface Entry {
   id: string;
+  userId: string;
   type: "WORK" | "LEARNING";
   text: string;
-  score: number | null;
+  productivityScore: number | null;
   entryDate: string;
   categoryId: string;
-  categoryName: string;
   subcategoryId: string | null;
-  subcategoryName: string | null;
+  category: { id: string; name: string; color: string };
+  subcategory: { id: string; name: string } | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface EntryListMeta {
@@ -63,7 +65,7 @@ export interface EntryListMeta {
 }
 
 export interface EntrySummary {
-  period: "7d" | "30d" | "all";
+  period: "7d" | "30d" | "week" | "month";
   totalEntries: number;
   totalByType: {
     WORK: number;

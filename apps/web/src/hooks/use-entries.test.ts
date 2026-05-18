@@ -35,15 +35,17 @@ const MOCK_SUMMARY = {
 
 const MOCK_ENTRY = {
   id: 'e1',
+  userId: 'u1',
   type: 'WORK' as const,
   text: 'Implemented auth guard.',
-  score: 8,
+  productivityScore: 8,
   entryDate: '2025-05-14',
   categoryId: 'c1',
-  categoryName: 'Backend',
   subcategoryId: 's1',
-  subcategoryName: 'NestJS',
+  category: { id: 'c1', name: 'Backend', color: '#69B598' },
+  subcategory: { id: 's1', name: 'NestJS' },
   createdAt: '2025-05-14T10:00:00Z',
+  updatedAt: '2025-05-14T10:00:00Z',
 };
 
 const MOCK_META = { total: 1, page: 1, limit: 10, totalPages: 1 };
@@ -173,7 +175,7 @@ describe('useCreateEntry', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.id).toBe('e1');
     expect(result.current.data?.type).toBe('WORK');
-    expect(result.current.data?.score).toBe(8);
+    expect(result.current.data?.productivityScore).toBe(8);
   });
 
   it('enters error state on 422', async () => {
@@ -198,7 +200,7 @@ describe('useCreateEntry', () => {
 
 describe('useUpdateEntry', () => {
   it('returns updated entry on 200', async () => {
-    const updated = { ...MOCK_ENTRY, score: 9, text: 'Updated the auth guard.' };
+    const updated = { ...MOCK_ENTRY, productivityScore: 9, text: 'Updated the auth guard.' };
     server.use(http.patch('*/entries/e1', () => HttpResponse.json({ data: updated, meta: {} })));
 
     const { result } = renderHook(() => useUpdateEntry(), {
@@ -213,7 +215,7 @@ describe('useUpdateEntry', () => {
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data?.score).toBe(9);
+    expect(result.current.data?.productivityScore).toBe(9);
     expect(result.current.data?.id).toBe('e1');
   });
 
