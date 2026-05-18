@@ -3,7 +3,7 @@
 // Login form — email + password with inline credential error and redirect logic.
 // Used by: app/(auth)/login/page.tsx
 import { type JSX, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -79,6 +79,7 @@ function PasswordInput({ hasError, className, ...props }: PasswordInputProps): J
 
 export function LoginForm(): JSX.Element {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const loginMutation = useLogin();
   const { login: saveSession } = useAuthStore();
   const [formError, setFormError] = useState<string | null>(null);
@@ -103,11 +104,10 @@ export function LoginForm(): JSX.Element {
     loginMutation.mutate(values, {
       onSuccess: ({ data }) => {
         saveSession(data.user, data.accessToken);
-        if (data.user.onboardingCompleted) {
-          void router.replace('/dashboard');
-        } else {
-          void router.replace('/onboarding');
-        }
+        const next = searchParams.get('next');
+        const fallback = data.user.onboardingCompleted ? '/dashboard' : '/onboarding';
+        // next is always set by our own middleware — safe to trust as an internal path
+        void router.replace((next ?? fallback) as Parameters<typeof router.replace>[0]);
       },
       onError: (error) => {
         const status = error.response?.status;

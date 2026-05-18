@@ -8,3 +8,21 @@ export interface UserProfile {
   subscriptionPlan: string | null;
   createdAt: string;
 }
+
+export interface Subcategory {
+  id: string;
+  name: string;
+  categoryId: string;
+  isCompleted: boolean;
+  createdAt: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  color: string;
+  isCompleted: boolean;
+  subcategories: Subcategory[];
+  entryCount: number;
+  createdAt: string;
+}

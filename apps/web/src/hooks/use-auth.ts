@@ -1,5 +1,5 @@
 // Auth hooks — mutations and queries for registration, login, session, and email verification.
-// Used by: components/auth/register-form, login-form, verify-email-content, resend-verification-form
+// Used by: components/auth/register-form, login-form, verify-email-content, resend-verification-form, auth-guard
 import {
   useMutation,
   useQuery,
@@ -95,5 +95,49 @@ export function useResendVerification(): UseMutationResult<
   return useMutation<ResendResponse, ApiError, ResendVerificationDto>({
     mutationFn: (body) =>
       api.post<ResendResponse>('/auth/resend-verification', body).then((r) => r.data),
+  });
+}
+
+interface MeResponse {
+  data: {
+    id: string;
+    email: string;
+    role: string;
+    isEmailVerified: boolean;
+    onboardingCompleted: boolean;
+    subscriptionStatus: string;
+  };
+  meta: object;
+}
+
+// Restores the session after a page reload. The access token is already recovered
+// from sessionStorage by lib/api.ts at module load, so GET /users/me will succeed
+// if the token is still valid (< 1 hour old). On 401, the Axios response interceptor
+// clears _gl_session and redirects to /login, breaking the middleware redirect loop.
+export function useRestoreSession(): UseQueryResult<LoginUser, ApiError> {
+  const { isAuthenticated } = useAuthStore();
+
+  const hasSessionCookie =
+    typeof document !== 'undefined' && document.cookie.includes('_gl_session=1');
+
+  return useQuery<LoginUser, ApiError>({
+    queryKey: ['auth', 'me'],
+    queryFn: async () => {
+      const res = await api.get<MeResponse>('/users/me');
+      const p = res.data.data;
+      const user: LoginUser = {
+        id: p.id,
+        email: p.email,
+        role: p.role as LoginUser['role'],
+        isEmailVerified: p.isEmailVerified,
+        onboardingCompleted: p.onboardingCompleted,
+        subscriptionStatus: p.subscriptionStatus as LoginUser['subscriptionStatus'],
+      };
+      useAuthStore.getState().restoreSession(user);
+      return user;
+    },
+    enabled: !isAuthenticated && hasSessionCookie,
+    retry: false,
+    staleTime: Infinity,
   });
 }

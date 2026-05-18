@@ -1,8 +1,9 @@
 'use client';
 
 // Verify email page — reads token from URL, auto-submits it, and renders loading/success/error state.
+// Suspense wraps the inner component because useSearchParams() requires a boundary during SSR prerender.
 // Used by: app/(auth)/layout.tsx (auth shell), email verification links from Resend
-import { type JSX } from 'react';
+import { Suspense, type JSX } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -118,7 +119,7 @@ function ErrorState({ message }: ErrorStateProps): JSX.Element {
   );
 }
 
-export default function VerifyEmailPage(): JSX.Element {
+function VerifyEmailContent(): JSX.Element {
   const searchParams = useSearchParams();
   const token = searchParams.get('token') ?? '';
 
@@ -142,4 +143,12 @@ export default function VerifyEmailPage(): JSX.Element {
   }
 
   return <LoadingState />;
+}
+
+export default function VerifyEmailPage(): JSX.Element {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
 }

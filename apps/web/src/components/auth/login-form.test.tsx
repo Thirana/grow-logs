@@ -10,7 +10,11 @@ import { useAuthStore } from '@/stores/auth.store';
 import { LoginForm } from './login-form';
 
 const mockReplace = vi.fn();
-vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mockReplace }) }));
+const mockGet = vi.fn().mockReturnValue(null);
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: mockReplace }),
+  useSearchParams: () => ({ get: mockGet }),
+}));
 vi.mock('sonner', () => ({ toast: { error: vi.fn() } }));
 
 const server = setupServer();
@@ -20,6 +24,7 @@ beforeAll(() => server.listen());
 afterEach(() => {
   server.resetHandlers();
   mockReplace.mockReset();
+  mockGet.mockReturnValue(null);
   useAuthStore.setState({ user: null, isAuthenticated: false });
 });
 afterAll(() => server.close());
@@ -111,6 +116,18 @@ describe('LoginForm', () => {
 
     await waitFor(() => expect(screen.getByText('Invalid email or password.')).toBeInTheDocument());
     expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it('redirects to the ?next= path instead of /dashboard after successful login', async () => {
+    mockGet.mockReturnValue('/categories');
+    server.use(http.post('*/auth/login', () => loginSuccess(true)));
+    renderForm();
+
+    await userEvent.type(screen.getByLabelText('Email address'), 'user@example.com');
+    await userEvent.type(screen.getByLabelText('Password'), 'Password1!');
+    await userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/categories'));
   });
 
   it('redirects to /check-email?resend=true when the account is not verified', async () => {

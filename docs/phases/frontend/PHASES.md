@@ -9,8 +9,8 @@ Fourteen steps across six phases. Each step is a single focused unit — one con
 | [F01](steps/step-f01-auth-layout-register.md) | Auth Layout + Register + Check Email | Phase 1 | ✅ |
 | [F02](steps/step-f02-login.md) | Login + Auth Store Wiring | Phase 1 | ✅ |
 | [F03](steps/step-f03-verify-email.md) | Email Verification + Resend | Phase 1 | ✅ |
-| [F04](steps/step-f04-middleware.md) | Route Protection Middleware | Phase 1 | ⬜ |
-| [F05](steps/step-f05-onboarding.md) | Onboarding Flow | Phase 2 | ⬜ |
+| [F04](steps/step-f04-middleware.md) | Route Protection Middleware | Phase 1 | ✅ |
+| [F05](steps/step-f05-onboarding.md) | Onboarding Flow | Phase 2 | ✅ |
 | [F06](steps/step-f06-dashboard-stats.md) | Dashboard Wired — Stats & Summary | Phase 3 | ⬜ |
 | [F07](steps/step-f07-dashboard-entries.md) | Dashboard Wired — Entries List & Charts | Phase 3 | ⬜ |
 | [F08](steps/step-f08-create-entry.md) | Create Entry | Phase 4 | ⬜ |

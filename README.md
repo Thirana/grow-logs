@@ -77,7 +77,7 @@ A Postman collection covering all implemented endpoints lives in `docs/postman/`
 
 > **Backend MVP feature complete.** All 22 API endpoints implemented — 24 / 26 backend steps complete. Steps 08 and 09 (OpenTelemetry, Axiom) are deferred.
 >
-> **Frontend in progress.** Step F03 complete — 3 / 14 frontend steps complete. Auth layout, register, login, check-email, and verify-email (with resend flow) are implemented.
+> **Frontend in progress.** Step F05 complete — 5 / 14 frontend steps complete. Full auth flow, route protection, and onboarding wizard (with category suggestions and subcategory support) are implemented.
 
 ---
 
