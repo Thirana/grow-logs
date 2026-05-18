@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { EntryRow } from './entry-row';
 import { IconArrowRight, IconEmptyList } from '@/components/common/icons';
-import type { MockEntry } from '@/data/dashboard-mock';
+import type { Entry } from '@grow-logs/types';
 
 type Filter = 'all' | 'work' | 'learning';
 
 interface RecentEntriesProps {
-  entries: MockEntry[];
+  entries: Entry[];
   onAddEntry?: () => void;
 }
 
@@ -18,7 +18,7 @@ const FILTER_LABELS: { key: Filter; label: string }[] = [
   { key: 'learning', label: 'Learning' },
 ];
 
-export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps) {
+export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps): JSX.Element {
   const [filter, setFilter] = useState<Filter>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -92,12 +92,14 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps) {
           <p className="text-gl-text-muted max-w-[320px] text-[14px] leading-relaxed">
             Your log will appear here once you start adding entries.
           </p>
-          <button
-            onClick={onAddEntry}
-            className="text-gl-primary hover:text-gl-primary-hover mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold"
-          >
-            Add your first entry <IconArrowRight size={12} />
-          </button>
+          {onAddEntry && (
+            <button
+              onClick={onAddEntry}
+              className="text-gl-primary hover:text-gl-primary-hover mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold"
+            >
+              Add your first entry <IconArrowRight size={12} />
+            </button>
+          )}
         </div>
       ) : visible.length === 0 ? (
         <div className="text-gl-text-muted px-6 py-10 text-center text-[13px] leading-relaxed">

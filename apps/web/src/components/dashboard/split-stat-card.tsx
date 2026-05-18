@@ -1,16 +1,25 @@
+import { type JSX } from 'react';
+import { cn } from '@/lib/utils';
+
 interface SplitStatCardProps {
   workPct: number;
   learnPct: number;
+  label?: string;
   className?: string;
 }
 
-export function SplitStatCard({ workPct, learnPct, className }: SplitStatCardProps) {
+export function SplitStatCard({
+  workPct,
+  learnPct,
+  label = "This month's split",
+  className,
+}: SplitStatCardProps): JSX.Element {
   return (
     <div
-      className={`border-gl-border bg-gl-surface shadow-gl rounded-xl border p-5 ${className ?? ''}`}
+      className={cn('border-gl-border bg-gl-surface shadow-gl rounded-xl border p-5', className)}
     >
       <p className="text-gl-text-faint text-[11px] font-bold tracking-[0.12em] uppercase">
-        This month&apos;s split
+        {label}
       </p>
 
       <div className="mt-3.5 mb-2.5 flex items-baseline justify-between">

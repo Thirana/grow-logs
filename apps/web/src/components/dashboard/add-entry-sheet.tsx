@@ -1,21 +1,27 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { IconClose, IconChevronDown } from '@/components/common/icons';
-import type { MockCategory } from '@/data/dashboard-mock';
+import { useCategories } from '@/hooks/use-categories';
+import { getCategorySwatchVar } from '@/lib/utils';
 
 interface AddEntrySheetProps {
   open: boolean;
   onClose: () => void;
-  categories: MockCategory[];
 }
 
-export function AddEntrySheet({ open, onClose, categories }: AddEntrySheetProps) {
+export function AddEntrySheet({ open, onClose }: AddEntrySheetProps) {
+  const { data: categories = [] } = useCategories();
+  const active = categories.filter((c) => !c.isCompleted);
+
   const [type, setType] = useState<'Work' | 'Learning'>('Work');
-  const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
+  const [categoryId, setCategoryId] = useState('');
   const [score, setScore] = useState(7);
 
-  const selectedCategory = categories.find((c) => c.id === categoryId) ?? categories[0];
+  // Derive effective ID at render time — avoids an effect-based setState cascade.
+  const effectiveCategoryId = categoryId || active[0]?.id || '';
+  const selectedCategory = active.find((c) => c.id === effectiveCategoryId) ?? active[0];
 
   useEffect(() => {
     if (!open) return;
@@ -24,7 +30,6 @@ export function AddEntrySheet({ open, onClose, categories }: AddEntrySheetProps)
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  // Prevent body scroll when open
   useEffect(() => {
     if (open) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
@@ -55,7 +60,13 @@ export function AddEntrySheet({ open, onClose, categories }: AddEntrySheetProps)
             <h2 className="text-gl-text text-[18px] leading-snug font-bold tracking-[-0.018em]">
               New entry
             </h2>
-            <p className="text-gl-text-muted mt-1 text-[12.5px]">Thursday, 15 May</p>
+            <p className="text-gl-text-muted mt-1 text-[12.5px]">
+              {new Intl.DateTimeFormat('en-US', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+              }).format(new Date())}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -99,16 +110,20 @@ export function AddEntrySheet({ open, onClose, categories }: AddEntrySheetProps)
             <div className="border-gl-border-input bg-gl-surface flex items-center gap-2.5 rounded-[10px] border px-3">
               <span
                 className="size-2.5 shrink-0 rounded-full"
-                style={{ background: selectedCategory?.swatchColor }}
+                style={{
+                  background: selectedCategory
+                    ? getCategorySwatchVar(selectedCategory.id)
+                    : 'var(--gl-border)',
+                }}
                 aria-hidden="true"
               />
               <select
                 id="sheet-category"
-                value={categoryId}
+                value={effectiveCategoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
                 className="text-gl-text h-[42px] flex-1 appearance-none bg-transparent text-[14px] outline-none"
               >
-                {categories.map((c) => (
+                {active.map((c) => (
                   <option key={c.id} value={c.id} style={{ background: 'var(--gl-surface)' }}>
                     {c.name}
                   </option>
@@ -117,16 +132,18 @@ export function AddEntrySheet({ open, onClose, categories }: AddEntrySheetProps)
               <IconChevronDown size={12} className="text-gl-text-muted shrink-0" />
             </div>
 
-            {selectedCategory && (
+            {selectedCategory && selectedCategory.subcategories.length > 0 && (
               <div className="mt-2.5 flex flex-wrap gap-1.5">
-                {selectedCategory.subcategories.map((sub) => (
-                  <span
-                    key={sub}
-                    className="border-gl-border bg-gl-bg-subtle text-gl-text-muted rounded-full border px-2.5 py-1 text-[11.5px]"
-                  >
-                    {sub}
-                  </span>
-                ))}
+                {selectedCategory.subcategories
+                  .filter((s) => !s.isCompleted)
+                  .map((sub) => (
+                    <span
+                      key={sub.id}
+                      className="border-gl-border bg-gl-bg-subtle text-gl-text-muted rounded-full border px-2.5 py-1 text-[11.5px]"
+                    >
+                      {sub.name}
+                    </span>
+                  ))}
               </div>
             )}
           </div>

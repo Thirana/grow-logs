@@ -1,7 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import type { DailyActivity } from '@/data/dashboard-mock';
+
+interface DailyChartPoint {
+  dateLabel: string;
+  workCount: number;
+  learnCount: number;
+}
 
 interface TooltipState {
   colIndex: number;
@@ -11,7 +16,7 @@ interface TooltipState {
 }
 
 interface DailyChartProps {
-  data: DailyActivity[];
+  data: DailyChartPoint[];
 }
 
 const CHART_H = 220;
@@ -22,9 +27,7 @@ export function DailyChart({ data }: DailyChartProps) {
 
   return (
     <div className="relative">
-      {/* Chart area: extra bottom space for x-axis labels */}
       <div className="relative pl-8" style={{ height: CHART_H + 28 }}>
-        {/* Y-axis gridlines */}
         {[1, 0.75, 0.5, 0.25].map((frac) => (
           <div
             key={frac}
@@ -37,7 +40,6 @@ export function DailyChart({ data }: DailyChartProps) {
           </div>
         ))}
 
-        {/* Zero line */}
         <div
           className="border-gl-border absolute right-0 left-8 border-t"
           style={{ top: CHART_H + 4 }}
@@ -47,7 +49,6 @@ export function DailyChart({ data }: DailyChartProps) {
           </span>
         </div>
 
-        {/* Bars */}
         <div
           className="absolute top-1 right-0 left-8 flex items-end gap-[3px]"
           style={{ height: CHART_H }}
@@ -57,12 +58,12 @@ export function DailyChart({ data }: DailyChartProps) {
             const lh = (d.learnCount / max) * 100;
             return (
               <div
-                key={d.dayIndex}
+                key={i}
                 className="flex h-full flex-1 cursor-default items-end gap-[2px]"
                 onMouseEnter={() =>
                   setTooltip({
                     colIndex: i,
-                    dateLabel: d.dateLabel || `Day ${d.dayIndex + 1}`,
+                    dateLabel: d.dateLabel || `Day ${i + 1}`,
                     workCount: d.workCount,
                     learnCount: d.learnCount,
                   })
@@ -82,7 +83,6 @@ export function DailyChart({ data }: DailyChartProps) {
           })}
         </div>
 
-        {/* X-axis labels */}
         <div className="absolute right-0 left-8 flex" style={{ top: CHART_H + 12 }}>
           {data.map((d, i) => (
             <div key={i} className="flex-1 text-center">
@@ -96,7 +96,6 @@ export function DailyChart({ data }: DailyChartProps) {
         </div>
       </div>
 
-      {/* Tooltip */}
       {tooltip && (
         <div
           className="border-gl-border bg-gl-surface shadow-gl-lg pointer-events-none absolute top-0 z-10 -translate-x-1/2 -translate-y-full rounded-lg border px-3 py-2"

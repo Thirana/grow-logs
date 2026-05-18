@@ -4,13 +4,22 @@ import { useState, useEffect, useRef } from 'react';
 import { TypeBadge } from '@/components/common/type-badge';
 import { ScorePill } from '@/components/common/score-pill';
 import { IconDots } from '@/components/common/icons';
-import type { MockEntry } from '@/data/dashboard-mock';
+import { getCategorySwatchVar } from '@/lib/utils';
+import type { Entry } from '@grow-logs/types';
 
 interface EntryRowProps {
-  entry: MockEntry;
+  entry: Entry;
   isExpanded: boolean;
   onToggleExpand: () => void;
   isLast: boolean;
+}
+
+function formatEntryDate(isoDate: string): { day: string; month: string } {
+  const d = new Date(`${isoDate}T00:00:00`);
+  return {
+    day: String(d.getDate()),
+    month: d.toLocaleString('en-US', { month: 'short' }),
+  };
 }
 
 function EntryMenu() {
@@ -64,37 +73,40 @@ function EntryMenu() {
 
 export function EntryRow({ entry, isExpanded, onToggleExpand, isLast }: EntryRowProps) {
   const borderClass = isLast ? '' : 'border-b border-gl-border';
+  const swatch = getCategorySwatchVar(entry.categoryId);
+  const { day, month } = formatEntryDate(entry.entryDate);
 
   return (
     <div className={`group hover:bg-gl-surface-2 cursor-pointer transition-colors ${borderClass}`}>
       {/* ── Mobile card layout ─────────────────────────────────────────── */}
       <div className="flex flex-col gap-2 px-4 py-3.5 sm:hidden" onClick={onToggleExpand}>
-        {/* Top row: type badge + score + menu */}
         <div className="flex items-center justify-between gap-2">
           <TypeBadge type={entry.type} />
           <div className="flex items-center gap-2">
-            <ScorePill score={entry.score} />
+            {entry.score != null && <ScorePill score={entry.score} />}
             <EntryMenu />
           </div>
         </div>
 
-        {/* Category breadcrumb */}
         <div className="flex items-center gap-1.5">
           <span
             className="size-[7px] shrink-0 rounded-full"
-            style={{ background: entry.swatchColor }}
+            style={{ background: swatch }}
             aria-hidden="true"
           />
           <span className="text-gl-text text-[13px] leading-none font-semibold">
             {entry.categoryName}
           </span>
-          <span className="text-gl-text-faint text-[11px] leading-none">/</span>
-          <span className="text-gl-text-muted truncate text-[12px] leading-none">
-            {entry.subcategoryName}
-          </span>
+          {entry.subcategoryName && (
+            <>
+              <span className="text-gl-text-faint text-[11px] leading-none">/</span>
+              <span className="text-gl-text-muted truncate text-[12px] leading-none">
+                {entry.subcategoryName}
+              </span>
+            </>
+          )}
         </div>
 
-        {/* Entry text — 2 lines preview, full on expand */}
         <p
           className={`text-gl-text-muted text-[13px] leading-[1.5] italic ${
             isExpanded ? '' : 'line-clamp-2'
@@ -106,36 +118,37 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast }: EntryRow
 
       {/* ── Desktop row layout ─────────────────────────────────────────── */}
       <div className="hidden items-center gap-4 px-[22px] py-3.5 sm:flex" onClick={onToggleExpand}>
-        {/* Date */}
         <div className="w-11 shrink-0 text-center">
           <div className="text-gl-text text-[17px] leading-none font-bold tracking-[-0.015em]">
-            {entry.day}
+            {day}
           </div>
           <div className="text-gl-text-faint mt-[3px] font-mono text-[10px] tracking-[0.06em] uppercase">
-            {entry.month}
+            {month}
           </div>
         </div>
 
-        {/* Type badge */}
         <div className="w-[76px] shrink-0">
           <TypeBadge type={entry.type} />
         </div>
 
-        {/* Category + body */}
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-1.5">
             <span
               className="size-[7px] shrink-0 rounded-full"
-              style={{ background: entry.swatchColor }}
+              style={{ background: swatch }}
               aria-hidden="true"
             />
             <span className="text-gl-text text-[13px] leading-none font-semibold">
               {entry.categoryName}
             </span>
-            <span className="text-gl-text-faint text-[11px] leading-none">/</span>
-            <span className="text-gl-text-muted truncate text-[12px] leading-none">
-              {entry.subcategoryName}
-            </span>
+            {entry.subcategoryName && (
+              <>
+                <span className="text-gl-text-faint text-[11px] leading-none">/</span>
+                <span className="text-gl-text-muted truncate text-[12px] leading-none">
+                  {entry.subcategoryName}
+                </span>
+              </>
+            )}
           </div>
           <p
             className={`text-gl-text-muted text-[13px] leading-[1.5] italic ${
@@ -146,12 +159,8 @@ export function EntryRow({ entry, isExpanded, onToggleExpand, isLast }: EntryRow
           </p>
         </div>
 
-        {/* Score */}
-        <div className="shrink-0">
-          <ScorePill score={entry.score} />
-        </div>
+        <div className="shrink-0">{entry.score != null && <ScorePill score={entry.score} />}</div>
 
-        {/* Menu */}
         <EntryMenu />
       </div>
     </div>

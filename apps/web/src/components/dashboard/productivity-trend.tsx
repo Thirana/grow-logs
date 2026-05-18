@@ -1,4 +1,6 @@
-import { IconTrendUp } from '@/components/common/icons';
+import { type JSX } from 'react';
+import { cn } from '@/lib/utils';
+import { IconTrendUp, IconTrendDown } from '@/components/common/icons';
 
 interface ProductivityTrendProps {
   data: (number | null)[];
@@ -28,9 +30,23 @@ function buildSegments(pts: { x: number; y: number | null; v: number | null; lab
   return segments;
 }
 
-export function ProductivityTrend({ data }: ProductivityTrendProps) {
+function computeTrendBadge(pts: { v: number | null }[]): {
+  up: boolean;
+  delta: number;
+  weeks: number;
+} | null {
+  const valid = pts.filter((p) => p.v != null);
+  if (valid.length < 2) return null;
+  const mid = Math.floor(valid.length / 2);
+  const avgFirst = valid.slice(0, mid).reduce((s, p) => s + (p.v ?? 0), 0) / mid;
+  const avgSecond = valid.slice(mid).reduce((s, p) => s + (p.v ?? 0), 0) / (valid.length - mid);
+  return { up: avgSecond >= avgFirst, delta: Math.abs(avgSecond - avgFirst), weeks: valid.length };
+}
+
+export function ProductivityTrend({ data }: ProductivityTrendProps): JSX.Element {
+  const span = Math.max(data.length - 1, 1);
   const pts = data.map((v, i) => ({
-    x: PAD_L + (i / (data.length - 1)) * CW,
+    x: PAD_L + (i / span) * CW,
     y: v == null ? null : PAD_T + (1 - v / 10) * CH,
     v,
     label: `W${i + 1}`,
@@ -38,6 +54,7 @@ export function ProductivityTrend({ data }: ProductivityTrendProps) {
 
   const segments = buildSegments(pts);
   const lastPt = pts.findLast((p) => p.y != null);
+  const trend = computeTrendBadge(pts);
 
   return (
     <div className="border-gl-border bg-gl-surface shadow-gl rounded-xl border p-[22px]">
@@ -50,9 +67,18 @@ export function ProductivityTrend({ data }: ProductivityTrendProps) {
             Average score per week across all entries
           </div>
         </div>
-        <div className="bg-gl-primary-soft text-gl-primary inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold">
-          <IconTrendUp size={11} /> Trending up · +1.2 over 8 weeks
-        </div>
+        {trend && (
+          <div
+            className={cn(
+              'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold',
+              trend.up ? 'bg-gl-primary-soft text-gl-primary' : 'bg-gl-danger-soft text-gl-danger',
+            )}
+          >
+            {trend.up ? <IconTrendUp size={11} /> : <IconTrendDown size={11} />}
+            {trend.up ? 'Trending up' : 'Trending down'} · {trend.up ? '+' : '-'}
+            {trend.delta.toFixed(1)} over {trend.weeks} weeks
+          </div>
+        )}
       </div>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="block h-[160px] w-full" aria-hidden="true">
@@ -63,7 +89,6 @@ export function ProductivityTrend({ data }: ProductivityTrendProps) {
           </linearGradient>
         </defs>
 
-        {/* Gridlines */}
         {[0, 5, 10].map((v) => {
           const y = PAD_T + (1 - v / 10) * CH;
           return (
@@ -90,7 +115,6 @@ export function ProductivityTrend({ data }: ProductivityTrendProps) {
           );
         })}
 
-        {/* X-axis week labels */}
         {pts.map((p) => (
           <text
             key={p.label}
@@ -105,7 +129,6 @@ export function ProductivityTrend({ data }: ProductivityTrendProps) {
           </text>
         ))}
 
-        {/* Area + line per segment */}
         {segments.map((seg, si) => {
           const d = seg.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
           const first = seg[0];
@@ -126,7 +149,6 @@ export function ProductivityTrend({ data }: ProductivityTrendProps) {
           );
         })}
 
-        {/* Data points */}
         {pts.map((p, i) =>
           p.y != null ? (
             <g key={i}>

@@ -3,13 +3,19 @@
 import { useState, useEffect } from 'react';
 import { DailyChart } from './daily-chart';
 import { CategoryChart } from './category-chart';
-import type { DailyActivity, MockCategory } from '@/data/dashboard-mock';
+import type { CategorySummaryItem } from '@grow-logs/types';
 
 type Tab = 'daily' | 'category';
 
+interface DailyPoint {
+  date: string;
+  workCount: number;
+  learnCount: number;
+}
+
 interface ActivityCardProps {
-  daily: DailyActivity[];
-  categories: MockCategory[];
+  dailyActivity: DailyPoint[];
+  byCategory: CategorySummaryItem[];
 }
 
 const TABS: { key: Tab; label: string; mobileLabel: string }[] = [
@@ -17,7 +23,13 @@ const TABS: { key: Tab; label: string; mobileLabel: string }[] = [
   { key: 'category', label: 'Category breakdown', mobileLabel: 'Categories' },
 ];
 
-export function ActivityCard({ daily, categories }: ActivityCardProps) {
+function formatShortDate(iso: string): string {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(
+    new Date(`${iso}T00:00:00`),
+  );
+}
+
+export function ActivityCard({ dailyActivity, byCategory }: ActivityCardProps) {
   const [tab, setTab] = useState<Tab>('daily');
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches,
@@ -30,18 +42,21 @@ export function ActivityCard({ daily, categories }: ActivityCardProps) {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const chartData = isMobile ? daily.slice(-7) : daily;
+  const raw = isMobile ? dailyActivity.slice(-7) : dailyActivity;
+  const chartData = raw.map((d, i, arr) => ({
+    dateLabel: i === 0 || i % 7 === 0 || i === arr.length - 1 ? formatShortDate(d.date) : '',
+    workCount: d.workCount,
+    learnCount: d.learnCount,
+  }));
 
   return (
     <div className="border-gl-border bg-gl-surface shadow-gl mb-4 overflow-visible rounded-xl border">
-      {/* Header — Activity label left, tabs + legend right */}
       <div className="flex items-center justify-between px-4 pt-4 sm:px-[22px] sm:pt-[18px]">
         <p className="text-gl-text-faint text-[11px] font-bold tracking-[0.12em] uppercase">
           Activity
         </p>
 
         <div className="flex items-center gap-3">
-          {/* Tab switcher */}
           <div className="border-gl-border bg-gl-bg-subtle inline-flex gap-1 rounded-[9px] border p-1">
             {TABS.map(({ key, label, mobileLabel }) => (
               <button
@@ -59,7 +74,6 @@ export function ActivityCard({ daily, categories }: ActivityCardProps) {
             ))}
           </div>
 
-          {/* Legend — desktop only */}
           <div className="text-gl-text-muted hidden items-center gap-3.5 text-[12px] sm:flex">
             <span className="flex items-center gap-1.5">
               <span className="bg-gl-work size-[9px] rounded-[2px]" aria-hidden="true" /> Work
@@ -71,12 +85,11 @@ export function ActivityCard({ daily, categories }: ActivityCardProps) {
         </div>
       </div>
 
-      {/* Chart area */}
       <div className="p-4 sm:p-[22px]">
         {tab === 'daily' ? (
           <DailyChart data={chartData} />
         ) : (
-          <CategoryChart categories={categories} />
+          <CategoryChart categories={byCategory} />
         )}
       </div>
     </div>
