@@ -11,12 +11,20 @@ import { StatsRowSkeleton } from './stats-row-skeleton';
 import { ActivityCard } from './activity-card';
 import { RecentEntries } from './recent-entries';
 import { RecentEntriesSkeleton } from './recent-entries-skeleton';
-import { ProductivityTrend } from './productivity-trend';
+import { ActivityHeatmaps } from './activity-heatmaps';
 import { EntrySheet } from './entry-sheet';
 import { useEntriesSummary, useEntries } from '@/hooks/use-entries';
 import { useUiStore } from '@/stores/ui.store';
+import { IconPlus } from '@/components/common/icons';
 
 type Period = '7d' | '30d' | 'week' | 'month';
+
+const PERIODS: { key: Period; label: string }[] = [
+  { key: '7d', label: '7 days' },
+  { key: '30d', label: '30 days' },
+  { key: 'week', label: 'This week' },
+  { key: 'month', label: 'This month' },
+];
 
 // YYYY-MM-DD in local time — avoids UTC midnight shifting the date.
 function localDateStr(d: Date): string {
@@ -43,6 +51,26 @@ function daysElapsed(period: Period): number {
   }
   // month: day of month (1–31)
   return today.getDate();
+}
+
+// ── Section header: accent bar · title · extending rule · optional right slot ──
+
+interface SectionHeaderProps {
+  title: string;
+  right?: React.ReactNode;
+}
+
+function SectionHeader({ title, right }: SectionHeaderProps): JSX.Element {
+  return (
+    <div className="mb-6 flex items-center gap-4">
+      <div className="flex shrink-0 items-center gap-2.5">
+        <div className="bg-gl-primary h-[18px] w-[3px] rounded-full" />
+        <h2 className="text-gl-text text-[15px] font-bold tracking-[-0.015em]">{title}</h2>
+      </div>
+      <div className="border-gl-border min-w-0 flex-1 border-t" />
+      {right}
+    </div>
+  );
 }
 
 interface StatsRowErrorProps {
@@ -78,6 +106,7 @@ export function DashboardClient(): JSX.Element {
   const {
     data: summary,
     isLoading: summaryLoading,
+    isFetching: summaryFetching,
     isError: summaryError,
     refetch: refetchSummary,
   } = useEntriesSummary(period);
@@ -107,62 +136,95 @@ export function DashboardClient(): JSX.Element {
       ? Math.round((summary.totalByType.WORK / summary.totalEntries) * 100)
       : 0;
   const learnPct = summary ? 100 - workPct : 0;
-  const trendData = summary?.weeklyTrend.map((w) => w.avgScore) ?? [];
-
-  // Days active: unique days with at least one entry in the selected period.
   const daysActive = summary?.dailyActivity.length ?? 0;
   const totalDaysInPeriod = daysElapsed(period);
+
+  const periodPicker = (
+    <div className="border-gl-border bg-gl-bg-subtle inline-flex shrink-0 items-center gap-1 rounded-[9px] border p-1">
+      {PERIODS.map(({ key, label }) => (
+        <button
+          key={key}
+          onClick={() => setPeriod(key)}
+          className={`rounded-[7px] px-3 py-[7px] text-[12.5px] font-medium whitespace-nowrap transition-colors duration-[120ms] ${
+            period === key
+              ? 'bg-gl-primary text-gl-primary-ink font-semibold'
+              : 'text-gl-text-muted hover:text-gl-text'
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+
+  const addEntryButton = (
+    <button
+      onClick={openCreateEntry}
+      className="border-gl-primary text-gl-primary hover:bg-gl-primary-soft inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border px-3 py-[7px] text-[12.5px] font-semibold transition-colors duration-[120ms]"
+    >
+      <IconPlus size={12} /> Add entry
+    </button>
+  );
 
   return (
     <>
       <TopBar
-        period={period}
-        onPeriodChange={setPeriod}
-        onAddEntry={openCreateEntry}
         streakDays={summary?.currentStreak ?? 0}
         todayDate={formatTodayDate()}
         todayCategories={todayCategories}
       />
 
-      <div className="flex-1 px-8 py-6 pb-16">
-        {summaryLoading ? (
-          <StatsRowSkeleton />
-        ) : summaryError ? (
-          <StatsRowError onRetry={() => void refetchSummary()} />
-        ) : summary ? (
-          <StatsRow
-            totalEntries={summary.totalEntries}
-            thisWeekCount={summary.thisWeekCount}
-            lastWeekCount={summary.lastWeekCount}
-            workPct={workPct}
-            learnPct={learnPct}
-            avgProductivity={summary.averageProductivityScore}
-            daysActive={daysActive}
-            totalDaysInPeriod={totalDaysInPeriod}
+      <div className="flex-1 px-8 py-8 pb-20">
+        {/* ── Section 1: Overview ──────────────────────────────────────────── */}
+        <SectionHeader title="Overview" right={periodPicker} />
+        <div
+          className={`transition-opacity duration-200 ${
+            summaryFetching && !summaryLoading ? 'opacity-60' : 'opacity-100'
+          }`}
+        >
+          {summaryLoading ? (
+            <StatsRowSkeleton />
+          ) : summaryError ? (
+            <StatsRowError onRetry={() => void refetchSummary()} />
+          ) : summary ? (
+            <StatsRow
+              totalEntries={summary.totalEntries}
+              thisWeekCount={summary.thisWeekCount}
+              lastWeekCount={summary.lastWeekCount}
+              workPct={workPct}
+              learnPct={learnPct}
+              avgProductivity={summary.averageProductivityScore}
+              daysActive={daysActive}
+              totalDaysInPeriod={totalDaysInPeriod}
+              period={period}
+            />
+          ) : null}
+
+          <ActivityCard
+            dailyActivity={summary?.dailyActivity ?? []}
+            byCategory={summary?.byCategory ?? []}
             period={period}
           />
-        ) : null}
+        </div>
 
-        <ActivityCard
-          dailyActivity={summary?.dailyActivity ?? []}
-          byCategory={summary?.byCategory ?? []}
-          period={period}
-        />
+        {/* ── Section 2: Recent entries ────────────────────────────────────── */}
+        <div className="mt-12">
+          <SectionHeader title="Recent entries" right={addEntryButton} />
+          {entriesLoading ? (
+            <RecentEntriesSkeleton />
+          ) : (
+            <RecentEntries
+              entries={entriesResult?.data ?? []}
+              onAddEntry={openCreateEntry}
+              onEdit={(entry) => setSelectedEntry(entry)}
+            />
+          )}
+        </div>
 
-        {entriesLoading ? (
-          <RecentEntriesSkeleton />
-        ) : (
-          <RecentEntries
-            entries={entriesResult?.data ?? []}
-            onAddEntry={openCreateEntry}
-            onEdit={(entry) => setSelectedEntry(entry)}
-          />
-        )}
-
-        <ProductivityTrend data={trendData} />
-
-        <div className="border-gl-border text-gl-text-faint mt-6 flex items-center justify-between border-t pt-5 text-[12px]">
-          <span>Last sync · just now</span>
+        {/* ── Section 3: Activity patterns ─────────────────────────────────── */}
+        <div className="mt-12">
+          <SectionHeader title="Activity patterns" />
+          <ActivityHeatmaps />
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 // Entry data hooks — summary (F06), list (F07), create/update/delete (F08/F09).
 // Used by: components/dashboard/dashboard-client.tsx, components/dashboard/entry-sheet.tsx, components/dashboard/delete-entry-dialog.tsx
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -34,6 +35,7 @@ export function useEntriesSummary(
         })
         .then((r) => r.data.data),
     staleTime: 60_000,
+    placeholderData: keepPreviousData,
   });
 }
 

@@ -77,6 +77,13 @@ export interface EntrySummary {
   currentStreak: number;
   longestStreak: number;
   byCategory: CategorySummaryItem[];
-  dailyActivity: { date: string; workCount: number; learnCount: number }[];
+  dailyActivity: {
+    date: string;
+    workCount: number;
+    learnCount: number;
+    avgScore: number | null;
+    categoryCount: number;
+    dominantCategory: { name: string; color: string } | null;
+  }[];
   weeklyTrend: { week: string; avgScore: number | null }[];
 }

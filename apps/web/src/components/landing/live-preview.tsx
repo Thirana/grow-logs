@@ -5,6 +5,7 @@ import { Logo } from '@/components/common/logo';
 import { StatsRow } from '@/components/dashboard/stats-row';
 import { ActivityCard } from '@/components/dashboard/activity-card';
 import { RecentEntries } from '@/components/dashboard/recent-entries';
+import { ActivityHeatmapsView } from '@/components/dashboard/activity-heatmaps';
 import { FadeIn } from '@/components/common/fade-in';
 import type { CategorySummaryItem, Entry } from '@grow-logs/types';
 
@@ -12,10 +13,80 @@ import type { CategorySummaryItem, Entry } from '@grow-logs/types';
 const _workSeed = [
   1, 2, 0, 3, 1, 2, 3, 1, 2, 2, 4, 2, 3, 1, 0, 2, 3, 2, 4, 1, 3, 2, 3, 1, 2, 4, 3, 2, 1, 3,
 ];
+const _scoreSeed: (number | null)[] = [
+  null,
+  7,
+  null,
+  8,
+  6,
+  7,
+  8,
+  6,
+  7,
+  7,
+  9,
+  7,
+  8,
+  6,
+  null,
+  7,
+  8,
+  7,
+  9,
+  6,
+  8,
+  7,
+  8,
+  6,
+  7,
+  9,
+  8,
+  7,
+  6,
+  8,
+];
+const _catCountSeed = [
+  1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 3, 2, 2, 1, 1, 2, 2, 2, 3, 1, 2, 2, 2, 1, 2, 3, 2, 2, 1, 2,
+];
+const _domCatSeed: { name: string; color: string }[] = [
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'System Design', color: '#8285BA' },
+];
 const PREVIEW_DAILY = _workSeed.map((w, i) => ({
   date: new Date(Date.now() - (29 - i) * 86_400_000).toISOString().slice(0, 10),
   workCount: w,
   learnCount: ((i * 3) % 4) + (i % 5 === 0 ? 1 : 0),
+  avgScore: w === 0 ? null : (_scoreSeed[i] ?? null),
+  categoryCount: _catCountSeed[i] ?? 1,
+  dominantCategory: _domCatSeed[i] ?? null,
 }));
 
 const PREVIEW_BY_CATEGORY: CategorySummaryItem[] = [
@@ -124,6 +195,19 @@ const PREVIEW_ENTRIES: Entry[] = [
   },
 ];
 
+// Section divider matching the dashboard's SectionHeader style.
+function PreviewSectionHeader({ title }: { title: string }) {
+  return (
+    <div className="mb-6 flex items-center gap-4">
+      <div className="flex shrink-0 items-center gap-2.5">
+        <div className="bg-gl-primary h-[18px] w-[3px] rounded-full" />
+        <h3 className="text-gl-text text-[15px] font-bold tracking-[-0.015em]">{title}</h3>
+      </div>
+      <div className="border-gl-border min-w-0 flex-1 border-t" />
+    </div>
+  );
+}
+
 export function LivePreview() {
   return (
     <section id="preview" className="py-12 sm:py-16 lg:py-20">
@@ -169,6 +253,7 @@ export function LivePreview() {
 
           {/* Dashboard content */}
           <div className="px-6 py-5 sm:px-8">
+            <PreviewSectionHeader title="Overview" />
             <StatsRow
               totalEntries={147}
               thisWeekCount={12}
@@ -185,14 +270,28 @@ export function LivePreview() {
               byCategory={PREVIEW_BY_CATEGORY}
               period="30d"
             />
-            <RecentEntries entries={PREVIEW_ENTRIES} />
+
+            <div className="mt-12">
+              <PreviewSectionHeader title="Recent entries" />
+              <RecentEntries entries={PREVIEW_ENTRIES} />
+            </div>
+
+            <div className="mt-12">
+              <PreviewSectionHeader title="Activity patterns" />
+              <ActivityHeatmapsView
+                isLoading={false}
+                dailyActivity={PREVIEW_DAILY}
+                byCategory={PREVIEW_BY_CATEGORY}
+                averageProductivityScore={7.4}
+              />
+            </div>
           </div>
 
-          {/* Bottom fade — creates the "peek" effect */}
+          {/* Bottom fade — teases the heatmap, draws users to open the full dashboard */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-56"
             style={{
-              background: 'linear-gradient(to top, var(--gl-bg-subtle) 20%, transparent)',
+              background: 'linear-gradient(to top, var(--gl-bg-subtle) 30%, transparent)',
             }}
             aria-hidden="true"
           />

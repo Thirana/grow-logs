@@ -62,7 +62,14 @@ export type SummaryResponse = {
   currentStreak: number;
   longestStreak: number;
   byCategory: CategorySummaryItem[];
-  dailyActivity: { date: string; workCount: number; learnCount: number }[];
+  dailyActivity: {
+    date: string;
+    workCount: number;
+    learnCount: number;
+    avgScore: number | null;
+    categoryCount: number;
+    dominantCategory: { name: string; color: string } | null;
+  }[];
   weeklyTrend: { week: string; avgScore: number | null }[];
 };
 
@@ -346,6 +353,8 @@ export class EntriesService {
       byCategoryTypeRaw,
       byCategoryAggRaw,
       byDayRaw,
+      byDayAvgRaw,
+      byDayCatRaw,
       trendEntries,
       thisWeekCount,
       lastWeekCount,
@@ -377,6 +386,16 @@ export class EntriesService {
         where: baseWhere,
         _count: { id: true },
         orderBy: { entryDate: 'asc' },
+      }),
+      this.prisma.entry.groupBy({
+        by: ['entryDate'],
+        where: baseWhere,
+        _avg: { productivityScore: true },
+      }),
+      this.prisma.entry.groupBy({
+        by: ['entryDate', 'categoryId'],
+        where: baseWhere,
+        _count: { id: true },
       }),
       this.prisma.entry.findMany({
         where: {
@@ -468,13 +487,59 @@ export class EntriesService {
       else existing.learnCount += row._count.id;
       dayMap.set(dateStr, existing);
     }
+
+    const dayAvgMap = new Map<string, number | null>();
+    for (const row of byDayAvgRaw) {
+      const dateStr = row.entryDate.toISOString().slice(0, 10);
+      dayAvgMap.set(
+        dateStr,
+        row._avg.productivityScore !== null
+          ? Math.round(row._avg.productivityScore * 10) / 10
+          : null,
+      );
+    }
+
+    // Per-day category breakdown: distinct count + dominant category for the focus/spotlight heatmaps.
+    const dayCatMap = new Map<string, Map<string, number>>();
+    for (const row of byDayCatRaw) {
+      const dateStr = row.entryDate.toISOString().slice(0, 10);
+      const catMap = dayCatMap.get(dateStr) ?? new Map<string, number>();
+      catMap.set(row.categoryId, row._count.id);
+      dayCatMap.set(dateStr, catMap);
+    }
+
     const dailyActivity = Array.from(dayMap.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, { workCount, learnCount }]) => ({
-        date,
-        workCount,
-        learnCount,
-      }));
+      .map(([date, { workCount, learnCount }]) => {
+        const catMap = dayCatMap.get(date);
+        let categoryCount = 0;
+        let dominantCategory: { name: string; color: string } | null = null;
+
+        if (catMap && catMap.size > 0) {
+          categoryCount = catMap.size;
+          let maxCount = 0;
+          let dominantCatId: string | null = null;
+          for (const [catId, count] of catMap) {
+            if (count > maxCount) {
+              maxCount = count;
+              dominantCatId = catId;
+            }
+          }
+          if (dominantCatId) {
+            const cat = categoryMap.get(dominantCatId);
+            if (cat) dominantCategory = { name: cat.name, color: cat.color };
+          }
+        }
+
+        return {
+          date,
+          workCount,
+          learnCount,
+          avgScore: dayAvgMap.get(date) ?? null,
+          categoryCount,
+          dominantCategory,
+        };
+      });
 
     // ── Weekly productivity trend (fixed 8-week window) ──────────────────────────
     const weekScores = new Map<string, { sum: number; count: number }>();
