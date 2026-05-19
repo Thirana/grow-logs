@@ -11,10 +11,10 @@ Fourteen steps across six phases. Each step is a single focused unit — one con
 | [F03](steps/step-f03-verify-email.md) | Email Verification + Resend | Phase 1 | ✅ |
 | [F04](steps/step-f04-middleware.md) | Route Protection Middleware | Phase 1 | ✅ |
 | [F05](steps/step-f05-onboarding.md) | Onboarding Flow | Phase 2 | ✅ |
-| [F06](steps/step-f06-dashboard-stats.md) | Dashboard Wired — Stats & Summary | Phase 3 | ⬜ |
-| [F07](steps/step-f07-dashboard-entries.md) | Dashboard Wired — Entries List & Charts | Phase 3 | ⬜ |
-| [F08](steps/step-f08-create-entry.md) | Create Entry | Phase 4 | ⬜ |
-| [F09](steps/step-f09-edit-delete-entry.md) | Edit + Delete Entry | Phase 4 | ⬜ |
+| [F06](steps/step-f06-dashboard-stats.md) | Dashboard Wired — Stats & Summary | Phase 3 | ✅ |
+| [F07](steps/step-f07-dashboard-entries.md) | Dashboard Wired — Entries List & Charts | Phase 3 | ✅ |
+| [F08](steps/step-f08-create-entry.md) | Create Entry | Phase 4 | ✅ |
+| [F09](steps/step-f09-edit-delete-entry.md) | Edit + Delete Entry | Phase 4 | ✅ |
 | [F10](steps/step-f10-categories-list.md) | Categories Page + List | Phase 5 | ⬜ |
 | [F11](steps/step-f11-category-mutations.md) | Category Mutations | Phase 5 | ⬜ |
 | [F12](steps/step-f12-subcategory-crud.md) | Subcategory CRUD | Phase 5 | ⬜ |

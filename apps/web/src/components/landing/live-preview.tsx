@@ -5,8 +5,208 @@ import { Logo } from '@/components/common/logo';
 import { StatsRow } from '@/components/dashboard/stats-row';
 import { ActivityCard } from '@/components/dashboard/activity-card';
 import { RecentEntries } from '@/components/dashboard/recent-entries';
+import { ActivityHeatmapsView } from '@/components/dashboard/activity-heatmaps';
 import { FadeIn } from '@/components/common/fade-in';
-import { MOCK_STATS, MOCK_CATEGORIES, MOCK_DAILY, MOCK_ENTRIES } from '@/data/dashboard-mock';
+import type { CategorySummaryItem, Entry } from '@grow-logs/types';
+
+// Static preview data — landing page only, never fetched.
+const _workSeed = [
+  1, 2, 0, 3, 1, 2, 3, 1, 2, 2, 4, 2, 3, 1, 0, 2, 3, 2, 4, 1, 3, 2, 3, 1, 2, 4, 3, 2, 1, 3,
+];
+const _scoreSeed: (number | null)[] = [
+  null,
+  7,
+  null,
+  8,
+  6,
+  7,
+  8,
+  6,
+  7,
+  7,
+  9,
+  7,
+  8,
+  6,
+  null,
+  7,
+  8,
+  7,
+  9,
+  6,
+  8,
+  7,
+  8,
+  6,
+  7,
+  9,
+  8,
+  7,
+  6,
+  8,
+];
+const _catCountSeed = [
+  1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 3, 2, 2, 1, 1, 2, 2, 2, 3, 1, 2, 2, 2, 1, 2, 3, 2, 2, 1, 2,
+];
+const _domCatSeed: { name: string; color: string }[] = [
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'System Design', color: '#8285BA' },
+  { name: 'Side Project', color: '#C4A05E' },
+  { name: 'Backend', color: '#69B598' },
+  { name: 'Reading', color: '#B87DA2' },
+  { name: 'System Design', color: '#8285BA' },
+];
+const PREVIEW_DAILY = _workSeed.map((w, i) => ({
+  date: new Date(Date.now() - (29 - i) * 86_400_000).toISOString().slice(0, 10),
+  workCount: w,
+  learnCount: ((i * 3) % 4) + (i % 5 === 0 ? 1 : 0),
+  avgScore: w === 0 ? null : (_scoreSeed[i] ?? null),
+  categoryCount: _catCountSeed[i] ?? 1,
+  dominantCategory: _domCatSeed[i] ?? null,
+}));
+
+const PREVIEW_BY_CATEGORY: CategorySummaryItem[] = [
+  {
+    category: { id: '1', name: 'Backend', color: '#69B598', isCompleted: false },
+    entryCount: 38,
+    averageProductivityScore: 7.8,
+    byType: { WORK: 28, LEARNING: 10 },
+  },
+  {
+    category: { id: '2', name: 'System Design', color: '#8285BA', isCompleted: false },
+    entryCount: 24,
+    averageProductivityScore: 7.2,
+    byType: { WORK: 12, LEARNING: 12 },
+  },
+  {
+    category: { id: '3', name: 'Reading', color: '#B87DA2', isCompleted: false },
+    entryCount: 22,
+    averageProductivityScore: 7.5,
+    byType: { WORK: 0, LEARNING: 22 },
+  },
+  {
+    category: { id: '4', name: 'Side Project', color: '#C4A05E', isCompleted: false },
+    entryCount: 19,
+    averageProductivityScore: 8.4,
+    byType: { WORK: 19, LEARNING: 0 },
+  },
+  {
+    category: { id: '5', name: 'Soft Skills', color: '#B87060', isCompleted: false },
+    entryCount: 12,
+    averageProductivityScore: 6.9,
+    byType: { WORK: 6, LEARNING: 6 },
+  },
+];
+
+const PREVIEW_ENTRIES: Entry[] = [
+  {
+    id: '1',
+    userId: 'preview',
+    type: 'WORK',
+    text: 'Refactored auth into a single guard. Pulled the refresh-token rotation out of the login handler and the test surface dropped by half.',
+    productivityScore: 8,
+    entryDate: '2025-05-14',
+    categoryId: '1',
+    subcategoryId: 'a',
+    category: { id: '1', name: 'Backend', color: '#69B598' },
+    subcategory: { id: 'a', name: 'NestJS' },
+    createdAt: '2025-05-14T10:00:00Z',
+    updatedAt: '2025-05-14T10:00:00Z',
+  },
+  {
+    id: '2',
+    userId: 'preview',
+    type: 'LEARNING',
+    text: 'Chapter 4: Designing Data-Intensive Applications. Replication patterns; conflict resolution figure finally clicked.',
+    productivityScore: 7,
+    entryDate: '2025-05-14',
+    categoryId: '3',
+    subcategoryId: 'b',
+    category: { id: '3', name: 'Reading', color: '#B87DA2' },
+    subcategory: { id: 'b', name: 'DDIA' },
+    createdAt: '2025-05-14T14:00:00Z',
+    updatedAt: '2025-05-14T14:00:00Z',
+  },
+  {
+    id: '3',
+    userId: 'preview',
+    type: 'WORK',
+    text: 'Shipped the import-from-CSV flow. Row-level errors inline. Cut onboarding friction for the three people who tried it.',
+    productivityScore: 9,
+    entryDate: '2025-05-13',
+    categoryId: '4',
+    subcategoryId: 'c',
+    category: { id: '4', name: 'Side Project', color: '#C4A05E' },
+    subcategory: { id: 'c', name: 'Grow Logs' },
+    createdAt: '2025-05-13T11:00:00Z',
+    updatedAt: '2025-05-13T11:00:00Z',
+  },
+  {
+    id: '4',
+    userId: 'preview',
+    type: 'LEARNING',
+    text: 'Read up on cache stampedes: request coalescing, lock-and-refresh, probabilistic early expiration. Trade-offs make sense now.',
+    productivityScore: 6,
+    entryDate: '2025-05-13',
+    categoryId: '2',
+    subcategoryId: 'd',
+    category: { id: '2', name: 'System Design', color: '#8285BA' },
+    subcategory: { id: 'd', name: 'Caching' },
+    createdAt: '2025-05-13T16:00:00Z',
+    updatedAt: '2025-05-13T16:00:00Z',
+  },
+  {
+    id: '5',
+    userId: 'preview',
+    type: 'WORK',
+    text: 'Replaced two redundant indexes after running the unused-index report. Saved ~140 MB. Tiny but satisfying.',
+    productivityScore: 7,
+    entryDate: '2025-05-12',
+    categoryId: '1',
+    subcategoryId: 'e',
+    category: { id: '1', name: 'Backend', color: '#69B598' },
+    subcategory: { id: 'e', name: 'Postgres' },
+    createdAt: '2025-05-12T09:00:00Z',
+    updatedAt: '2025-05-12T09:00:00Z',
+  },
+];
+
+// Section divider matching the dashboard's SectionHeader style.
+function PreviewSectionHeader({ title }: { title: string }) {
+  return (
+    <div className="mb-6 flex items-center gap-4">
+      <div className="flex shrink-0 items-center gap-2.5">
+        <div className="bg-gl-primary h-[18px] w-[3px] rounded-full" />
+        <h3 className="text-gl-text text-[15px] font-bold tracking-[-0.015em]">{title}</h3>
+      </div>
+      <div className="border-gl-border min-w-0 flex-1 border-t" />
+    </div>
+  );
+}
 
 export function LivePreview() {
   return (
@@ -53,16 +253,45 @@ export function LivePreview() {
 
           {/* Dashboard content */}
           <div className="px-6 py-5 sm:px-8">
-            <StatsRow stats={MOCK_STATS} />
-            <ActivityCard daily={MOCK_DAILY} categories={MOCK_CATEGORIES} />
-            <RecentEntries entries={MOCK_ENTRIES} />
+            <PreviewSectionHeader title="Overview" />
+            <StatsRow
+              totalEntries={147}
+              thisWeekCount={12}
+              lastWeekCount={9}
+              workPct={62}
+              learnPct={38}
+              avgProductivity={7.4}
+              daysActive={18}
+              totalDaysInPeriod={30}
+              period="30d"
+            />
+            <ActivityCard
+              dailyActivity={PREVIEW_DAILY}
+              byCategory={PREVIEW_BY_CATEGORY}
+              period="30d"
+            />
+
+            <div className="mt-12">
+              <PreviewSectionHeader title="Recent entries" />
+              <RecentEntries entries={PREVIEW_ENTRIES} />
+            </div>
+
+            <div className="mt-12">
+              <PreviewSectionHeader title="Activity patterns" />
+              <ActivityHeatmapsView
+                isLoading={false}
+                dailyActivity={PREVIEW_DAILY}
+                byCategory={PREVIEW_BY_CATEGORY}
+                averageProductivityScore={7.4}
+              />
+            </div>
           </div>
 
-          {/* Bottom fade — creates the "peek" effect */}
+          {/* Bottom fade — teases the heatmap, draws users to open the full dashboard */}
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-56"
             style={{
-              background: 'linear-gradient(to top, var(--gl-bg-subtle) 20%, transparent)',
+              background: 'linear-gradient(to top, var(--gl-bg-subtle) 30%, transparent)',
             }}
             aria-hidden="true"
           />

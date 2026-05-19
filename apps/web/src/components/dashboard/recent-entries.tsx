@@ -1,15 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { EntryRow } from './entry-row';
 import { IconArrowRight, IconEmptyList } from '@/components/common/icons';
-import type { MockEntry } from '@/data/dashboard-mock';
+import type { Entry } from '@grow-logs/types';
 
 type Filter = 'all' | 'work' | 'learning';
 
 interface RecentEntriesProps {
-  entries: MockEntry[];
+  entries: Entry[];
   onAddEntry?: () => void;
+  onEdit?: (entry: Entry) => void;
 }
 
 const FILTER_LABELS: { key: Filter; label: string }[] = [
@@ -18,7 +19,7 @@ const FILTER_LABELS: { key: Filter; label: string }[] = [
   { key: 'learning', label: 'Learning' },
 ];
 
-export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps) {
+export function RecentEntries({ entries, onAddEntry, onEdit }: RecentEntriesProps): JSX.Element {
   const [filter, setFilter] = useState<Filter>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -34,14 +35,14 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps) {
           <h2 className="text-gl-text text-[16px] leading-snug font-bold tracking-[-0.015em]">
             Recent entries
           </h2>
-          <div className="border-gl-border bg-gl-bg-subtle flex gap-0.5 rounded-lg border p-[3px]">
+          <div className="border-gl-border bg-gl-bg-subtle flex gap-1 rounded-[9px] border p-1">
             {FILTER_LABELS.map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`rounded-[6px] px-2.5 py-1 text-[11.5px] font-medium transition-colors duration-[120ms] ${
+                className={`rounded-[7px] px-2.5 py-[5px] text-[11.5px] font-medium transition-colors duration-[120ms] ${
                   filter === key
-                    ? 'bg-gl-primary-soft text-gl-primary font-semibold'
+                    ? 'bg-gl-primary text-gl-primary-ink font-semibold'
                     : 'text-gl-text-muted hover:text-gl-text'
                 }`}
               >
@@ -57,14 +58,14 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps) {
             Recent entries
           </h2>
           <div className="flex items-center gap-3">
-            <div className="border-gl-border bg-gl-bg-subtle flex gap-0.5 rounded-lg border p-[3px]">
+            <div className="border-gl-border bg-gl-bg-subtle flex gap-1 rounded-[9px] border p-1">
               {FILTER_LABELS.map(({ key, label }) => (
                 <button
                   key={key}
                   onClick={() => setFilter(key)}
-                  className={`rounded-[7px] px-3 py-1.5 text-[12.5px] font-medium transition-colors duration-[120ms] ${
+                  className={`rounded-[7px] px-3 py-[7px] text-[12.5px] font-medium transition-colors duration-[120ms] ${
                     filter === key
-                      ? 'bg-gl-primary-soft text-gl-primary font-semibold'
+                      ? 'bg-gl-primary text-gl-primary-ink font-semibold'
                       : 'text-gl-text-muted hover:text-gl-text'
                   }`}
                 >
@@ -92,12 +93,14 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps) {
           <p className="text-gl-text-muted max-w-[320px] text-[14px] leading-relaxed">
             Your log will appear here once you start adding entries.
           </p>
-          <button
-            onClick={onAddEntry}
-            className="text-gl-primary hover:text-gl-primary-hover mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold"
-          >
-            Add your first entry <IconArrowRight size={12} />
-          </button>
+          {onAddEntry && (
+            <button
+              onClick={onAddEntry}
+              className="text-gl-primary hover:text-gl-primary-hover mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold"
+            >
+              Add your first entry <IconArrowRight size={12} />
+            </button>
+          )}
         </div>
       ) : visible.length === 0 ? (
         <div className="text-gl-text-muted px-6 py-10 text-center text-[13px] leading-relaxed">
@@ -111,6 +114,7 @@ export function RecentEntries({ entries, onAddEntry }: RecentEntriesProps) {
             isExpanded={expandedId === entry.id}
             onToggleExpand={() => setExpandedId(expandedId === entry.id ? null : entry.id)}
             isLast={i === visible.length - 1}
+            onEdit={onEdit}
           />
         ))
       )}

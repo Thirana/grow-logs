@@ -13,12 +13,11 @@ export function TypeBadge({ type, className }: TypeBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] leading-none font-semibold tracking-[0.01em] whitespace-nowrap',
-        isWork ? 'bg-gl-work-bg text-gl-work' : 'bg-gl-learn-bg text-gl-learn',
+        'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] leading-none font-semibold tracking-[0.01em] whitespace-nowrap',
+        isWork ? 'bg-gl-work text-gl-work-ink' : 'bg-gl-learn text-gl-learn-ink',
         className,
       )}
     >
-      <span className="size-[5px] rounded-full bg-current" aria-hidden="true" />
       {isWork ? 'Work' : 'Learning'}
     </span>
   );

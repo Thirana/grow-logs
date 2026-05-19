@@ -1,13 +1,16 @@
-import { z } from 'zod';
-import { dateStringSchema } from './common.js';
+import { z } from "zod";
+import { dateStringSchema } from "./common.js";
 
-export const entryTypeSchema = z.enum(['WORK', 'LEARNING']);
+export const entryTypeSchema = z.enum(["WORK", "LEARNING"]);
 
 export const createEntrySchema = z.object({
   type: entryTypeSchema,
-  text: z.string().min(10).max(1000),
+  text: z
+    .string()
+    .min(10, "Entry must be at least 10 characters")
+    .max(1000, "Entry must be 1 000 characters or less"),
   categoryId: z.string().uuid(),
-  subcategoryId: z.string().uuid().optional(),
+  subcategoryId: z.string().uuid().optional().nullable(),
   productivityScore: z.number().int().min(1).max(10).optional(),
   entryDate: dateStringSchema.optional(),
 });
@@ -25,7 +28,7 @@ export const entryFiltersSchema = z.object({
 });
 
 export const summaryQuerySchema = z.object({
-  period: z.enum(['7d', '30d', 'all']).default('30d'),
+  period: z.enum(["7d", "30d", "week", "month"]).default("30d"),
   type: entryTypeSchema.optional(),
 });
 

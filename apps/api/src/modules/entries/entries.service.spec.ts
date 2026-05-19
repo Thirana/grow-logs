@@ -477,13 +477,15 @@ describe('EntriesService', () => {
   // ─── getSummary ───────────────────────────────────────────────────────────────
 
   describe('getSummary', () => {
-    // Helper: set up all 9 parallel DB mocks in the order Promise.all calls them.
+    // Helper: set up all 11 parallel DB mocks in the order Promise.all calls them.
     function setupSummaryMocks({
       aggregate = { _count: { id: 0 }, _avg: { productivityScore: null } },
       typeGrouped = [],
       byCategoryType = [],
       byCategoryAgg = [],
       byDayRaw = [],
+      byDayAvgRaw = [],
+      byDayCatRaw = [],
       trendEntries = [],
       thisWeekCount = 0,
       lastWeekCount = 0,
@@ -506,6 +508,15 @@ describe('EntriesService', () => {
         _avg: { productivityScore: number | null };
       }[];
       byDayRaw?: { entryDate: Date; type: string; _count: { id: number } }[];
+      byDayAvgRaw?: {
+        entryDate: Date;
+        _avg: { productivityScore: number | null };
+      }[];
+      byDayCatRaw?: {
+        entryDate: Date;
+        categoryId: string;
+        _count: { id: number };
+      }[];
       trendEntries?: { entryDate: Date; productivityScore: number | null }[];
       thisWeekCount?: number;
       lastWeekCount?: number;
@@ -522,7 +533,9 @@ describe('EntriesService', () => {
         .mockResolvedValueOnce(typeGrouped)
         .mockResolvedValueOnce(byCategoryType)
         .mockResolvedValueOnce(byCategoryAgg)
-        .mockResolvedValueOnce(byDayRaw);
+        .mockResolvedValueOnce(byDayRaw)
+        .mockResolvedValueOnce(byDayAvgRaw)
+        .mockResolvedValueOnce(byDayCatRaw);
       mockPrisma.entry.findMany
         .mockResolvedValueOnce(trendEntries)
         .mockResolvedValueOnce(distinctDates);
@@ -656,7 +669,83 @@ describe('EntriesService', () => {
         date: '2024-01-15',
         workCount: 2,
         learnCount: 3,
+        avgScore: null,
+        categoryCount: 0,
+        dominantCategory: null,
       });
+    });
+
+    it('includes avgScore per day when scored entries exist', async () => {
+      const date = new Date('2024-01-15T00:00:00.000Z');
+      setupSummaryMocks({
+        byDayRaw: [{ entryDate: date, type: 'WORK', _count: { id: 2 } }],
+        byDayAvgRaw: [{ entryDate: date, _avg: { productivityScore: 8.25 } }],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.dailyActivity[0].avgScore).toBe(8.3); // rounded to 1dp
+    });
+
+    it('computes categoryCount and dominantCategory from per-day category grouping', async () => {
+      const date = new Date('2024-01-15T00:00:00.000Z');
+      setupSummaryMocks({
+        byDayRaw: [{ entryDate: date, type: 'WORK', _count: { id: 3 } }],
+        byDayCatRaw: [
+          { entryDate: date, categoryId: 'cat-1', _count: { id: 2 } },
+          { entryDate: date, categoryId: 'cat-2', _count: { id: 1 } },
+        ],
+        byCategoryType: [
+          { categoryId: 'cat-1', type: 'WORK', _count: { id: 2 } },
+          { categoryId: 'cat-2', type: 'WORK', _count: { id: 1 } },
+        ],
+        byCategoryAgg: [
+          {
+            categoryId: 'cat-1',
+            _count: { id: 2 },
+            _avg: { productivityScore: null },
+          },
+          {
+            categoryId: 'cat-2',
+            _count: { id: 1 },
+            _avg: { productivityScore: null },
+          },
+        ],
+        categories: [
+          {
+            id: 'cat-1',
+            name: 'Backend',
+            color: '#69B598',
+            isCompleted: false,
+          },
+          {
+            id: 'cat-2',
+            name: 'System Design',
+            color: '#8285BA',
+            isCompleted: false,
+          },
+        ],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.dailyActivity[0].categoryCount).toBe(2);
+      expect(result.dailyActivity[0].dominantCategory).toEqual({
+        name: 'Backend',
+        color: '#69B598',
+      });
+    });
+
+    it('returns categoryCount 0 and dominantCategory null when no per-day category data', async () => {
+      const date = new Date('2024-01-15T00:00:00.000Z');
+      setupSummaryMocks({
+        byDayRaw: [{ entryDate: date, type: 'WORK', _count: { id: 1 } }],
+      });
+
+      const result = await service.getSummary('user-1', { period: '30d' });
+
+      expect(result.dailyActivity[0].categoryCount).toBe(0);
+      expect(result.dailyActivity[0].dominantCategory).toBeNull();
     });
 
     it('always returns exactly 8 weeklyTrend entries', async () => {
@@ -694,13 +783,42 @@ describe('EntriesService', () => {
 
     it('returns period in the response', async () => {
       setupSummaryMocks();
-
       const result7d = await service.getSummary('user-1', { period: '7d' });
       setupSummaryMocks();
-      const resultAll = await service.getSummary('user-1', { period: 'all' });
+      const resultWeek = await service.getSummary('user-1', { period: 'week' });
 
       expect(result7d.period).toBe('7d');
-      expect(resultAll.period).toBe('all');
+      expect(resultWeek.period).toBe('week');
+    });
+
+    it('applies start of current ISO week as entryDate filter for "week" period', async () => {
+      const { startOfISOWeek: soiw } =
+        jest.requireActual<typeof import('date-fns')>('date-fns');
+      setupSummaryMocks();
+
+      await service.getSummary('user-1', { period: 'week' });
+
+      type AggCall = [{ where: { entryDate?: { gte: Date } } }];
+      const gte = (mockPrisma.entry.aggregate.mock.calls as AggCall[])[0][0]
+        .where.entryDate?.gte;
+      expect(gte?.toISOString().slice(0, 10)).toBe(
+        soiw(new Date()).toISOString().slice(0, 10),
+      );
+    });
+
+    it('applies start of current month as entryDate filter for "month" period', async () => {
+      const { startOfMonth: som } =
+        jest.requireActual<typeof import('date-fns')>('date-fns');
+      setupSummaryMocks();
+
+      await service.getSummary('user-1', { period: 'month' });
+
+      type AggCall = [{ where: { entryDate?: { gte: Date } } }];
+      const gte = (mockPrisma.entry.aggregate.mock.calls as AggCall[])[0][0]
+        .where.entryDate?.gte;
+      expect(gte?.toISOString().slice(0, 10)).toBe(
+        som(new Date()).toISOString().slice(0, 10),
+      );
     });
 
     it('returns thisWeekCount and lastWeekCount from the DB queries', async () => {

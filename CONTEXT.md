@@ -14,11 +14,11 @@ Grow Logs is a personal growth logging SaaS. Users track daily work and learning
 
 **Overall status:** Implementation in progress.
 
-**Last completed step:** F05 — Onboarding Flow
+**Last completed step:** F09 — Edit + Delete Entry
 
-**Next step:** F06 — Dashboard Wired — Stats & Summary
+**Next step:** F10 — Categories Page + List
 
-**Progress:** Backend MVP 24/26 complete. Frontend 5/14 complete.
+**Progress:** Backend MVP 24/26 complete. Frontend 9/14 complete.
 
 > **Note:** Backend Steps 08 (OpenTelemetry) and 09 (Axiom) are intentionally deferred.
 See full backend step index: `docs/phases/backend/mvp/PHASES.md`

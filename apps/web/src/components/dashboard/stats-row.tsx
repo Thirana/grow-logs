@@ -1,36 +1,76 @@
+import { type JSX } from 'react';
 import { StatCard } from './stat-card';
 import { SplitStatCard } from './split-stat-card';
-import type { DashboardStats } from '@/data/dashboard-mock';
 
 interface StatsRowProps {
-  stats: DashboardStats;
+  totalEntries: number;
+  thisWeekCount: number;
+  lastWeekCount: number;
+  workPct: number;
+  learnPct: number;
+  avgProductivity: number | null;
+  daysActive: number;
+  totalDaysInPeriod: number;
+  period: '7d' | '30d' | 'week' | 'month';
 }
 
-export function StatsRow({ stats }: StatsRowProps) {
+export function StatsRow({
+  totalEntries,
+  thisWeekCount,
+  lastWeekCount,
+  workPct,
+  learnPct,
+  avgProductivity,
+  daysActive,
+  totalDaysInPeriod,
+  period,
+}: StatsRowProps): JSX.Element {
+  const weekDiff = thisWeekCount - lastWeekCount;
+  const weekTrendUp = weekDiff >= 0;
+  const weekTrendText =
+    weekDiff === 0
+      ? 'Same as last week'
+      : `${Math.abs(weekDiff)} ${weekDiff > 0 ? 'more' : 'fewer'} than last week`;
+
+  const splitLabel =
+    period === '7d' || period === 'week' ? "This week's split" : "This month's split";
+
+  const totalSub =
+    period === '7d'
+      ? 'past 7 days'
+      : period === '30d'
+        ? 'past 30 days'
+        : period === 'week'
+          ? 'this week'
+          : 'this month';
+
+  const consistencyPct =
+    totalDaysInPeriod > 0 ? Math.round((daysActive / totalDaysInPeriod) * 100) : 0;
+
   return (
     <div className="mb-4 grid grid-cols-2 gap-3.5 lg:grid-cols-5">
-      <StatCard label="Total entries" value={stats.totalEntries} sub="since you started" />
+      <StatCard label="Total entries" value={totalEntries} sub={totalSub} />
       <StatCard
         label="This week"
-        value={stats.thisWeek}
-        trend={{ up: stats.weekTrendUp, text: stats.weekTrendText }}
+        value={thisWeekCount}
+        trend={{ up: weekTrendUp, text: weekTrendText }}
       />
       <SplitStatCard
-        workPct={stats.workPct}
-        learnPct={stats.learnPct}
+        workPct={workPct}
+        learnPct={learnPct}
+        label={splitLabel}
         className="col-span-2 lg:col-span-1"
       />
       <StatCard
         label="Avg productivity"
-        value={stats.avgProductivity.toFixed(1)}
-        suffix="/10"
+        value={avgProductivity != null ? avgProductivity.toFixed(1) : '—'}
+        suffix={avgProductivity != null ? '/10' : undefined}
         sub="across scored entries"
       />
       <StatCard
-        label="Current streak"
-        value={stats.currentStreak}
-        sub={`Personal best: ${stats.personalBestStreak} days`}
-        subTone="sage"
+        label="Days active"
+        value={daysActive}
+        sub={`${consistencyPct}% of ${totalDaysInPeriod} days`}
       />
     </div>
   );
