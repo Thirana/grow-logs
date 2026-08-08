@@ -32,8 +32,8 @@
   },
   "devDependencies": {
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.4",
-    "turbo": "^2.3.3"
+    "lint-staged": "^17.3.0",
+    "turbo": "^2.10.8"
   },
   "packageManager": "npm@11.13.0",
   "engines": {
